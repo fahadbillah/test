@@ -1,7 +1,15 @@
 <?php 
 	include_once "user.php";
 	session_start();
-	
+		
+	/*if(!isset($_SESSION["designation"]))
+		$_SESSION["designation"] = 'site manager';
+	if(!isset($_SESSION["location"]))
+		$_SESSION["location"] = 10011.5;
+	if(!isset($_SESSION["autorizatin_level"]))
+		$_SESSION["autorizatin_level"] = 'Approve';
+	if(!isset($_SESSION["user_id"]))
+		$_SESSION["user_id"] = '24';*/
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");
@@ -74,32 +82,9 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
              <ul class="nav">
-               <?php
-			  	$req_list->get_pages($_SESSION["designation"]);
-				$a=(explode("/",$_SERVER["PHP_SELF"]));
-				//echo $a[2];
-				foreach($req_list->user_data as $pages)
-						{
-							extract($pages);
-			  ?>		
-              <li
-			  <?php 
-			  	if($a[2]==$url)
-					echo "class='active'";
-			  ?>
-              >
-              	<a href="<?php echo $url ?>">
-				<?php
-				 if($icon)
-               		 echo $icon." ".$name;
-				 else
-				 	 echo $name;
-				?>
-                </a>
-              </li>
-              <?php 
-						}
-			  ?>
+              <li> <a class="active" href="user_home.php">Home</a> </li>
+              <li> <a href="add_new_req.php">Requisition</a> </li>
+              <li> <a href="log_out.php">Log Out</a>  </li>
             </ul>
 
           </div><!--/.nav-collapse -->
@@ -116,67 +101,37 @@
           </ul>
           
           <div class="page-header">
-            <h2>Requisition <?php echo $_REQUEST["id"] ?></h2>
+            <h2>Requisition <?php echo $_REQUEST["id"]." ".$_SESSION["location"][0]." ".$_SESSION["user_id"] ?></h2>
           </div>
           <div id="notice">
           <?php 
 		  	//print_r($_SESSION);
 			if(isset($_REQUEST["pm_submit"]))
 				$req_list->add_pm($_REQUEST["subject"],$_REQUEST["message"],$_REQUEST["sender"],$_REQUEST["receiver"]);
-		  	if(isset($_REQUEST["admin_submit"]))
-				$req_list->add_admin($_REQUEST["select_admin"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
+		  	if(isset($_REQUEST["stat_cng"]))
+				$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
 		  ?>
           </div>
           <div id="yooo">
-          
-          <?php 
-	
-				
-				unset($req_list->req_data);
-				
-				if(isset($_REQUEST["read_status"]))
-					$req_list->change_req_activities($_REQUEST["id"],'Pending');
-						
-				
-				if(isset($_REQUEST["submit"])&& !empty($_REQUEST["comment"]))
-				{
-					$req_list->add_comment_to_req($_SESSION["idusers"],$_REQUEST["id"],$_REQUEST["comment"]);
-					
+		  	<?php 
+				unset($req_list->user_data);
+				if(isset($_REQUEST['decision1'])){
+			   		$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
+			   		$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
+			   		$req_list->change_req_status_main($_REQUEST["id"],$_REQUEST['decision1']);
+			   		$req_list->assign_local_account_scm($_REQUEST["id"],$_SESSION['location'][0]);					
 				}
-				
-				if($_SESSION["designation"]=="site manager" || $_SESSION["designation"]=="site supervisor")
-				{
-				if($req_list->check_any_req_in_table($_SESSION['idusers'],"user_id"))
-				{
-				
-					//print_r($req_list->req_data);
-					
-					$perpage = 5;
-	
-					if(isset($_GET["page"]))				
-					{				
-					  $page = intval($_GET["page"]);				
-					}				
-					else			
-					{			
-					  $page = 1;				
-					}
-									
-					$calc = $perpage * $page;
-					
-					$start = $calc - $perpage;
-					
-					
-					
-					$sn =1;
-				
+				if(isset($_REQUEST['decision2']))
+			   		echo $_REQUEST['decision2'];
+				if(isset($_REQUEST['decision3']))
+			   		echo $_REQUEST['decision3'];
 			?>
-             </div>           
+          </div>           
              <div>
              <table class="table table-striped">
              <?php 
-				unset($req_list->req_data); 
-			 	$req_list->user_req_single($_SESSION["idusers"],$_REQUEST["id"],"user_id");
+				//unset($req_list->req_data); 
+			 	$req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
 			 	foreach($req_list->req_data as $list)
 				{
 					extract($list);			   
@@ -199,11 +154,6 @@
                <tr>
                  <th>Type of Requisition</th>
                  <td><?php echo $type_of_req ?>
-                 </td>
-               </tr>  
-               <tr>
-                 <th>Recurring/Nonrecurring</th>
-                 <td><?php echo $recurring_nonrecurring ?>
                  </td>
                </tr>   
                <tr>
@@ -240,8 +190,11 @@
 				 <?php
 				 	switch($status)
 					{
-						case "Solved":						
-							echo "<button class='btn btn-small btn-success disabled' type='button'>Solved</button>";
+						case "Solved":	
+						case "Approved":		
+						case "Clear From Accounts":	
+						case "Delivered":						
+							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
 							break;
 						case "Pending":	
 						case "New":						
@@ -249,6 +202,9 @@
 							break;
 						case "Modify":						
 							echo "<button class='btn btn-small btn-danger disabled' type='button'>Need Modification</button>";
+							break;
+						case "Closed":						
+							echo "<button class='btn btn-small btn-danger disabled' type='button'>Closed</button>";
 							break;
 					}
 				 ?>
@@ -263,147 +219,73 @@
                  <th>Deadline</th>
                  <td><?php echo $deadline ?>
                  </td> 
-               </tr>              
-               <?php 
-					}	
-				}			
-			   ?>               
+               </tr>
+               <tr>
+                 <th>Decision</th>
+                 <?php 
+				 if($status==='New'){					 
+				 ?>
+                 <td>
+                 <form id="des" name="des" action="req_validation.php?id=<?php echo $id ?>" method="post" onSubmit="reassure()">
+                     <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
+                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
+                     <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>
+                 </form>
+                 </td>                 
+                 <?php 
+				 }
+				 else if($status==='Delivered'){
+				 ?>   
+                 <td>
+				 <?php 
+				 echo "<button class='btn btn-small btn-success disabled' type='button'>Delivered</button>";
+				 ?>
+                 </td>         
+                 <?php 
+				 }
+				 else if($status==='Approved'){
+				 ?>   
+                 <td>
+				 <?php 
+				 echo "<button class='btn btn-small btn-success disabled' type='button'>Approved</button>";
+				 ?>
+                 </td>         
+                 <?php 
+				 }
+				 else if($status==='Clear From Accounts'){
+				 ?>   
+                 <td>
+				 <?php 
+				 echo "<button class='btn btn-small btn-success disabled' type='button'>Clear From Accounts</button>";
+				 ?>
+                 </td>         
+                 <?php 
+				 }
+				 else if($status==='Solved'){
+				 ?>   
+                 <td>
+				 <?php 
+				 echo "<button class='btn btn-small btn-success disabled' type='button'>Solved</button>";
+				 ?>
+                 </td>        
+                 <?php 
+				 }
+				 else if($status==='Closed'){
+				 ?>   
+                 <td>
+				 <?php 
+				 echo "<button class='btn btn-small btn-success disabled' type='button'>Closed</button>";
+				 ?>
+                 </td>      
+                 <?php 
+				 }
+				 ?>  
+               </tr>             
              </table>
              <?php 
 				}	
 				unset($req_list->req_data); 		
-			   ?>  
-               
-             <?php
-               
-               if($req_list->is_corporate($_SESSION["designation"]))
-				{
-				if($req_list->check_any_req_in_table($_SESSION['idusers'],"admin"))
-				{
-				
-					//print_r($req_list->req_data);
-					
-					$perpage = 5;
-	
-					if(isset($_GET["page"]))				
-					{				
-					  $page = intval($_GET["page"]);				
-					}				
-					else			
-					{			
-					  $page = 1;				
-					}
-									
-					$calc = $perpage * $page;
-					
-					$start = $calc - $perpage;
-					
-					
-					
-					$sn =1;
-				
-			?>
-             </div>           
-             <div>
-             <table class="table table-striped">
-             <?php 
-				unset($req_list->req_data); 
-			 	$req_list->user_req_single($_SESSION["idusers"],$_REQUEST["id"],"admin");
-			 	foreach($req_list->req_data as $list)
-				{
-					extract($list);			   
-			 ?>
-               <tr>
-                 <th>Requisition ID</th>
-                 <td><?php echo $id ?>
-                 </td>
-               </tr>  
-               <tr>
-                 <th>Title</th>	
-                 <td><?php echo $title ?>
-                 </td>		
-               </tr>  
-               <tr>					
-                 <th>Description</th>
-                 <td><?php echo $description ?>
-                 </td>
-               </tr>  
-               <tr>
-                 <th>Type of Requisition</th>
-                 <td><?php echo $type_of_req ?>
-                 </td>
-               </tr>  
-               <tr>
-                 <th>Recurring/Nonrecurring</th>
-                 <td><?php echo $recurring_nonrecurring ?>
-                 </td>
-               </tr>    
-               <tr>
-                 <th>Requisition by</th>
-                 <td><?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> <a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>
-                 </td>
-               </tr> 
-               <tr>
-                 <th>Costing</th>
-                 <td><?php echo $costing ?>
-                 </td>
-               </tr> <?php if($_SESSION['designation'] == 'Manager'){ ?>
-               <tr>
-                 <th>Admins</th>
-                 <td>
-				 <?php 
-				 	unset($req_list->user_data);
-				 	$req_list->get_list_of_admins($_REQUEST['id']);
-					foreach($req_list->user_data as $admin){
-						extract($admin);
-						echo $req_list->idusers_to_id($admin_id)." | ";
-					}
-				 ?>
-                 </td>
-               </tr> 
-               <tr>
-                 <th>Add Admin</th>
-                 <td><a href="#add_admin" role="button" class="btn btn-small" data-toggle="modal"><i class="icon-user icon-white"></i> Add Admin</a>
-                 </td>
-               </tr> <?php } ?>
-               <tr>
-                 <th>Status</th>
-                 <td>
-				 <?php
-				 switch($status)
-					{
-						case "Solved":						
-							echo "<button class='btn btn-small btn-success disabled' type='button'>Solved</button>";
-							break;
-						case "Pending":	
-						case "New":						
-							echo "<button class='btn btn-small btn-primary disabled' type='button'>Pending</button>";
-							break;
-						case "Modify":						
-							echo "<button class='btn btn-small btn-danger disabled' type='button'>Need Modification</button>";
-							break;
-					}
-				 ?>
-                 </td>
-               </tr>  
-               <tr>
-                 <th>Submission Date</th>
-                 <td><?php echo $submission_date ?>
-                 </td>
-               </tr>
-               <tr>
-                 <th>Deadline</th>
-                 <td><?php echo $deadline ?>
-                 </td> 
-               </tr>         
-               <?php 
-					}	
-				}			
-			   ?>               
-             </table>
-             <?php 
-				}			
-			   ?> 
+			   ?>                 
              </div>
              <div>
                 <legend>Comments</legend>
@@ -412,75 +294,9 @@
                 </table>
              </div>             
              <div class="accordion" id="accordion2">
-             <?php 
-			   unset($req_list->user_data);
-			   $req_list->get_comments($_REQUEST["id"]);
-			   
-			   $sn = 1;	
-			   		   
-			   foreach($req_list->comment_data as $cmnt)
-				{
-					extract($cmnt);	
-					$req_list->get_user_details($comment_by,"name");	
-					if($sn == $req_list->additional_data){
-			 ?>
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a id="comment_heading" class="accordion-toggle" onClick="<?php if($_SESSION["idusers"] != $comment_by){?>make_read(<?php echo $id ?>)<?php }?>" data-toggle="collapse" data-parent="#accordion2" href="#<?php echo "collapse".$sn ?>">
-                    <?php 
-						echo substr($comment,0,50).".... Comment # ".$sn." by ".$req_list->user_data[0]["name"]." time ".$date; 
-						if($comment_by!= $_SESSION["idusers"])
-						{
-							if($flag=="unread")
-								echo "<strong> New*</strong>";
-							else
-								echo " Old";
-						}
-					?>
-					<i class="icon-comment"></i>
-                  </a>
-                </div>
-                <div id="<?php echo "collapse".$sn ?>" class="accordion-body collapse in">
-                  <div id="comment" class="accordion-inner">
-                    <?php echo $comment ?>
-                  </div>
-                </div>
-              </div> 
-              <?php
-				}
-				else{
-			  ?>
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a id="comment_heading" class="accordion-toggle" onClick="<?php if($_SESSION["idusers"] != $comment_by){?>make_read(<?php echo $id ?>)<?php }?>" data-toggle="collapse" data-parent="#accordion2" href="#<?php echo "collapse".$sn ?>">
-                    <?php 
-						echo substr($comment,0,50).".... Comment # ".$sn." by ".$req_list->user_data[0]["name"]." time ".$date; 
-						if($comment_by!= $_SESSION["idusers"])
-						{
-							if($flag=="unread")
-								echo "<strong> New*</strong>";
-							else
-								echo " Old";
-						}
-					?>
-					<i class="icon-comment"> </i>
-                  </a>
-                </div>
-                <div id="<?php echo "collapse".$sn ?>" class="accordion-body collapse">
-                  <div id="comment" class="accordion-inner">
-                    <?php echo $comment ?>
-                  </div>
-                </div>
-              </div> 
-              <?php
-					}
-					$sn++;}
-				unset($req_list->user_data); 
-				unset($req_list->comment_data);							  
-			  ?>             
             </div>
              <div>
-                 <form name="comments" action="req_details.php?id=<?php echo $_REQUEST["id"]?>" method="post">
+                 <form name="comments" action="req_validation.php?id=<?php echo $_REQUEST["id"]?>" method="post">
                   <fieldset>
                     <textarea name="comment" rows="3"></textarea>
                     <span class="help-block">Write your comment here.</span>
@@ -518,37 +334,31 @@
           </div>
 		</form>
         </div>
-        <div id="add_admin" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div id="changeStatus" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <br>
         <br>
-        <form id="admin" name="admin" class="form-horizontal" method="post" action="req_validation.php?id=<?php echo $_REQUEST["id"] ?>">
+        <form id="status" name="status" class="form-horizontal" method="post" action="req_validation.php?id=<?php echo $_REQUEST["id"] ?>">
           <div class="control-group">
-            <label class="control-label" for="inputEmail">Add Admin</label>
+            <label class="control-label" for="status_list">Change Status</label>
             <div class="controls">
-              <select id="dept" name="dept" onChange="get_user_dept()">
-                <option>Select Department</option>
-                <?php 
-                    $req_list->get_departments("Max Automobile","corporate");
-                    foreach($req_list->comment_data as $dept){
-                        extract($dept);
-                        echo "<option>".$name."</option>";
-                    }
-                ?>
+              <select id="status_list" name="status_list">
+                <option>Select Status</option>
+                <option>Need Modification</option>
+                <option>Local Purchase Approved</option>
+                <option>Reffered to Higher Authority</option>
               </select>
             </div>
           </div>
           <div class="control-group">
-            <label class="control-label" for="select_admin">Select Admin</label>
+            <label class="control-label" for="details">Write Details</label>
             <div class="controls">
-              <select id="select_admin" name="select_admin">
-                <option>Select Admin</option>
-              </select>
+              <input type="text" id="details" name="details">
             </div>
           </div>
           <div class="control-group">
             <div class="controls">
-              <input type="hidden" id="req_id" name="req_id" value="<?php echo $user_id ?>">
-              <button type="submit" id="admin_submit" name="admin_submit" class="btn">Add</button>
+              <input type="hidden" id="req_id" name="req_id" value="<?php echo $_REQUEST["id"] ?>">
+              <button type="submit" id="stat_cng" name="stat_cng" class="btn">Submit</button>
             </div>
           </div>
         </form>
@@ -586,11 +396,8 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
 	<script>	   
-	  function get_user_dept(){
-		  $.post('get_user_dept.php', {admin: admin.dept.value},
-              function(output){
-                  $('#select_admin').html(output).show();
-              });	  
+	  function reassure(){
+		 alert('Do you really want to approve? ')
 	  }
 	  
 	  function make_read($id){

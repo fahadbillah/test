@@ -70,21 +70,37 @@
             <h2>Welcome Mr. <?php echo $_SESSION["name"] ?></h2>
           </div>
           <div id="yooo">
-          <?php echo $_SESSION["location"] ?>
+          <?php //echo $_SESSION["location"] ?>
           </div>
           <?php 
-		  	$user_post = array_unique($test->getPost(24));
+		  		$perpage = 10;
+
+				if(isset($_REQUEST["page"]))				
+				{				
+				  $page = intval($_REQUEST["page"]);				
+				}				
+				else			
+				{			
+				  $page = 1;				
+				}
+								
+				$calc = $perpage * $page;
+				
+				$start = $calc - $perpage;
+				
+			(isset($_REQUEST['page'])) ? $stpage = $_REQUEST['page']-1 : $stpage = 0; 
+		  	/*$user_post = array_unique($user_home->getPost($_SESSION["user_id"]));
 			foreach($user_post as $up){
 				extract($up);	
 				
-			}
+			}*/
 		  ?>
           <div class="well well-large">
              <h4>All Requisition</h4>
              <table class="table table-striped">
              <ul>     
              <?php 
-			 	switch($post){
+			 	/*switch($post){
 					case "Boss":
 						$upost = 'Boss';
 						break;
@@ -95,8 +111,8 @@
 						$upost = 'SCM';
 						break;
 					default:
-						$upost = 'Creator';			
-				}
+						$upost = 'Raiser';			
+				}*/
 				/*if(in_array("Boss", $user_post))
 					$upost = 'Boss';
 				else if(in_array("Accountant", $user_post))
@@ -104,11 +120,11 @@
 				else if(in_array("SCM", $user_post))
 					$upost = 'SCM';
 				else
-					$upost = 'Creator';*/
-				$user_home->getLink($upost,$_SESSION["user_id"]);
+					$upost = 'Raiser';*/
+				//$user_home->getLink($upost,$_SESSION["user_id"]);
 			 	unset($user_home->req_data);
 				//$user_home->user_home_req_list_by_type(0,10,"New",$_SESSION["idusers"]);
-				$user_home->get_request_list(0,10,$_SESSION["user_id"],$upost);
+				$user_home->get_request_list($stpage,$perpage,$_SESSION["user_id"]);
 				  if($user_home->good_to_go_flag>0){
 					 foreach($user_home->req_data as $list)
 					 {
@@ -140,6 +156,9 @@
 						case 'Approved':
 							 echo ' <button class="btn btn-warning btn-mini disabled">Approved</button>';
 							 break;
+						case 'Clear From Accounts':
+							 echo ' <button class="btn btn-warning btn-mini disabled">Clear From Accounts</button>';
+							 break;
 						
 					}
 				?>  
@@ -161,7 +180,7 @@
 				
 				//print_r($req_list->req_data);
 				
-				$perpage = 5;
+				/*$perpage = 5;
 
 				if(isset($_GET["page"]))				
 				{				
@@ -174,7 +193,7 @@
 								
 				$calc = $perpage * $page;
 				
-				$start = $calc - $perpage;	
+				$start = $calc - $perpage;	*/
 				
 				$sort_type = "Pending";			
 			?>

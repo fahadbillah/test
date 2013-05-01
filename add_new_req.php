@@ -93,7 +93,7 @@
           <div id="yooo">
           <?php 
 	
-				
+				//echo $_SESSION["location"];
 				
 				if(isset($_REQUEST["submit"]))
 				{

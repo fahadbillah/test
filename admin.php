@@ -93,7 +93,7 @@
              <?php 
 			 	unset($admin->req_data);
 			 	unset($admin->good_to_go_flag);
-				$admin->recent_added_user(10);
+				$admin->recent_added_user(50);
 				  if($admin->good_to_go_flag>0){
 					 foreach($admin->req_data as $list)
 					 {

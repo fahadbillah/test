@@ -469,9 +469,9 @@ class User extends Database
 			return $this->user_data_temp1;
 		}		
 	}
-	public function get_req_destination()
+	public function get_req_destination($req_id)
 	{		
-		$query="SELECT * FROM requisition_destination";
+		$query="SELECT location FROM req_hub where req_id = '$req_id'";
 		
 		$result = $this->mysqli->query($query);
 		
@@ -481,7 +481,7 @@ class User extends Database
 			
 			while($rows=$result->fetch_assoc()){
 								
-				$this->user_data_temp1[]=$rows;					
+				$this->user_data_temp1=$rows['location'];					
 			}						
 			return $this->user_data_temp1;
 		}		
@@ -534,7 +534,7 @@ class User extends Database
 		//echo 'new_req executed</br>';
 		//echo $costing.$type_of_req.'</br>';
 		$last_req_id = $this->mysqli->insert_id;
-		$hub = $this->determine_local_main($costing,$type_of_req);
+		$hub = $this->determine_local_main($costing,$location_id);
 		//var_dump($hub);
 		if($hub == 'local'){
 			$this->send_to_hub($last_req_id,$location_id);
@@ -554,10 +554,10 @@ class User extends Database
 		
 		echo "<span class='label label-success'>New requisition is successfully added the hub.</span>";			
 	}
-	public function determine_local_main($costing,$type_of_req)
+	public function determine_local_main($costing,$location)
 	{
 		//echo 'determine_local_main executed</br>';
-		if($this->money_limit_cross($costing,$type_of_req)){
+		if($this->money_limit_cross($costing,$location)){
 			return 'local';
 		}
 		else
@@ -594,42 +594,62 @@ class User extends Database
 			}						
 		}
 	}
-	public function money_limit_cross($costing,$type_of_req)
+	public function getBossByLocation($location_id)
 	{
-		//$default = 'default';
-		
-		$query = "SELECT * FROM money_limit where type = '$type_of_req' limit 1";
-			
-		$result = $this->mysqli->query($query);
-		
-		$num_result=$result->num_rows;		// determine number of rows result set 
-				
-		if($num_result>0){
-			
-			while($rows=$result->fetch_assoc()){
-								
-				$this->req_data=$rows;					
+		unset($this->user_data_temp1);
+		$query = "SELECT user_id FROM requisition_user where location_id = '$location_id' and post = 'Boss'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;	
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){								
+				$this->user_data_temp1=$rows['user_id'];					
 			}						
+			return $this->user_data_temp1;
+		}
+		else
+			echo "<span class='label label-warning'>No boss found for '$location_id' location.</span>";		
+	}
+	public function get_limit($user_id){
+		unset($this->req_data);
+		$query="SELECT * FROM money_limit where user_id = '$user_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 		
+		$this->additional_data = $num_result;					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->req_data=$rows["limit"];				
+			}						
+			return $this->req_data;
 		}
 		else{
+			echo "<span class='label label-warning'>Limit for this user not found.</span>";
+			return 0;
+		}
+	}
+	public function money_limit_cross($costing,$location)
+	{
+		$id = (int)$this->getBossByLocation($location);
+		$limit = $this->get_limit($id);
+		if($limit){
+			if($costing<=$limit) //money limit not crossed return true
+				return true;
+			else if($costing>=$limit)//money limit crossed return false
+				return false;
+		}
+		else{
+			echo "<span class='label label-warning'>Limit for '$location' boss not set.</span>";
 			if($costing<=10000) //money limit not crossed return true
 				return true;
 			else if($costing>=10000)//money limit crossed return false
-				return false;
-		} 
-		
-		if($costing<=$this->req_data['limit']) //money limit not crossed return true
-			return true;
-		else if($costing>=$this->req_data['limit'])//money limit crossed return false
-			return false;
-		
+				return false;			
+		}
 	}
 	public function add_admin_local($location_id,$last_req_id)
 	{	
 		$this->date_time();
 		$admin = (int)$this->highest_local_authority($location_id);
 		$message = 'admin added,'.$this->date;
-		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$admin', activities='$message', status='New'";
+		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$admin', relation_to_req='Boss', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span>";
@@ -647,7 +667,7 @@ class User extends Database
 	{	
 		$this->date_time();
 		$message = 'admin added,'.$this->date;
-		$query="INSERT INTO admins SET req_id='$req_id', admin_id= '$user_id', activities='$message', status='New'";
+		$query="INSERT INTO admins SET req_id='$req_id', admin_id= '$user_id', relation_to_req='Boss', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span>";
@@ -656,14 +676,14 @@ class User extends Database
 	{	
 		$this->date_time();
 		$message = 'requisition raised,'.$this->date;
-		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$idusers', activities='$message', status='New'";
+		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$idusers', relation_to_req='Raiser', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span>";
 	}
 	public function highest_local_authority($location_id)
 	{	
-		$query="SELECT user_id FROM requisition_user where location_id = '$location_id' limit 1";
+		$query="SELECT user_id FROM requisition_user where location_id = '$location_id' and post = 'Boss' limit 1";
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
@@ -737,7 +757,8 @@ class User extends Database
 		//if($colname=="user_id")	
 		//$query="SELECT * FROM requisition where id = '$req_id'";
 		//if($colname=="admin")	
-		$query="SELECT * FROM requisition where id = '$req_id'";
+		unset($this->req_data);
+		$query="SELECT * FROM requisition WHERE id = '$req_id'";
 		
 		$result = $this->mysqli->query($query);
 		
@@ -835,13 +856,13 @@ class User extends Database
 		/*else
 			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
 	}
-	public function get_request_list($start,$limit,$user_id,$post)
+	public function get_request_list($start,$limit,$user_id)
 	{	
-		$query="SELECT requisition.id, requisition.title, admins.status
+		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
 		INNER JOIN admins
-		ON requisition.id=admins.req_id
-		WHERE admins.admin_id = '$user_id' and admins.relation_to_req='$post'
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id'
 		ORDER BY requisition.id desc limit $start,$limit";
 		
 		$result = $this->mysqli->query($query);
@@ -1224,9 +1245,9 @@ class User extends Database
 		//var_dump($sid);
 		
 		//var_dump($mid);
-		//echo " ".$user." ".$ms." ".$pr." ".$site." ".$msite." ".$temp;
+		//echo " ".$user." ".$ms." ".$pr." ".$site." ".$msite." ".$temp;user_id	location_id		
 		
-		$query="INSERT INTO user_by_location SET user_id='$user', location_id='$temp'";
+		$query="INSERT INTO requisition_user SET user_id='$user', location_id='$temp', post='Raiser', active='active'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>User successfully added to that location.</span>";	
@@ -1471,7 +1492,8 @@ class User extends Database
 		}	
 		/*else
 			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
-	}	public function check_new_req()
+	}	
+	public function check_new_req()
 	{		
 		$query="SELECT * FROM requisition where status = 'New'";
 		
@@ -2024,6 +2046,7 @@ class User extends Database
 	}
 	public function change_req_activities($admin,$id,$status)
 	{		
+	echo $admin.' '.$id.' '.$status;
 		$query="SELECT * FROM admins where req_id = '$id' and admin_id = '$admin' limit 1";
 		
 		$result = $this->mysqli->query($query);
@@ -2072,6 +2095,7 @@ class User extends Database
 	}
 	public function change_req_status_main($req_id,$status)
 	{		
+		//echo $req_id." ".$status;
 		$query="update requisition SET status = '$status' where id = '$req_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
@@ -2110,9 +2134,9 @@ class User extends Database
 		$activitiesAcc = 'accountant added,'.$this->date;
 		$activitiesScm = 'scm added,'.$this->date;
 		//echo $name,$designation,$office_code,$authority_level;		
-		$query_account="INSERT INTO admins SET admin_id='$account', req_id='$id', activities = '$activitiesAcc', status='New'";
+		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
 		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-		$query_scm="INSERT INTO admins SET admin_id='$scm', req_id='$id', activities = '$activitiesScm', status='New'";
+		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
 		/*$query="INSERT INTO admins (admin_id, req_id, activities, status)
 						VALUES ('$account', '$id', '$activitiesAcc','New')
 						VALUES ('$scm', '$id', '$activitiesScm','New')";*/
@@ -2120,20 +2144,34 @@ class User extends Database
 		
 		echo "<span class='label label-success'>User added successfully.</span>";	
 	}
-	public function assign_local_account_scm($id,$location)
+	public function getReqDestination($id){
+		unset($this->req_data);
+		$query="SELECT location FROM req_hub WHERE req_id = '$id'";
+		$result = $this->mysqli->query($query);
+		$num_result=$result->num_rows;		
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->req_data=$rows;					
+			}						
+			return $this->req_data['location'];
+		}
+		else
+			echo "<span class='label label-warning'>Not found in req_hub.</span>";	
+	}
+	public function assign_local_account_scm($id)
 	{
 		$this->date_time();
 		$id = $this->mysqli->real_escape_string($id);
-		$location = $this->mysqli->real_escape_string($location);
+		$location = $this->getReqDestination($id); //$this->mysqli->real_escape_string($location);
 		//$idL = $this->get_location_id($location);
 		$account = (int)$this->get_local_accountant($location);
 		$scm = (int)$this->get_local_scm($location);
 		$activitiesAcc = 'accountant added,'.$this->date;
 		$activitiesScm = 'scm added,'.$this->date;
 		//echo $name,$designation,$office_code,$authority_level;		
-		$query_account="INSERT INTO admins SET admin_id='$account', req_id='$id', activities = '$activitiesAcc', status='New'";
+		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
 		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-		$query_scm="INSERT INTO admins SET admin_id='$scm', req_id='$id', activities = '$activitiesScm', status='New'";
+		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
 		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>User added successfully.</span>";	
@@ -2146,13 +2184,9 @@ class User extends Database
 		$scm = $this->get_central_scm();
 		$activitiesAcc = 'accountant added,'.$this->date;
 		$activitiesScm = 'scm added,'.$this->date;
-		//echo $name,$designation,$office_code,$authority_level;		
-		$query_account="INSERT INTO admins SET admin_id='$account', req_id='$id', activities = '$activitiesAcc', status='New'";
+		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
 		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-		$query_scm="INSERT INTO admins SET admin_id='$scm', req_id='$id', activities = '$activitiesScm', status='New'";
-		/*$query="INSERT INTO admins (admin_id, req_id, activities, status)
-						VALUES ('$account', '$id', '$activitiesAcc','New')
-						VALUES ('$scm', '$id', '$activitiesScm','New')";*/
+		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
 		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>User added successfully.</span>";	
@@ -2201,7 +2235,7 @@ class User extends Database
 		else
 			echo "<span class='label label-warning'>No requisition available.</span>";	
 	}
-			public function get_local_accountant($location)
+	public function get_local_accountant($location)
 	{		
 		unset($this->req_data);
 		$query="SELECT user_master.id 
@@ -2532,9 +2566,9 @@ class User extends Database
 		}
 		return $this->comment_data;
 	}
-	public function getPost($user_id){
+	public function getPost($user_id,$req_id){
 		unset($this->user_data_temp1);
-		$query="SELECT post FROM requisition_user WHERE user_id = '$user_id'";
+		$query="SELECT relation_to_req FROM admins WHERE admin_id = '$user_id' and req_id = '$req_id'";
 				
 		$result = $this->mysqli->query($query);
 		
@@ -2543,31 +2577,113 @@ class User extends Database
 		if($num_result>0){
 				
 			while($rows=$result->fetch_assoc()){									
-				$this->user_data_temp1[]=$rows;		
+				$this->user_data_temp1=$rows;		
 			}						
-			return $this->user_data_temp1;
+			return $this->user_data_temp1['relation_to_req'];
 		}
 		else
-			echo "<span class='label label-warning'>No post for this user found.</span>";	
+			return false;//echo "<span class='label label-warning'>No post for this user found.</span>";	
 	}
-	public function getLink($post,$user_id){
+	public function getReqStatus($req_id,$user_id){
 		unset($this->user_data_temp);
-		
-		/*$query="SELECT post FROM requisition_user WHERE user_id = '$user_id'";
-				
-		$result = $this->mysqli->query($query);
-		
-		$num_result=$result->num_rows;		// determine number of rows result set 
-					
-		if($num_result>0){
-				
+		$query="SELECT status FROM admins WHERE req_id = '$req_id' and admin_id = '$user_id'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->user_data_temp=$rows;		
+			}						
+			return $this->user_data_temp['status'];
+		}
+		else
+			echo "<span class='label label-warning'>No status found for this requisition of this uesr.</span>";
+	}
+	public function getButton($status){
+		unset($this->user_data_temp1);		
+		switch($status){
+			case 'New':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
+				<button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
+				<button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>';
+				break;
+			case 'Delivered':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Solved">Solved</button>
+                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>';
+				break;
+			case 'Approved':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Clear From Accounts">Clear</button>
+                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>';
+				break;
+			case 'Clear From Accounts':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Delivered</button>
+                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>';
+				break;
+			case 'Solved':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Closed">Closed</button>
+                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="dReview" value="Review">Review</button>';
+				break;
+			case 'Redirect':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
+				<button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
+				<button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>';
+				break;
+			case 'Closed':
+				$this->user_data_temp1 = '';
+				break;
+		}	
+		return $this->user_data_temp1;
+	}
+	public function checkBoss($req_id,$user_id){		
+		unset($this->user_data_temp);
+		$query="SELECT relation_to_req FROM admins WHERE req_id = '$req_id' and admin_id = '$user_id'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->user_data_temp=$rows;		
+			}						
+			if($this->user_data_temp['relation_to_req']=='Boss')
+				return true;
+			else
+				return false;
+		}
+		else
+			echo "<span class='label label-warning'>No admin found for this requisition.</span>";
+	}
+	public function search_boss(){
+		unset($this->user_data_temp);
+		$query="SELECT * FROM requisition_user WHERE post = 'Boss' and location_id <> 'central'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
 			while($rows=$result->fetch_assoc()){									
 				$this->user_data_temp[]=$rows;		
 			}						
 			return $this->user_data_temp;
 		}
 		else
-			echo "<span class='label label-warning'>No post for this user found.</span>";	*/
+			echo "<span class='label label-warning'>No admin found for this requisition.</span>";
+	}
+	public function get_boss_by_id($user_id){
+		unset($this->user_data_temp1);
+		$query="SELECT name FROM user_master WHERE id = '$user_id'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->user_data_temp1=$rows['name'];		
+			}						
+			return $this->user_data_temp1;
+		}
+		else
+			echo "<span class='label label-warning'>No admin found for this requisition.</span>";
+	}
+	public function add_boss_limit($user_id,$limit){
+		$id = (int)$user_id;
+		$lim = (int)$limit;
+		$query="INSERT INTO money_limit SET limit = '$lim', user_id = '$id'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		echo "<span class='label label-success'>Pm send successfully.</span>";
 	}
 }	
 ?>

@@ -26,6 +26,14 @@
 		$_SESSION["spacial_case"] = "testing admin selection";*/
 	$user = new User();
 	
+	if(isset($_REQUEST['add_limit'])){
+		if(!in_array("", $_REQUEST)){
+			$user->add_boss_limit($_REQUEST['boss'],$_REQUEST['money_limit']);
+		}
+		else 
+			echo "<span class='label label-warning'>A field was empty.</span>";	
+	}
+	
 	if(isset($_REQUEST['add_exec'])){
 		if(!in_array("", $_REQUEST)){
 			$user->add_new_exec($_REQUEST['user1'],$_REQUEST['loc'],$_REQUEST['post']);
@@ -131,6 +139,7 @@
 		<a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Location to User</a>
 		<a href="#add_top_local" role="button" class="btn" data-toggle="modal">Add Local Boss</a>
    	 	<a href="#add_top_central" role="button" class="btn" data-toggle="modal">Add Central Boss</a>
+        <a href="#add_boss_limit" role="button" class="btn" data-toggle="modal">Add Boss Limit</a>
    	  </div>
     </div>
 	<!-- All modals -->
@@ -334,9 +343,7 @@
       </div>
     </form>
     </div>
-    
-    
-	<div id="add_top_local" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="add_top_local" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Add local boss,accountant and SCM</h3>
@@ -382,6 +389,45 @@
       <div class="control-group">
         <div class="controls">
           <button type="submit" value="add_exec" id="add_exec" name="add_exec" class="btn">Submit</button>
+        </div>
+      </div>
+    </form>
+    </div>
+    
+	<div id="add_boss_limit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Add Boss Money Limit</h3>
+      </div>
+      <br>
+    <form id="limit_money" name="limit_money" class="form-horizontal" action="add_user.php" method="post">
+      <div class="control-group">
+        <label class="control-label" for="inputUser">User</label>
+        <div class="controls">
+        	<select id="boss" name="boss" onChange="getLocations()">
+             <option value="" label="Select Boss"></option>  
+             <?php
+			 	unset($user->user_data_temp);
+                $user->search_boss(); 
+                foreach($user->user_data_temp as $bossLimit)
+				{
+					extract($bossLimit);
+					$user->get_boss_by_id($user_id);					
+            ?>	
+              <option value="<?php echo $user_id ?>"><?php echo $user->user_data_temp1; ?></option>    
+            <?php }?>  
+            </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="inputUser">Money Limit</label>
+        <div class="controls">
+        	<input id="money_limit" name="money_limit" type="text">
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" value="add_limit" id="add_limit" name="add_limit" class="btn">Submit</button>
         </div>
       </div>
     </form>

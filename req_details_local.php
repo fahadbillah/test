@@ -1,13 +1,6 @@
 <?php 
 	include_once "user.php";
 	session_start();
-		
-	if(!isset($_SESSION["designation"]))
-		$_SESSION["designation"] = 'site manager';
-	if(!isset($_SESSION["location"]))
-		$_SESSION["location"] = 41201;
-	if(!isset($_SESSION["autorizatin_level"]))
-		$_SESSION["autorizatin_level"] = 'Approve';
 	/*if(!isset($_SESSION["user_id"]))
 		$_SESSION["user_id"] = '6';*/
 	/*if(!isset($_SESSION["loggedin"]))

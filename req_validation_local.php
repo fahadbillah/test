@@ -101,7 +101,7 @@
           </ul>
           
           <div class="page-header">
-            <h2>Requisition <?php echo $_REQUEST["id"]." ".$_SESSION["location"][0]." ".$_SESSION["user_id"] ?></h2>
+            <h2>Requisition <?php echo $_REQUEST["id"] ?></h2>
           </div>
           <div id="notice">
           <?php 
@@ -114,12 +114,15 @@
           </div>
           <div id="yooo">
 		  	<?php 
+			//echo $_SESSION['location'];
 				unset($req_list->user_data);
 				if(isset($_REQUEST['decision1'])){
+					//echo $_REQUEST['decision1'];
 			   		$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
 			   		$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
 			   		$req_list->change_req_status_main($_REQUEST["id"],$_REQUEST['decision1']);
-			   		$req_list->assign_local_account_scm($_REQUEST["id"],$_SESSION['location'][0]);					
+			   		if($req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]))
+						$req_list->assign_local_account_scm($_REQUEST["id"]);					
 				}
 				if(isset($_REQUEST['decision2']))
 			   		echo $_REQUEST['decision2'];
@@ -132,6 +135,7 @@
              <?php 
 				//unset($req_list->req_data); 
 			 	$req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
+				//var_dump($req_list->req_data);
 			 	foreach($req_list->req_data as $list)
 				{
 					extract($list);			   
@@ -155,6 +159,11 @@
                  <th>Type of Requisition</th>
                  <td><?php echo $type_of_req ?>
                  </td>
+               </tr>
+               <tr>
+                 <th>Raised From</th>
+                 <td><?php echo $location_id ?>
+                 </td>
                </tr>   
                <tr>
                  <th>Requisition by</th>
@@ -165,26 +174,7 @@
                  <th>Costing</th>
                  <td><?php echo $costing ?>
                  </td>
-               </tr> <?php if($_SESSION['designation'] == 'Manager'){ ?>
-               <tr>
-                 <th>Admins</th>
-                 <td>
-				 <?php 
-				 	unset($req_list->user_data);
-				 	$req_list->get_list_of_admins($_REQUEST['id']);
-					foreach($req_list->user_data as $admin){
-						extract($admin);
-						echo $req_list->idusers_to_id($admin_id)." | ";
-					}
-				 ?>
-                 </td>
-               </tr> 
-               <tr>
-                 <th>Add Admin</th>
-                 <td><a href="#add_admin" role="button" class="btn btn-small" data-toggle="modal"><i class="icon-user icon-white"></i> Add Admin</a>
-                 </td>
-               </tr> <?php } ?>
-               <tr>
+               </tr>               
                  <th>Status</th>
                  <td>
 				 <?php
@@ -193,6 +183,7 @@
 						case "Solved":	
 						case "Approved":		
 						case "Clear From Accounts":	
+						case "Redirect":					
 						case "Delivered":						
 							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
 							break;
@@ -222,64 +213,31 @@
                </tr>
                <tr>
                  <th>Decision</th>
-                 <?php 
-				 if($status==='New'){					 
-				 ?>
+                 
                  <td>
-                 <form id="des" name="des" action="req_validation_local.php?id=<?php echo $id ?>" method="post" onSubmit="reassure()">
-                     <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
+                 <form id="des" name="des" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post" onSubmit="reassure()">
+                 <?php 
+					$button = $req_list->getButton($status);
+				 	$pst = $req_list->getPost($_SESSION["user_id"],$_REQUEST["id"]);	
+					if($pst){
+					 if(($status==='Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='Accountant')||($status==='Clear From Accounts' && $pst==='SCM')||($status==='Solved' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss'))
+						echo $button;						 
+					 else
+						echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
+					}
+					else
+						echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
+				 ?>
+                     <!--<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
                      <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
-                     <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>
+                     <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>-->
                  </form>
-                 </td>                 
-                 <?php 
-				 }
-				 else if($status==='Delivered'){
-				 ?>   
+                 </td>    
                  <td>
 				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Delivered</button>";
+				 
 				 ?>
-                 </td>         
-                 <?php 
-				 }
-				 else if($status==='Approved'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Approved</button>";
-				 ?>
-                 </td>         
-                 <?php 
-				 }
-				 else if($status==='Clear From Accounts'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Clear From Accounts</button>";
-				 ?>
-                 </td>         
-                 <?php 
-				 }
-				 else if($status==='Solved'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Solved</button>";
-				 ?>
-                 </td>        
-                 <?php 
-				 }
-				 else if($status==='Closed'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Closed</button>";
-				 ?>
-                 </td>      
-                 <?php 
-				 }
-				 ?>  
+                 </td>  
                </tr>             
              </table>
              <?php 
@@ -464,6 +422,7 @@
 	<script>	   
 	  function reassure(){
 		 alert('Do you really want to approve? ')
+		 preventdefault()
 	  }
 	  
 	  function make_read($id){
