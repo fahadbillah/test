@@ -4,7 +4,7 @@
 	$test = new User();
 	//$arr = $test->user_from_requisition_user(24);
 	
-	var_dump($test->getPost(24,66));
+	var_dump($test->location_id_to_name('10011.4'));
 	
 	//echo $test->req_data;
 	//echo $test->req_data[0]['relation_to_req']

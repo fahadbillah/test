@@ -113,10 +113,10 @@
 							//echo $name.$email.$password.$contact.$master.$project.$site_factory.$designation;
 						}
 						else
-							echo "<span class='label label-warning'>Input number in costing field.</span>";							
+							echo "<span class='label label-warning'>Input number in costing field.</span> ";							
 					}
 					else 
-						echo "<span class='label label-warning'>You left a field blank.</span>";
+						echo "<span class='label label-warning'>You left a field blank.</span> ";
 						
 						
 					
@@ -134,8 +134,11 @@
 							for($i=0;$i<count($loc);$i++)
 							{
 						?>	
-						  <option><?php echo $loc[$i] ?></option>    
-						<?php }?>   
+						  <option><?php echo $new_req->location_id_to_name($loc[$i]) ?></option>    
+						<?php 
+							}
+						
+						?>   
                   </select>  
                   <span class="help-inline">Select Location of Requisition</span>                  
                 </div>

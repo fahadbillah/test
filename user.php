@@ -56,7 +56,7 @@ class User extends Database
 		$query="update users SET staff_id = '$unique_id' where idusers = $id";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>A new user added.</span>";
+		echo "<span class='label label-success'>A new user added.</span> ";
 		
 	}
 		public function get_all_designation()
@@ -224,7 +224,7 @@ class User extends Database
 			return $this->user_data_temp;
 		}	
 		else
-			echo "<span class='label label-success'>no project found.</span>";	
+			echo "<span class='label label-success'>no project found.</span> ";	
 		return 0;
 	}
 	public function get_all_projects($master)
@@ -488,6 +488,7 @@ class User extends Database
 	}
 	public function get_all_type_of_req()
 	{		
+		unset($this->user_data_temp1);
 		$query="SELECT * FROM type_of_req";
 		
 		$result = $this->mysqli->query($query);
@@ -512,7 +513,7 @@ class User extends Database
 			$query="INSERT INTO requisition_user SET user_id='$user', location_id='$location', post='$post', active='active'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>User added as '$post' for '$location' location.</span>";
+		echo "<span class='label label-success'>User added as '$post' for '$location' location.</span> ";
 		//echo $this->mysqli->insert_id;
 	}
 	public function new_req($idusers,$title,$description,$type_of_req,$costing,$datepicker,$location_id)
@@ -530,7 +531,7 @@ class User extends Database
 		$query="INSERT INTO requisition SET user_id='$idusers', title='$title', description='$description', type_of_req='$type_of_req', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>New requisition is successfully added.</span>";
+		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
 		//echo 'new_req executed</br>';
 		//echo $costing.$type_of_req.'</br>';
 		$last_req_id = $this->mysqli->insert_id;
@@ -552,7 +553,7 @@ class User extends Database
 		$query="INSERT INTO req_hub SET req_id='$last_req_id', location='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>New requisition is successfully added the hub.</span>";			
+		echo "<span class='label label-success'>New requisition is successfully added the hub.</span> ";			
 	}
 	public function determine_local_main($costing,$location)
 	{
@@ -607,7 +608,7 @@ class User extends Database
 			return $this->user_data_temp1;
 		}
 		else
-			echo "<span class='label label-warning'>No boss found for '$location_id' location.</span>";		
+			echo "<span class='label label-warning'>No boss found for '$location_id' location.</span> ";		
 	}
 	public function get_limit($user_id){
 		unset($this->req_data);
@@ -622,7 +623,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else{
-			echo "<span class='label label-warning'>Limit for this user not found.</span>";
+			echo "<span class='label label-warning'>Limit for this user not found.</span> ";
 			return 0;
 		}
 	}
@@ -637,7 +638,7 @@ class User extends Database
 				return false;
 		}
 		else{
-			echo "<span class='label label-warning'>Limit for '$location' boss not set.</span>";
+			echo "<span class='label label-warning'>Limit for '$location' boss not set.</span> ";
 			if($costing<=10000) //money limit not crossed return true
 				return true;
 			else if($costing>=10000)//money limit crossed return false
@@ -652,7 +653,7 @@ class User extends Database
 		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$admin', relation_to_req='Boss', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>New requisition is successfully added.</span>";
+		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
 	}
 	public function add_activity_central($user_id,$req_id,$status)
 	{	
@@ -661,7 +662,7 @@ class User extends Database
 		$query="INSERT INTO admins SET req_id='$req_id', admin_id= '$user_id', activities='$message', status='$status'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>New accounts activity is successfully added.</span>";
+		echo "<span class='label label-success'>New accounts activity is successfully added.</span> ";
 	}
 	public function add_admin_central($user_id,$req_id)
 	{	
@@ -670,7 +671,7 @@ class User extends Database
 		$query="INSERT INTO admins SET req_id='$req_id', admin_id= '$user_id', relation_to_req='Boss', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>New requisition is successfully added.</span>";
+		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
 	}
 	public function add_user_to_admin_table($idusers,$last_req_id)
 	{	
@@ -679,7 +680,7 @@ class User extends Database
 		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$idusers', relation_to_req='Raiser', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>New requisition is successfully added.</span>";
+		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
 	}
 	public function highest_local_authority($location_id)
 	{	
@@ -813,7 +814,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
+			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
 	public function super_admin_req_list_by_type($start,$limit,$type,$idusers)
 	{		
@@ -834,7 +835,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
+			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}	public function super_admin_req_list_by_location($start,$limit,$type,$location_id)
 	{		
 		$query="SELECT * FROM requisition where location_id LIKE '$location_id%' and status = '$type' order by id desc limit $start,$limit";
@@ -854,7 +855,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
+			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
 	public function get_request_list($start,$limit,$user_id)
 	{	
@@ -880,7 +881,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span>";
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function get_request_list_central_accounts($start,$limit)
 	{	
@@ -906,7 +907,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span>";
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function get_request_list_central_scm($start,$limit)
 	{	
@@ -932,7 +933,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span>";
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function get_requisition_list_for_admins($start,$limit,$location)
 	{	
@@ -958,7 +959,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span>";
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function get_requisition_list($start,$limit,$location)
 	{	
@@ -984,7 +985,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span>";
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function get_single_request($req_id)
 	{	
@@ -1010,7 +1011,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span>";
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function super_admin_req_list($start,$limit)
 	{		
@@ -1048,7 +1049,7 @@ class User extends Database
 	{		
 		if(!filter_var($email, FILTER_VALIDATE_EMAIL)) 
 		{
-			echo "<span class='label label-warning'>Enter valid email adress</span>";
+			echo "<span class='label label-warning'>Enter valid email adress</span> ";
 			echo "<INPUT class='btn' TYPE='button' VALUE='Back to Sign in page' onClick='history.go(-1);return true;'>";
 			exit;
 		}
@@ -1079,12 +1080,12 @@ class User extends Database
 			}	
 			else
 			{
-				echo "<span class='label label-warning'>Wrong username or password</span>";
+				echo "<span class='label label-warning'>Wrong username or password</span> ";
 				echo "<INPUT class='btn' TYPE='button' VALUE='Back to Sign in page' onClick='history.go(-1);return true;'>";
 				exit;
 			}	
 			if($this->login_data[0]['active_status'] !== 'active')	{
-				echo "<span class='label label-warning'>This user is not active right now</span>";
+				echo "<span class='label label-warning'>This user is not active right now</span> ";
 				echo "<INPUT class='btn' TYPE='button' VALUE='Back to Sign in page' onClick='history.go(-1);return true;'>";
 				exit;
 			}
@@ -1110,7 +1111,7 @@ class User extends Database
 		
 		if($result->num_rows==0)		// determine number of rows result set 
 		{
-			echo "<span class='label label-info'>Please make your first requisition.</span>";
+			echo "<span class='label label-info'>Please make your first requisition.</span> ";
 			return false;
 		}
 		else
@@ -1126,11 +1127,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		if($result->num_rows!=0){	// determine number of rows result set 
-			echo "<span class='label label-warning'>Sorry this email is not available.</span>";
+			echo "<span class='label label-warning'>Sorry this email is not available.</span> ";
 			return false;
 		}
 		else{
-			echo "<span class='label label-success'>This email is available.</span>";
+			echo "<span class='label label-success'>This email is available.</span> ";
 			return true;
 		}
 	}
@@ -1159,7 +1160,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span>";	
+			echo "<span class='label label-warning'>No user found.</span> ";	
 		return $num_result;
 	}
 	public function get_user_by_locations($id)
@@ -1189,7 +1190,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span>";	
+			echo "<span class='label label-warning'>No user found.</span> ";	
 		return $num_result;
 	}
 	
@@ -1210,7 +1211,7 @@ class User extends Database
 			return $this->login_data;
 		}
 		else
-			echo "<span class='label label-warning'>no msite data found</span>";	
+			echo "<span class='label label-warning'>no msite data found</span> ";	
 	}
 	function get_micro_site_id($msite,$site){
 		unset($this->login_data);
@@ -1229,7 +1230,7 @@ class User extends Database
 			return $this->login_data;
 		}
 		else
-			echo "<span class='label label-warning'>no msite data found</span>";
+			echo "<span class='label label-warning'>no msite data found</span> ";
 		return NULL;
 	}
 	public function add_location_to_user($user,$ms,$pr,$site,$msite)
@@ -1250,7 +1251,7 @@ class User extends Database
 		$query="INSERT INTO requisition_user SET user_id='$user', location_id='$temp', post='Raiser', active='active'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>User successfully added to that location.</span>";	
+		echo "<span class='label label-success'>User successfully added to that location.</span> ";	
 	}
 	public function search_location()
 	{		
@@ -1270,7 +1271,7 @@ class User extends Database
 			return $this->login_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span>";	
+			echo "<span class='label label-warning'>No user found.</span> ";	
 			
 		$this->login_data = $num_result;
 		return $this->login_data;
@@ -1305,7 +1306,7 @@ class User extends Database
 			return $this->login_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span>";	
+			echo "<span class='label label-warning'>No user found.</span> ";	
 			
 		$this->login_data = $num_result;
 		return $this->login_data;
@@ -1340,7 +1341,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No comment available.</span>";	
+			echo "<span class='label label-warning'>No comment available.</span> ";	
 		return $this->additional_data;
 	}
 		public function get_user_details($comment_by,$type = "")
@@ -1388,7 +1389,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span>";	
+			echo "<span class='label label-warning'>No user found.</span> ";	
 			
 		return $this->user_data;
 		
@@ -1402,7 +1403,7 @@ class User extends Database
 		$query="INSERT INTO comment SET comment='$comment', comment_by='$user', comment_to='$req_id', flag='unread'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Comment added successfully.</span>";	
+		echo "<span class='label label-success'>Comment added successfully.</span> ";	
 	}
 		public function idusers_to_id($idusers)
 	{
@@ -1421,7 +1422,7 @@ class User extends Database
 			return $rows["name"];	
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span>";	
+			echo "<span class='label label-warning'>No user found.</span> ";	
 		return $this->additional_data;
 	}
 	public function new_comment_available($id,$self)
@@ -1468,7 +1469,7 @@ class User extends Database
 		else
 			echo "<li class='active'><a href='sing_in.php'><i class='icon-home icon-white'></i> Home</a></li>
               <li><a href=''>Pages Not Defined For This User</a></li>";
-			//echo "<span class='label label-warning'>User type not found. So navbar can not be available</span>";		
+			//echo "<span class='label label-warning'>User type not found. So navbar can not be available</span> ";		
 			//header("Location: signin.php?status=notauthorized"); 
 	}
 	public function recent_added_user($limit)
@@ -1491,7 +1492,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
+			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}	
 	public function check_new_req()
 	{		
@@ -1512,7 +1513,7 @@ class User extends Database
 			return $this->req_data;
 		}	*/
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span>";*/
+			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
 	/*public function change_req_status($id,$status)
 	{
@@ -1543,7 +1544,7 @@ class User extends Database
 			return $this->additional_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No data is found.</span>";
+			echo "<span class='label label-warning'>No data is found.</span> ";
 	} 
 	public function get_exec($type)
 	{
@@ -1558,7 +1559,7 @@ class User extends Database
 			return $this->req_data;
 		}	
 		else
-			echo "<span class='label label-warning'>No data is found.</span>";
+			echo "<span class='label label-warning'>No data is found.</span> ";
 	}
 	public function add_feedback($title,$description,$idusers)
 	{
@@ -1569,7 +1570,7 @@ class User extends Database
 		$query="INSERT INTO feedback SET title='$title', description='$description', iduser='$idusers', flag='unread'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>feedback added successfully.</span>";	
+		echo "<span class='label label-success'>feedback added successfully.</span> ";	
 	}
 	public function get_feedbacks()
 	{
@@ -1590,7 +1591,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No feedback available.</span>";	
+			echo "<span class='label label-warning'>No feedback available.</span> ";	
 		return $this->additional_data;
 	}
 	public function get_feedbacks_id($id)
@@ -1612,7 +1613,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No feedback available.</span>";	
+			echo "<span class='label label-warning'>No feedback available.</span> ";	
 		return $this->additional_data;
 	}
 	public function change_feed_stat($rad,$id)
@@ -1623,7 +1624,7 @@ class User extends Database
 		$query="update feedback SET flag = '$rad' where id = $id";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Feedback updated.</span>";
+		echo "<span class='label label-success'>Feedback updated.</span> ";
 		
 	}
 	public function make_read_feed($id,$handler_type)
@@ -1676,7 +1677,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No department available.</span>";	
+			echo "<span class='label label-warning'>No department available.</span> ";	
 		return $this->additional_data;
 	}
 	public function get_designation()
@@ -1698,7 +1699,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No designation available.</span>";	
+			echo "<span class='label label-warning'>No designation available.</span> ";	
 		return $this->additional_data;
 	}
 	public function get_admin($destination,$admin)
@@ -1720,7 +1721,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No designation available.</span>";	
+			echo "<span class='label label-warning'>No designation available.</span> ";	
 		return $this->additional_data;
 	}
 	public function get_admin_department($dept)
@@ -1742,7 +1743,7 @@ class User extends Database
 			return $this->comment_data;
 		}
 		else
-			echo "<span class='label label-warning'>No designation available.</span>";	
+			echo "<span class='label label-warning'>No designation available.</span> ";	
 		return $this->additional_data;
 	}
 	public function get_manager($ad)
@@ -1764,7 +1765,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No designation available.</span>";	
+			echo "<span class='label label-warning'>No designation available.</span> ";	
 		return $this->additional_data;
 	}
 	public function add_pm($subject,$message,$sender,$receiver)
@@ -1773,7 +1774,7 @@ class User extends Database
 		
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
 		
-		echo "<span class='label label-success'>Pm send successfully.</span>";
+		echo "<span class='label label-success'>Pm send successfully.</span> ";
 	}
 	public function add_admin($select_admin,$req_id)
 	{		
@@ -1781,7 +1782,7 @@ class User extends Database
 		
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
 		
-		echo "<span class='label label-success'>Admin added successfully.</span>";
+		echo "<span class='label label-success'>Admin added successfully.</span> ";
 	}	
 	public function get_user_by_dept($admin,$master)
 	{		
@@ -1802,7 +1803,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user available.</span>";	
+			echo "<span class='label label-warning'>No user available.</span> ";	
 		return $this->additional_data;
 	}
 	public function get_list_of_admins($id)
@@ -1824,7 +1825,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No admin assigned.</span>";	
+			echo "<span class='label label-warning'>No admin assigned.</span> ";	
 		return $this->additional_data;
 	}
 	public function is_corporate($user_designation)
@@ -1863,7 +1864,7 @@ class User extends Database
 		$query="INSERT INTO locations SET site_factory='$site_factory', project='$project', master='$master', location_id='$tempAvailable'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Location added successfully.</span>";	
+		echo "<span class='label label-success'>Location added successfully.</span> ";	
 	}
 	function check_available_location_id($id){
 		$query="SELECT * FROM locations WHERE location_id LIKE '$id%' ORDER by location_id DESC limit 1";
@@ -1892,7 +1893,7 @@ class User extends Database
 		$query="INSERT INTO micro_site SET name='$msite', site='$si'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Micro site added successfully.</span>";	
+		echo "<span class='label label-success'>Micro site added successfully.</span> ";	
 	}
 	public function add_new_master($master,$id)
 	{
@@ -1900,7 +1901,7 @@ class User extends Database
 		$query="INSERT INTO master_business SET name='$master', id='$id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Master added successfully.</span>";	
+		echo "<span class='label label-success'>Master added successfully.</span> ";	
 	}
 	public function add_new_site($site,$id,$project)
 	{
@@ -1924,7 +1925,7 @@ class User extends Database
 		$query="INSERT INTO sites_factories SET name='$site', id='$id', project='$project'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Site added successfully.</span>";	
+		echo "<span class='label label-success'>Site added successfully.</span> ";	
 	}
 	
 	public function getLastSiteId($project)
@@ -1946,7 +1947,7 @@ class User extends Database
 			return $this->user_data_temp;
 		}	
 		else
-			echo "<span class='label label-success'>no project found.</span>";	
+			echo "<span class='label label-success'>no project found.</span> ";	
 		return 0;
 	}
 	public function ifSameSiteExists($site)
@@ -1985,13 +1986,13 @@ class User extends Database
 			$final = $this->get_master_id($master)+10;
 		}
 		if($this->ifSameProjectExists($final)){
-			echo "<span class='label label-warning'>Another project with same id exists.</span>";
+			echo "<span class='label label-warning'>Another project with same id exists.</span> ";
 			return ;	
 		}
 		$query="INSERT INTO projects SET name='$project', id='$final', master='$master'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Project added successfully.</span>";	
+		echo "<span class='label label-success'>Project added successfully.</span> ";	
 	}
 	public function ifSameProjectExists($project)
 	{
@@ -2028,7 +2029,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user available.</span>";	
+			echo "<span class='label label-warning'>No user available.</span> ";	
 		return $this->additional_data;
 	}
 	public function add_new_user($name,$designation,$office_code,$authority_level)
@@ -2041,12 +2042,12 @@ class User extends Database
 		$query="INSERT INTO user_master SET name='$name', designation='$designation', office_code='$office_code', authorization_level='$authority_level', active_status='active'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>User added successfully.</span>";	
+		echo "<span class='label label-success'>User added successfully.</span> ";	
 		return $this->mysqli->insert_id;
 	}
 	public function change_req_activities($admin,$id,$status)
 	{		
-	echo $admin.' '.$id.' '.$status;
+	//	echo $admin.' '.$id.' '.$status;
 		$query="SELECT * FROM admins where req_id = '$id' and admin_id = '$admin' limit 1";
 		
 		$result = $this->mysqli->query($query);
@@ -2074,7 +2075,7 @@ class User extends Database
 			$this->update_admins($rearranged,$admin,$id);
 		}
 		else
-			echo "<span class='label label-warning'>No request available.</span>";	
+			echo "<span class='label label-warning'>No request available.</span> ";	
 		return $this->additional_data;
 	}
 	public function update_admins($rearranged,$admin,$id)
@@ -2082,7 +2083,7 @@ class User extends Database
 		$query="update admins SET activities = '$rearranged' where req_id = '$id' and admin_id = $admin";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Admin activity updated.</span>";
+		echo "<span class='label label-success'>Admin activity updated.</span> ";
 		
 	}
 	public function change_req_status($admin,$req_id,$status)
@@ -2090,7 +2091,7 @@ class User extends Database
 		$query="update admins SET status = '$status' where req_id = '$req_id' and admin_id = '$admin'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Requisition status updated.</span>";
+		echo "<span class='label label-success'>Requisition status updated.</span> ";
 		
 	}
 	public function change_req_status_main($req_id,$status)
@@ -2099,7 +2100,7 @@ class User extends Database
 		$query="update requisition SET status = '$status' where id = '$req_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Main requisition status updated.</span>";
+		echo "<span class='label label-success'>Main requisition status updated.</span> ";
 		
 	}
 	public function get_approved_requisition_list($start,$limit,$location)
@@ -2121,7 +2122,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No requisition available.</span>";	
+			echo "<span class='label label-warning'>No requisition available.</span> ";	
 		return $this->additional_data;
 	}
 	public function redirect_to_dept($id, $dept)
@@ -2142,7 +2143,7 @@ class User extends Database
 						VALUES ('$scm', '$id', '$activitiesScm','New')";*/
 		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>User added successfully.</span>";	
+		echo "<span class='label label-success'>User added successfully.</span> ";	
 	}
 	public function getReqDestination($id){
 		unset($this->req_data);
@@ -2156,7 +2157,7 @@ class User extends Database
 			return $this->req_data['location'];
 		}
 		else
-			echo "<span class='label label-warning'>Not found in req_hub.</span>";	
+			echo "<span class='label label-warning'>Not found in req_hub.</span> ";	
 	}
 	public function assign_local_account_scm($id)
 	{
@@ -2174,7 +2175,7 @@ class User extends Database
 		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
 		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>User added successfully.</span>";	
+		echo "<span class='label label-success'>User added successfully.</span> ";	
 	}
 	public function assign_central_account_scm($id)
 	{
@@ -2189,7 +2190,7 @@ class User extends Database
 		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
 		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>User added successfully.</span>";	
+		echo "<span class='label label-success'>User added successfully.</span> ";	
 	}
 	public function get_central_accountant()
 	{		
@@ -2211,7 +2212,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No requisition available.</span>";	
+			echo "<span class='label label-warning'>No requisition available.</span> ";	
 	}
 	public function get_central_scm()
 	{		
@@ -2233,7 +2234,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No requisition available.</span>";	
+			echo "<span class='label label-warning'>No requisition available.</span> ";	
 	}
 	public function get_local_accountant($location)
 	{		
@@ -2259,7 +2260,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No requisition available.</span>";	
+			echo "<span class='label label-warning'>No requisition available.</span> ";	
 	}
 	public function get_local_scm($location)
 	{		
@@ -2285,7 +2286,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No requisition available.</span>";	
+			echo "<span class='label label-warning'>No requisition available.</span> ";	
 	}
 	public function get_location($site='',$id='')
 	{		
@@ -2309,7 +2310,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span>";	
+			echo "<span class='label label-warning'>No location available.</span> ";	
 	}
 	public function get_location_id($location)
 	{		
@@ -2330,7 +2331,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span>";	
+			echo "<span class='label label-warning'>No location available.</span> ";	
 	}
 	public function get_location_by_id($id)
 	{		
@@ -2348,7 +2349,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span>";	
+			echo "<span class='label label-warning'>No location available.</span> ";	
 	}
 	
 	function convert_id_location($id){
@@ -2398,7 +2399,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span>";	
+			echo "<span class='label label-warning'>No location available.</span> ";	
 	}
 	public function get_req_log($req_id)
 	{		
@@ -2419,7 +2420,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No log data available.</span>";	
+			echo "<span class='label label-warning'>No log data available.</span> ";	
 	}
 	public function check_login_available($user_id)
 	{				
@@ -2436,7 +2437,7 @@ class User extends Database
 		$department = $this->mysqli->real_escape_string($department);
 		$query="INSERT INTO departments SET name='$department'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
-		echo "<span class='label label-success'>A new department added.</span>";	
+		echo "<span class='label label-success'>A new department added.</span> ";	
 	}
 	public function location_by_user($user_id)
 	{		
@@ -2460,7 +2461,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span>";	
+			echo "<span class='label label-warning'>No location available.</span> ";	
 	}
 	public function user_from_highest_local_authority($user_id){
 		unset($this->user_data);
@@ -2483,7 +2484,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user_from_highest_local_authority available.</span>";	
+			echo "<span class='label label-warning'>No user_from_highest_local_authority available.</span> ";	
 		return false;
 	}
 	public function user_from_requisition_user($user_id){
@@ -2503,7 +2504,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user_from_requisition_user available.</span>";	
+			echo "<span class='label label-warning'>No user_from_requisition_user available.</span> ";	
 		return false;
 	}
 	public function user_from_user_by_location($user_id){
@@ -2528,7 +2529,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No user_from_user_by_location available.</span>";	
+			echo "<span class='label label-warning'>No user_from_user_by_location available.</span> ";	
 		return false;
 	}
 	public function getExtractedArray($arr,$key){
@@ -2582,7 +2583,7 @@ class User extends Database
 			return $this->user_data_temp1['relation_to_req'];
 		}
 		else
-			return false;//echo "<span class='label label-warning'>No post for this user found.</span>";	
+			return false;//echo "<span class='label label-warning'>No post for this user found.</span> ";	
 	}
 	public function getReqStatus($req_id,$user_id){
 		unset($this->user_data_temp);
@@ -2596,7 +2597,7 @@ class User extends Database
 			return $this->user_data_temp['status'];
 		}
 		else
-			echo "<span class='label label-warning'>No status found for this requisition of this uesr.</span>";
+			echo "<span class='label label-warning'>No status found for this requisition of this uesr.</span> ";
 	}
 	public function getButton($status){
 		unset($this->user_data_temp1);		
@@ -2648,7 +2649,7 @@ class User extends Database
 				return false;
 		}
 		else
-			echo "<span class='label label-warning'>No admin found for this requisition.</span>";
+			echo "<span class='label label-warning'>No admin found for this requisition.</span> ";
 	}
 	public function search_boss(){
 		unset($this->user_data_temp);
@@ -2662,7 +2663,7 @@ class User extends Database
 			return $this->user_data_temp;
 		}
 		else
-			echo "<span class='label label-warning'>No admin found for this requisition.</span>";
+			echo "<span class='label label-warning'>No admin found for this requisition.</span> ";
 	}
 	public function get_boss_by_id($user_id){
 		unset($this->user_data_temp1);
@@ -2676,14 +2677,53 @@ class User extends Database
 			return $this->user_data_temp1;
 		}
 		else
-			echo "<span class='label label-warning'>No admin found for this requisition.</span>";
+			echo "<span class='label label-warning'>No admin found for this requisition.</span> ";
 	}
 	public function add_boss_limit($user_id,$limit){
 		$id = (int)$user_id;
 		$lim = (int)$limit;
 		$query="INSERT INTO money_limit SET limit = '$lim', user_id = '$id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
-		echo "<span class='label label-success'>Pm send successfully.</span>";
+		echo "<span class='label label-success'>Pm send successfully.</span> ";
+	}
+	public function location_id_to_name($location_id){
+		unset($this->user_data_temp1);
+		$temp = explode(".", $location_id);
+		$query="SELECT site_factory,project,master FROM locations WHERE location_id = '$temp[0]'";			
+			$result = $this->mysqli->query($query);		
+			$num_result=$result->num_rows;		// determine number of rows result set 					
+			if($num_result>0){				
+				while($rows=$result->fetch_assoc()){									
+					$this->user_data_temp1=$rows['master']."->".$rows['project']."->".$rows['site_factory'];		
+				}						
+			}
+			else
+				echo "<span class='label label-warning'>No micro site found for this requisition.</span> ";
+				
+		if(count($temp)==2){			
+			$query="SELECT name FROM micro_site WHERE id = '$temp[1]'";			
+			$result = $this->mysqli->query($query);		
+			$num_result=$result->num_rows;		// determine number of rows result set 					
+			if($num_result>0){				
+				while($rows=$result->fetch_assoc()){									
+					$this->user_data_temp1.="->".$rows['name'];		
+				}
+			}
+			else
+				echo "<span class='label label-warning'>No micro site found for this requisition.</span> ";
+			return $this->user_data_temp1;
+		}
+	}
+	function insert_actual_cost($actual_cost,$req_id){
+		/*echo $actual_cost.' '.$req_id;
+		$actual_cost = (int)$actual_cost;
+		$req_id = (int)$req_id;
+		echo $actual_cost.' '.$req_id;
+		var_dump($actual_cost);
+		var_dump($req_id);*/
+		$query="UPDATE requisition SET actual_cost_by_scm = '$actual_cost' where id = '$req_id'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		echo "<span class='label label-success'>Actual cost set successfully by SCM.</span> ";
 	}
 }	
 ?>

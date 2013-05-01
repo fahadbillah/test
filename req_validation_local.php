@@ -116,6 +116,9 @@
 		  	<?php 
 			//echo $_SESSION['location'];
 				unset($req_list->user_data);
+				if(isset($_REQUEST['costSubmit']) && $_REQUEST['fcost']!=''){
+			   		$req_list->insert_actual_cost($_REQUEST["fcost"],$_REQUEST["id"]);	
+				}
 				if(isset($_REQUEST['decision1'])){
 					//echo $_REQUEST['decision1'];
 			   		$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
@@ -134,6 +137,8 @@
              <table class="table table-striped">
              <?php 
 				//unset($req_list->req_data); 
+				
+				$pst = $req_list->getPost($_SESSION["user_id"],$_REQUEST["id"]);
 			 	$req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
 				//var_dump($req_list->req_data);
 			 	foreach($req_list->req_data as $list)
@@ -171,10 +176,33 @@
                  </td>
                </tr>  
                <tr>
-                 <th>Costing</th>
+                 <th>Estimated Costing</th>
                  <td><?php echo $costing ?>
                  </td>
-               </tr>               
+               </tr> 
+               <tr>
+                 <th>Final Costing</th>
+                 <td>
+               <?php 
+				if($actual_cost_by_scm == 0){	
+				   	if($pst=='SCM'){		   
+			   ?>
+                 <form id="actualCost" name="actualCost" method="post">
+                 	<input type="text" id="fcost" name="fcost"/>
+                    <input type="submit" class="btn" name="costSubmit" id="costSubmit" />
+                 </form> 
+               <?php 
+				   	} 
+					else{
+						echo 'Final cost not submitted by SCM';
+					}
+				}
+				else{		
+				 echo $actual_cost_by_scm;
+				}
+				?>	
+                 </td>
+               </tr>            
                  <th>Status</th>
                  <td>
 				 <?php
@@ -215,10 +243,9 @@
                  <th>Decision</th>
                  
                  <td>
-                 <form id="des" name="des" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post" onSubmit="reassure()">
-                 <?php 
+                 <form id="des" name="des" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
+                 <?php 	
 					$button = $req_list->getButton($status);
-				 	$pst = $req_list->getPost($_SESSION["user_id"],$_REQUEST["id"]);	
 					if($pst){
 					 if(($status==='Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='Accountant')||($status==='Clear From Accounts' && $pst==='SCM')||($status==='Solved' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss'))
 						echo $button;						 
@@ -412,7 +439,7 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
     <style type="text/css">
-    * { font-family: Verdana; font-size: 98%; }
+    * { font-family: Verdana; font-size: 100%; }
     label { width: 10em; float: left; }
     label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
     p { clear: both; }
@@ -420,10 +447,20 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
 	<script>	   
-	  function reassure(){
-		 alert('Do you really want to approve? ')
-		 preventdefault()
-	  }
+	$("#des").submit(function(e){
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	});
+	  /*function reassure(){
+		if (!confirm("Do you confirm submit?"))
+		{
+			preventDefault();
+			return;
+		} 
+	  }*/
 	  
 	  function make_read($id){
 		  $.post('comment_handler.php', {handler_type: "makeRead", id: $id},

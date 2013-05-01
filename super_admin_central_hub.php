@@ -5,14 +5,14 @@
 	
 	$super_admin = new User();	
 	
-	if(!isset($_SESSION["designation"]))
+	/*if(!isset($_SESSION["designation"]))
 		$_SESSION["designation"] = 'site manager';
 	if(!isset($_SESSION["location_central"]))
 		$_SESSION["location_central"] = 'central';
 	if(!isset($_SESSION["autorizatin_level"]))
 		$_SESSION["autorizatin_level"] = 'Approve';
 	if(!isset($_SESSION["user_id"]))
-		$_SESSION["user_id"] = '6';
+		$_SESSION["user_id"] = '6';*/
 	
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  
@@ -43,7 +43,7 @@
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>New Requisition</title>
+    <title>Central Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -138,7 +138,7 @@
 					 }
 				 }
 					else
-					 	echo "<span class='label label-warning'>No requisition is found under this type.</span>";
+					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
 			}
 		  ?>                
              </ul>

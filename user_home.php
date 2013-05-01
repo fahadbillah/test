@@ -13,7 +13,7 @@
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Requisition Home</title>
+    <title>Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -168,7 +168,7 @@
 					 }
 				 }
 					else
-					 	echo "<span class='label label-warning'>No requisition is found under this type.</span>";
+					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
 		  ?>             
              </ul> <?php 
 	
@@ -286,7 +286,7 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
     <style type="text/css">
-    * { font-family: Verdana; font-size: 98%; }
+    * { font-family: Verdana; font-size: 100%; }
     label { width: 10em; float: left; }
     label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
     p { clear: both; }
