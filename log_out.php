@@ -56,8 +56,9 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href=""><i class="icon-home icon-white"></i> Home</a></li>
-              <li><a href="signin.htm">Sign In</a></li>
+              <li><a href=""><i class="icon-home icon-white"></i> Home</a></li>
+              <li><a href="signin.htm">Sign In</a></li>            
+              <li class="active"><a href="log_out.php">Log Out</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
