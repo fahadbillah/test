@@ -2725,5 +2725,80 @@ class User extends Database
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
 		echo "<span class='label label-success'>Actual cost set successfully by SCM.</span> ";
 	}
+	public function getMatCat(){
+		unset($this->user_data_temp1);
+		$query="SELECT id,name FROM material_category WHERE type = 'Category'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->user_data_temp1[]=$rows;		
+			}						
+			return $this->user_data_temp1;
+		}
+		else{
+			$this->user_data_temp1[0]['id']= 0;
+			$this->user_data_temp1[0]['name']= 'No category';
+			return $this->user_data_temp1;
+		}
+	}
+	public function id_to_category($mCat){
+		unset($this->user_data_temp1);
+		$query="SELECT name FROM material_category WHERE id = '$mCat'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->user_data_temp1=$rows['name'];		
+			}						
+			return $this->user_data_temp1;
+		}
+	}
+	public function add_material($mCat,$mSubCat,$mName,$mUnit,$mDes,$mCPU){
+		//echo $mCat." ".$mSubCat." ".$mName." ".$mUnit." ".$mDes." ".$mCPU;
+		$Cat = $this->id_to_category($mCat);
+		$SubCat = $this->id_to_category($mSubCat);
+		//var_dump($cat);
+		$mCat = $this->mysqli->real_escape_string($mCat);
+		$mSubCat = $this->mysqli->real_escape_string($mSubCat);
+		$mName = $this->mysqli->real_escape_string($mName);
+		$mUnit = $this->mysqli->real_escape_string($mUnit);
+		$mDes = $this->mysqli->real_escape_string($mDes);
+		$mCPU = $this->mysqli->real_escape_string($mCPU);
+		//if($category=='Category')
+			$query="INSERT INTO material_master SET name = '$mName', category = '$Cat', subcategory = '$SubCat', measurment_unit = '$mUnit', m_description = '$mDes', cost_per_unit = '$mCPU'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		echo "<span class='label label-success'>Material category added successfully.</span> ";	
+				
+	}
+	public function add_material_category($cName,$category,$cat){
+		$cName = $this->mysqli->real_escape_string($cName);
+		$category = $this->mysqli->real_escape_string($category);
+		$cat = $this->mysqli->real_escape_string($cat);
+		if($category=='Category')
+			$query="INSERT INTO material_category SET name = '$cName', type = '$category'";
+		else
+			$query="INSERT INTO material_category SET name = '$cName', type = '$category', sub_cat_of = '$cat'";			
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		echo "<span class='label label-success'>Material category added successfully.</span> ";	
+				
+	}
+	public function getMatSubCat($cat){
+		unset($this->user_data_temp);
+		$query="SELECT id,name FROM material_category WHERE sub_cat_of = '$cat'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->user_data_temp[]=$rows;		
+			}						
+			return $this->user_data_temp;
+		}
+		else{
+			$this->user_data_temp[0]['id']= 0;
+			$this->user_data_temp[0]['name']= 'No category';
+			return $this->user_data_temp;
+		}
+	}
 }	
 ?>

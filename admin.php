@@ -71,7 +71,8 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
-              <li><a href="add_user.php">Add User</a></li>    
+              <li><a href="add_user.php">Add User</a></li> 
+              <li><a href="add_material.php">Add Material</a></li>    
               <li><a href="add_location.php">Add Location</a></li>                
               <li><a href="log_out.php">Log Out</a></li>
             </ul>

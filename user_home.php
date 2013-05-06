@@ -3,10 +3,10 @@
 	
 	session_start();
 	
-	/*if(!isset($_SESSION["loggedin"])||!isset($_SESSION["id"]))
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
-	}*/
+	}
 	$user_home = new User();
 	?>
 <!DOCTYPE html>
@@ -158,6 +158,9 @@
 							 break;
 						case 'Clear From Accounts':
 							 echo ' <button class="btn btn-warning btn-mini disabled">Clear From Accounts</button>';
+							 break;
+						case 'Redirected':
+							 echo ' <button class="btn btn-warning btn-mini disabled">Redirected</button>';
 							 break;
 						
 					}

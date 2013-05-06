@@ -1447,7 +1447,7 @@ input[readonly],
 select[readonly],
 textarea[readonly] {
   cursor: not-allowed;
-  background-color: #555555;
+  background-color: #949494;
 }
 
 input[type="radio"][disabled],
@@ -3174,7 +3174,7 @@ table th[class*="span"],
 
 .close:hover,
 .close:focus {
-  color: #000000;
+  color: #FFF;
   text-decoration: none;
   cursor: pointer;
   opacity: 0.4;

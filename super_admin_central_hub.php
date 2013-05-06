@@ -5,14 +5,14 @@
 	
 	$super_admin = new User();	
 	
-	/*if(!isset($_SESSION["designation"]))
+	if(!isset($_SESSION["designation"]))
 		$_SESSION["designation"] = 'site manager';
 	if(!isset($_SESSION["location_central"]))
 		$_SESSION["location_central"] = 'central';
 	if(!isset($_SESSION["autorizatin_level"]))
 		$_SESSION["autorizatin_level"] = 'Approve';
 	if(!isset($_SESSION["user_id"]))
-		$_SESSION["user_id"] = '6';*/
+		$_SESSION["user_id"] = '6';
 	
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  

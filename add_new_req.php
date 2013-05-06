@@ -125,7 +125,7 @@
              </div>             
 			  <form id="new_req_form" class="form-horizontal" action="add_new_req.php" method="post">             
               <div class="control-group">
-                <label class="control-label" for="location">Type of Requisition</label>
+                <label class="control-label" for="location">Location</label>
                 <div class="controls">
                   <select id="location" name="location">
                     <option value="">Select Location</option>
@@ -134,7 +134,7 @@
 							for($i=0;$i<count($loc);$i++)
 							{
 						?>	
-						  <option><?php echo $new_req->location_id_to_name($loc[$i]) ?></option>    
+						  <option value="<?php echo $loc[$i];?>"><?php echo $new_req->location_id_to_name($loc[$i]) ?></option>    
 						<?php 
 							}
 						

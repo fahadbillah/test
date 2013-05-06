@@ -28,8 +28,11 @@
 				}
 				unset($login->user_data_temp);
 				$login->getExtractedArray($login->get_all_user_location($_SESSION["user_id"]),'location_id');
-				$_SESSION["location"]= substr($login->user_data_temp, 0, -1);	
-				header("Location: user_home.php");			
+				$_SESSION["location"]= substr($login->user_data_temp, 0, -1);
+				if($_SESSION["designation"]=='hub admin')
+					header("Location: admin.php");	
+				else		
+					header("Location: user_home.php");			
 				//$temp = substr($login->user_data_temp, 0, -1);
 				//$arr = explode("|", $temp);
 				/*$login->get_all_user_location($_SESSION["user_id"]);

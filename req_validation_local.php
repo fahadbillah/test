@@ -1,35 +1,10 @@
 <?php 
 	include_once "user.php";
-	session_start();
-		
-	/*if(!isset($_SESSION["designation"]))
-		$_SESSION["designation"] = 'site manager';
-	if(!isset($_SESSION["location"]))
-		$_SESSION["location"] = 10011.5;
-	if(!isset($_SESSION["autorizatin_level"]))
-		$_SESSION["autorizatin_level"] = 'Approve';
-	if(!isset($_SESSION["user_id"]))
-		$_SESSION["user_id"] = '24';*/
-	/*if(!isset($_SESSION["loggedin"]))
+	session_start();	
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 	{ 	  
-	  header("Location: signin.php?status=notloggedin");
-	}
-	
-	if(isset($_SESSION["designation"]))
-	{
-		switch($_SESSION["designation"])
-		{
-			case "super admin";
-			case "site manager";
-			case "site supervisor";
-			  break;
-		 	default:
-			  header("Location: signin.php?status=notauthorized"); 
-			  break;		 		
-		}	 	  
-	}	*/
-	
-	
+		header("Location: signin.php?status=notloggedin");
+	}	
 	$req_list = new User();
 	
 	
@@ -177,8 +152,10 @@
                </tr>  
                <tr>
                  <th>Estimated Costing</th>
-                 <td><?php echo $costing ?>
-                 </td>
+                 <td>
+				 <?php 
+						echo $costing ;
+				 ?>
                </tr> 
                <tr>
                  <th>Final Costing</th>
@@ -453,7 +430,10 @@
 			e.preventDefault();
 			return;
 		} 
-	});
+	}); 
+	$("#edit").click(function(e){
+		$("#editedCost").removeAttr("disabled")
+	}); 
 	  /*function reassure(){
 		if (!confirm("Do you confirm submit?"))
 		{

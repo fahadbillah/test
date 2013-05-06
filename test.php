@@ -4,8 +4,21 @@
 	$test = new User();
 	//$arr = $test->user_from_requisition_user(24);
 	
-	var_dump($test->location_id_to_name('10011.4'));
+	var_dump($test->getMatSubCat(1));
 	
+	
+	
+				/* 	if($pst == 'Boss'){
+				 ?>
+                     <form id="bossEdit" name="bossEdit" method="post">
+                        <input type="text" disabled id="editedCost" name="editedCost" value="<?php 	echo $costing ; ?>"/>
+                        <input type="button" value="Edit" class="btn" name="edit" id="edit" />
+                        <input type="submit" class="btn" name="costSubmit" id="costSubmit" />
+                     </form> 
+                 </td>
+				 <?php 
+					}
+					else*/
 	//echo $test->req_data;
 	//echo $test->req_data[0]['relation_to_req']
 	//var_dump($test->money_limit_cross(500000,'10011.9'));
