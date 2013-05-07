@@ -192,8 +192,7 @@
               <div class="control-group">
                 <label class="control-label" for="datepicker">Deadline</label>
                 <div class="controls">
-                  <input name="datepicker" type="text" placeholder="Date input">            
-                  <span class="help-inline">like 16/12/2012</span> 
+                  <input id="datepicker" name="datepicker" type="text" placeholder="Date input">
                   <!--<div class="input-append date" id="datepicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
                     <input size="16" type="text" value="12-02-2012" readonly>
                     <span class="add-on"><i class="icon-th"></i></span>
@@ -213,7 +212,7 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.8.3.js"></script>
+ <!--   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>    -->
     <script src="js/jquery.validate.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
 	<script src="./starter_files/jquery.js"></script>
@@ -231,6 +230,9 @@
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" />
+	<script src="js/jquery-1.9.1.js"></script>
+    <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
     label { width: 10em; float: left; }
@@ -240,9 +242,11 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
 	<script>
-		
-	  $('#datepicker').datepicker();
-	  
+	  //$.noConflict() 
+	  jQuery(function($){
+		$("#datepicker").datepicker({ dateFormat: "dd-mm-yy" });
+	  });
+	
 	  function get_other_field()
       {
 		  other = document.getElementById("type_of_req")

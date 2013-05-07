@@ -3,6 +3,11 @@
 	
 	session_start();
 	
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
+	{ 	  
+		header("Location: signin.php?status=notloggedin");
+	}
+	
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");
