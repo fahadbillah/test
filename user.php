@@ -1056,8 +1056,7 @@ class User extends Database
 		else
 		{		
 			$email = $this->mysqli->real_escape_string($email);
-			$not_yo_business = $this->mysqli->real_escape_string($not_yo_business);			
-			echo $email." ".$not_yo_business;
+			$not_yo_business = $this->mysqli->real_escape_string($not_yo_business);		
 		    $not_yo_business = $this->my_hash($not_yo_business);	
 		
 			$query="SELECT user_master.*
@@ -1141,11 +1140,7 @@ class User extends Database
 		
 		$id = $this->mysqli->real_escape_string($id);
 				
-		$query="SELECT locations.master, locations.project, locations.site_factory
-				FROM locations
-				INNER JOIN user_by_location
-				ON locations.id = user_by_location.location_id
-				WHERE user_by_location.user_id = '$id'";
+		$query="SELECT location_id FROM requisition_user WHERE user_id = '$id'";
 		
 		$result = $this->mysqli->query($query);
 		
@@ -1155,7 +1150,7 @@ class User extends Database
 				
 			while($rows=$result->fetch_assoc()){
 									
-				$this->user_data[]=$rows;					
+				$this->user_data=$rows['location_id'];					
 			}						
 			return $this->user_data;
 		}
@@ -2528,9 +2523,9 @@ class User extends Database
 			$this->user_data[] = $array;	*/		
 			return $this->user_data;
 		}
-		else
-			echo "<span class='label label-warning'>No user_from_user_by_location available.</span> ";	
-		return false;
+		else			
+			return 0;
+			//echo "<span class='label label-warning'>No user_from_user_by_location available.</span> ";	
 	}
 	public function getExtractedArray($arr,$key){
 		//$this->comment_data = array();

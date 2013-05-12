@@ -4,7 +4,7 @@
 	$test = new User();
 	//$arr = $test->user_from_requisition_user(24);
 	
-	var_dump($test->getMatSubCat(1));
+	var_dump($test->get_user_locations(1));
 	
 	
 	

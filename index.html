@@ -18,18 +18,29 @@
       }
 
       .form-signin {
-        max-width: 300px;
-        padding: 19px 29px 29px;
-        margin: 0 auto 20px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        -webkit-border-radius: 5px;
-           -moz-border-radius: 5px;
-                border-radius: 5px;
-        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-                box-shadow: 0 1px 2px rgba(0,0,0,.05);
-      }
+		position: absolute;
+		top: 200px;
+		left: 500px;
+		max-width: 300px;
+		padding: 19px 29px 29px;
+		margin: 0 auto 20px;
+		background-color: #131517;
+		border: 1px solid #e5e5e5;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		/*-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+		-moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+		box-shadow: 0 1px 2px rgba(0,0,0,.05);*/
+		
+		border-top: solid 1px #2f2f2f;
+		border-left: solid 1px #2f2f2f;
+		border-right: solid 1px #2f2f2f;
+		border-bottom: solid 1px #2f2f2f;
+		-webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+		-moz-box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+		box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+	  }	
       .form-signin .form-signin-heading,
       .form-signin .checkbox {
         margin-bottom: 10px;
@@ -40,6 +51,11 @@
         height: auto;
         margin-bottom: 15px;
         padding: 7px 9px;
+      }
+	  .topHeadingLogo {
+		position: absolute;
+		top: 159px;
+		left: 689px;
       }
 
     </style>
@@ -61,13 +77,16 @@
   <body>
 
     <div class="container">
+        <div class="topHeadingLogo">
+            <img src="logo.png" height="47" width="167">
+        </div>
 
       <form class="form-signin" action="sign_in_process.php" method="post">
         <h2 class="form-signin-heading">Please sign in</h2>
         <input name="email" id="email" type="text" class="input-block-level" placeholder="Email address">
         <input name="not_yo_business" id="not_yo_business" type="password" class="input-block-level" placeholder="Password">
         
-        <input class="btn btn-large btn-primary" type="submit" name="submit" value="Submit">
+        <input class="btn btn-large" type="submit" name="submit" value="Submit">
       </form>
 
     </div> <!-- /container -->

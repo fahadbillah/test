@@ -4,23 +4,11 @@
 	session_start();
 	
 	$user_details = new User();
-	
-	$_SESSION["designation"] = 'Cons.Manager';
-	//if(!isset($_SESSION["location"]))
-	$_SESSION["location"] = 41201;
-	/*if(!isset($_SESSION["loggedin"]))
+
+	if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");
 	}
-	
-	if(isset($_SESSION["designation"]))
-	{
-		if(!$user_details->is_corporate($_SESSION["designation"])&& $_SESSION["designation"]!="site manager" && $_SESSION["designation"]!="site supervisor" && $_SESSION["designation"]!="admin")
-		{
-			header("Location: signin.php?status=notauthorized"); 
-		} 	  
-	}*/
-		
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -69,43 +57,24 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <?php
-			  	if($_SESSION["designation"]!='admin'){
-			  	$user_details->get_pages($_SESSION["designation"]);
-				$a=(explode("/",$_SERVER["PHP_SELF"]));
-				//echo $a[2];
-				foreach($user_details->user_data as $pages)
-						{
-							extract($pages);
-			  ?>		
-              <li
-			  <?php 
-			  	if($a[2]==$url)
-					echo "class='active'";
-			  ?>
-              >
-              	<a href="<?php echo $url ?>">
-				<?php
-				 if($icon)
-               		 echo $icon." ".$name;
-				 else
-				 	 echo $name;
-				?>
-                </a>
-              </li>
-              <?php 
-					}
-				}
-				else {
-			  ?>
-              <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
-              <li><a href="admin_panel.php">Admin Panel</a></li>
-              <li class="active"><a href="profile.php"><i class="icon-user icon-white"></i> Profile</a></li>            
-              <li><a href="log_out.php">Log Out</a></li>
-              <?php 
-				}
-				
-			  ?>
+            <?php 
+			if($_SESSION["designation"]=='Hub Admin'){
+			?>
+              <li class="active"><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
+              <li><a href="add_user.php">Add User</a></li> 
+              <li><a href="add_material.php">Add Material</a></li>    
+              <li><a href="add_location.php">Add Location</a></li>                
+              <li><a id="log_out" href="log_out.php">Log Out</a></li>
+            <?php 
+			}
+			else{
+			?>
+              <li> <a class="active" href="user_home.php">Home</a> </li>
+              <li> <a href="add_new_req.php">Requisition</a> </li>
+              <li> <a id="log_out" href="log_out.php">Log Out</a>  </li>
+            <?php 
+			}
+			?>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -171,21 +140,12 @@
                     </tr>  
                     <tr>
                         <th>Assigned Locations
-                        <?php 
-							unset($user_details->user_data);
-							if($user_details->get_user_locations($_REQUEST["id"])){
-									
-									
-						?>
                         </th>
                         <td>
 						<?php 
-							foreach($user_details->user_data as $reuslt1)
-								{
-									extract($reuslt1);	
-									echo $master.'->'.$project.'->'.$site_factory.'</br>';
-								}
-							} 
+							unset($user_details->user_data);
+							if($user_details->get_user_locations($_REQUEST["id"]))	
+								echo $user_details->user_data;
 						?>
                    		</td>
                     </tr>                    
@@ -245,6 +205,7 @@
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
     label { width: 10em; float: left; }

@@ -8,26 +8,13 @@
 	if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");
-	}
-	
-	echo $_SESSION["designation"];
-	
-	if(isset($_SESSION["designation"]))
-	{
-		if(!$user_details->is_corporate($_SESSION["designation"])&& $_SESSION["designation"]!="site manager" && $_SESSION["designation"]!="site supervisor" && $_SESSION["designation"]!="admin")
-		{
-			header("Location: signin.php?status=notauthorized"); 
-		}
-		 
-	}
-	echo $_SESSION["designation"];	
-	
+	}	
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Admin Panel</title>
+    <title>Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -102,7 +89,7 @@
               <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
               <li><a href="admin_panel.php">Admin Panel</a></li>
               <li class="active"><a href="profile.php"><i class="icon-user icon-white"></i> Profile</a></li>            
-              <li><a href="log_out.php">Log Out</a></li>
+              <li><a id="log_out" href="log_out.php">Log Out</a></li>
               <?php 
 				}
 				
@@ -119,13 +106,9 @@
             <h2>Welcome Mr. <?php echo $_SESSION["name"] ?></h2>
             
           </div>
-          <div id="yooo">
-          
-          <?php 
-	
-			
-			$user_details->search_user($_SESSION["idusers"],"idusers");		
-				
+          <div id="yooo">          
+          <?php 			
+			$user_details->search_user($_SESSION["idusers"],"idusers");						
 		  ?>        
           </div>  
           <div>
@@ -226,6 +209,7 @@
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
     label { width: 10em; float: left; }

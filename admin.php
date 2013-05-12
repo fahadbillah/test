@@ -78,7 +78,7 @@
               <li><a href="add_user.php">Add User</a></li> 
               <li><a href="add_material.php">Add Material</a></li>    
               <li><a href="add_location.php">Add Location</a></li>                
-              <li><a href="log_out.php">Log Out</a></li>
+              <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -89,11 +89,11 @@
           <!--Body content-->
           
           <div class="page-header">
-            <h2>Welcome Mr. Zulkarnain<?php //echo $_SESSION["name"] ?></h2>
+            <h2>Welcome Mr. <?php echo $_SESSION["name"] ?></h2>
           </div>
           <div id="yooo">
           <div class="well well-large">
-             <h3>Pending</h3>
+             <h3>Recent Added User</h3>
              <ul>   
              <?php 
 			 	unset($admin->req_data);
@@ -160,6 +160,7 @@
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
     label { width: 10em; float: left; }
@@ -168,10 +169,4 @@
     .submit { margin-left: 12em; }
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
-	<script>
-		
-	  $('#datepicker').datepicker();
-	
-    </script>
-
 </body></html>

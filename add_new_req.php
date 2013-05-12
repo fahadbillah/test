@@ -74,7 +74,7 @@
             <ul class="nav">
               <li> <a class="active" href="user_home.php">Home</a> </li>
               <li> <a href="add_new_req.php">Requisition</a> </li>
-              <li> <a href="log_out.php">Log Out</a>  </li>
+              <li> <a id="log_out" href="log_out.php">Log Out</a>  </li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -230,6 +230,7 @@
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script src="js/all_functions.js"></script>
     <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" />
 	<script src="js/jquery-1.9.1.js"></script>
     <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
