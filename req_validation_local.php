@@ -202,9 +202,8 @@
                <tr>
                  <th>Purchase Order</th>
                  <td>
-               <?php 
-				if($po_info == ''){	
-				   	if($pst=='SCM'){		   
+               <?php 	
+				if($pst=='SCM' && $req_list->poOff($status)){		   
 			   ?>
                  <input class="checkbox" type="checkbox" id="pos" name="pos"/> <span id="chk">P.O. Available</span>
                  <form style="display:none" class="form-horizontal"id="poForm" name="poForm" method="post" action="req_validation_local.php?id=<?php echo $_REQUEST['id'] ?>">             
@@ -253,15 +252,44 @@
                   </div>
                  </form> 
                <?php 
-				   	} 
-					else{
-						echo 'Purchase Order not submitted.';
-					}
+				} 
+				else{
+					//echo 'Purchase Order not submitted.';
 				}
-				else{		
-				 echo $po_info;
+					
+				if($po_info == ''){
+					echo '</br> Purchase Order not submitted.';
 				}
+				else{
 				?>	
+                <table class="table-condensed">
+                  <tr>
+                    <th>PO NO.</th>
+                    <th>Purchase Amount</th>
+                    <th>Purchase Cost</th>
+                    <th>Details</th>
+                    <th>Date</th>
+                  </tr>
+				<?php
+					$po_form_temp = $req_list->form_unserialized($po_info);
+				// echo $po_info;
+					foreach($po_form_temp as $pft){
+						extract($pft);
+				?>	
+                  <tr>
+                    <td><?php echo $poNo?> </td>
+                    <td><?php echo $poAmount.' '.$amount?> </td>
+                    <td><?php echo $poCost?> </td>
+                    <td><?php echo $poDetails?> </td>
+                    <td><?php echo $date?> </td>
+                  </tr>
+				<?php
+					}
+				?>
+                </table>
+				<?php
+				 }
+				?>
                  </td>
                </tr>            
                  <th>Status</th>

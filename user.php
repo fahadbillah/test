@@ -538,7 +538,10 @@ class User extends Database
 		//echo $costing.$type_of_req.'</br>';
 		$last_req_id = $this->mysqli->insert_id;
 		$this->send_to_hub($last_req_id,$location_id);
-		$this->add_admin_local($location_id,$last_req_id);
+		$adminStat = $this->add_admin_local($location_id,$last_req_id);
+		if(!$adminStat){
+			$this->send_to_hub_update($last_req_id,'central');
+		}		
 		$this->add_user_to_admin_table($idusers,$last_req_id);	
 		/*$hub = $this->determine_local_main($costing,$location_id);
 		//var_dump($hub);
@@ -662,11 +665,15 @@ class User extends Database
 	{	
 		$this->date_time();
 		$admin = (int)$this->highest_local_authority($location_id);
+		if(!$admin)
+			return false;
+			//$admin = (int)$this->highest_local_authority('central');			
 		$message = 'admin added,'.$this->date;
 		$query="INSERT INTO admins SET req_id='$last_req_id', admin_id= '$admin', relation_to_req='Boss', activities='$message', status='New'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
+		return true;
 	}
 	public function add_activity_central($user_id,$req_id,$status)
 	{	
@@ -698,18 +705,16 @@ class User extends Database
 	public function highest_local_authority($location_id)
 	{	
 		$query="SELECT user_id FROM requisition_user where location_id = '$location_id' and post = 'Boss' limit 1";
-		$result = $this->mysqli->query($query);
-		
-		$num_result=$result->num_rows;		// determine number of rows result set 
-				
-		if($num_result>0){
-			
-			while($rows=$result->fetch_assoc()){
-								
-				$this->req_data=$rows['user_id'];					
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){		
+			while($rows=$result->fetch_assoc()){								
+				return $rows['user_id'];					
 			}						
-			return $this->req_data;
+			//return $this->req_data;
 		}		
+		else
+			return false;
 	}
 	public function requisition_table_id()
 	{		
@@ -1249,8 +1254,12 @@ class User extends Database
 		$site = $this->mysqli->real_escape_string($site);
 		$sid = $this->get_site_id($site);
 		$msite = $this->mysqli->real_escape_string($msite);
-		$mid = $this->get_micro_site_id($msite,$site);
-		$temp = $sid[0]['location_id'].".".$mid[0]['id'];
+		if(strtolower($ms)=='single entity')
+			$temp = $sid[0]['location_id'];
+		else{
+			$mid = $this->get_micro_site_id($msite,$site);
+			$temp = $sid[0]['location_id'].".".$mid[0]['id'];
+		}
 		//var_dump($sid);
 		
 		//var_dump($mid);
@@ -2720,16 +2729,19 @@ class User extends Database
 	public function location_id_to_name($location_id){
 		unset($this->user_data_temp1);
 		$temp = explode(".", $location_id);
+		//var_dump($temp);
+		//if(count($temp)>1){
 		$query="SELECT site_factory,project,master FROM locations WHERE location_id = '$temp[0]'";			
 			$result = $this->mysqli->query($query);		
 			$num_result=$result->num_rows;		// determine number of rows result set 					
 			if($num_result>0){				
 				while($rows=$result->fetch_assoc()){									
-					$this->user_data_temp1=$rows['master']."->".$rows['project']."->".$rows['site_factory'];		
+					return $this->user_data_temp1=$rows['master']."->".$rows['project']."->".$rows['site_factory'];		
 				}						
 			}
 			else
 				echo "<span class='label label-warning'>No micro site found for this requisition.</span> ";
+		//}
 				
 		if(count($temp)==2){			
 			$query="SELECT name FROM micro_site WHERE id = '$temp[1]'";			
@@ -3061,7 +3073,7 @@ class User extends Database
 		if($num_result>0){			
 			while($rows=$result->fetch_assoc()){	
 				//array_push($unit[0], $rows['name']);							
-				$temp = $rows;					
+				$temp = $rows['po_info'];					
 			}
 			if($temp==''){	
 				$temp1 = serialize($po_form);
@@ -3071,6 +3083,8 @@ class User extends Database
 			}
 			else{
 				$temp1 = serialize($po_form);
+				//$temp2 = serialize($temp);
+				//array_push($temp, $temp1);
 				$temp.= '|'.$temp1;
 				$query="update requisition SET po_info = '$temp' where id = '$req_id'";
 				$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
@@ -3097,7 +3111,7 @@ class User extends Database
 		$finish = $id+9999;
 		$current= 0;
 		$newID = 0;
-		var_dump($finish);
+		//var_dump($finish);
 		//return $fDigit;
 		$query="SELECT id FROM projects WHERE id BETWEEN '$id' AND '$finish' ORDER by id DESC limit 1";		
 		$result = $this->mysqli->query($query);		
@@ -3135,6 +3149,83 @@ class User extends Database
 		}
 		else
 			echo "<span class='label label-success'>Entity not found.</span> ";
+	}
+	public function add_new_single_entity_off_fac($id,$off_fac){
+		//echo $id.' '.$off_fac;
+		$id_name = explode('|',$id);
+		//var_dump($off_fac);
+		//return ;
+		$query="SELECT name,master FROM projects WHERE id = '$id_name[0]'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){							
+				$id_master[]= $rows;					
+			}
+			$final_id = $this->get_single_entity_final_id($id_name[0]);
+			//var_dump($final_id);	
+			//echo $off_fac.' '.$id_master[0]['name'].' '.$id_master[0]['master'].' '.$final_id;
+			//return ;	
+			$master_name = $id_master[0]['name'];
+			$master = $id_master[0]['master'];	
+			$query="INSERT INTO locations SET site_factory = '$off_fac', project = '$master_name', master = '$master', location_id = '$final_id', location_type = '$master'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+			echo "<span class='label label-success'>Entity office/factory added.</span> ";
+		}
+		else{
+			echo "<span class='label label-success'>Master Entity not found.</span> ";
+			return ;
+		}		
+	}
+	public function get_single_entity_final_id($id){		
+		$limit = $id + 9;
+		$query="SELECT location_id FROM locations WHERE location_id BETWEEN '$id' AND '$limit' ORDER BY location_id DESC limit 1";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){							
+				return $rows['location_id']+1;					
+			}			
+		}
+		else
+			return $id + 1;
+	}
+	public function is_single_entity($location_id){	
+		$query="SELECT location_type FROM locations WHERE location_id = '$location_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$location_type = $rows['location_type'];				
+			}				
+			if(strtolower($location_type)=='single entity')	
+				return true;	
+		}
+		else
+			return false;
+	}
+	public function poOff($status){
+		switch($status){
+			case "Received":					
+			case "Delivered":		
+			case "Document Delivered":		
+			case "Document Received":		
+			case "Closed":
+				return false;
+				break;
+			default:
+				return true;
+				break;			
+		}
+	}
+	public function form_unserialized($po_info){
+		$temp = explode('|',$po_info);
+		foreach($temp as $t){
+			$temp1 = unserialize($t);
+			array_splice($temp1, -1);
+			$temp2[] = $temp1;
+		}
+		return $temp2;
 	}
 }	
 ?>

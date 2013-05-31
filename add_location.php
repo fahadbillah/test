@@ -131,7 +131,8 @@
               <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
               <li><a href="add_user.php">Add User</a></li> 
               <li><a href="add_material.php">Add Material</a></li>    
-              <li class="active"><a href="add_location.php">Add Location</a></li>                
+              <li class="active"><a href="add_location.php">Add Location</a></li>       
+              <li><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -366,7 +367,7 @@
 					{
 						extract($ett);
 				?>	
-				  <option value="<?php echo $id ?>"><?php echo $name ?></option>    
+				  <option value="<?php echo $id.'|'.$name ?>"><?php echo $name ?></option>    
 				<?php }?>  
                 </select>
         </div>
@@ -402,7 +403,6 @@
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }

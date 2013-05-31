@@ -3,10 +3,10 @@
 	
 	session_start();
 	
-	/*if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
-	}*/
+	}
 	
 	$super_admin = new User();	
 	
@@ -91,7 +91,11 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="super_admin_central_hub.php"><i class="icon-home icon-white"></i> Home</a></li>
+              <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
+              <li><a href="add_user.php">Add User</a></li> 
+              <li><a href="add_material.php">Add Material</a></li>    
+              <li><a href="add_location.php">Add Location</a></li>    
+              <li class="active"><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
           </div><!--/.nav-collapse -->

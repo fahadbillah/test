@@ -1,4 +1,5 @@
-<?php include_once "redirect_page.php";
+<?php 
+	include_once "redirect_page.php";
 	include_once "user.php";
 	session_start();	
 	$login = new User();

@@ -83,32 +83,12 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
              <ul class="nav">
-               <?php
-			  	$req_list->get_pages($_SESSION["designation"]);
-				$a=(explode("/",$_SERVER["PHP_SELF"]));
-				//echo $a[2];
-				foreach($req_list->user_data as $pages)
-						{
-							extract($pages);
-			  ?>		
-              <li
-			  <?php 
-			  	if($a[2]==$url)
-					echo "class='active'";
-			  ?>
-              >
-              	<a href="<?php echo $url ?>">
-				<?php
-				 if($icon)
-               		 echo $icon." ".$name;
-				 else
-				 	 echo $name;
-				?>
-                </a>
-              </li>
-              <?php 
-						}
-			  ?>
+              <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
+              <li><a href="add_user.php">Add User</a></li> 
+              <li><a href="add_material.php">Add Material</a></li>    
+              <li><a href="add_location.php">Add Location</a></li>    
+              <li class="active"><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
+              <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
 
           </div><!--/.nav-collapse -->
