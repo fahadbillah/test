@@ -98,29 +98,29 @@
 				if(isset($_REQUEST["submit"]))
 				{
 					//var_dump($_REQUEST);		
-					
-					if(!in_array("",$_REQUEST))
-					{
-						extract($_REQUEST);
-						if(filter_var($costing, FILTER_VALIDATE_INT))
+					if($_SESSION['rand']==$_REQUEST["prevent"]){
+						if(!in_array("",$_REQUEST))
 						{
-							//echo $type_of_req." ".$recurring_recurring." ".$title." ".$description." ".$costing." ".$datepicker;
-							
-							$id = $new_req->new_req($_SESSION["user_id"],$title,$description,$type_of_req,$costing,$datepicker,$location);
-							
-							//echo "id ".$id." has been added to requisition list";
-							
-							//echo $name.$email.$password.$contact.$master.$project.$site_factory.$designation;
+							extract($_REQUEST);
+							if(filter_var($costing, FILTER_VALIDATE_INT))
+							{
+								//echo $type_of_req." ".$recurring_recurring." ".$title." ".$description." ".$costing." ".$datepicker;
+								
+								$id = $new_req->new_req($_SESSION["user_id"],$title,$description,$type_of_req,$costing,$datepicker,$location);
+								//echo "id ".$id." has been added to requisition list";
+								
+								//echo $name.$email.$password.$contact.$master.$project.$site_factory.$designation;
+							}
+							else
+								echo "<span class='label label-warning'>Input number in costing field.</span> ";							
 						}
-						else
-							echo "<span class='label label-warning'>Input number in costing field.</span> ";							
+						else 
+							echo "<span class='label label-warning'>You left a field blank.</span> ";					
 					}
 					else 
-						echo "<span class='label label-warning'>You left a field blank.</span> ";
-						
-						
-					
+						echo "<span class='label label-warning'>Form resubmission prevented.</span> ";									
 				}
+				$_SESSION['rand'] = rand(1, 10000000);
 			?>
              </div>             
 			  <form id="new_req_form" class="form-horizontal" action="add_new_req.php" method="post">             
@@ -201,6 +201,7 @@
               </div> 
               <div class="control-group">
                 <div class="controls">
+                  <input id="prevent" name="prevent" value="<?php echo $_SESSION['rand']?>" style="display:none"/>
                   <input name="submit" value="Submit Reuisition" type="submit" class="btn">
                 </div>
               </div>
@@ -214,8 +215,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
  <!--   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>    -->
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>

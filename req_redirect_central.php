@@ -222,7 +222,8 @@
 							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
 							break;
 						case "Pending":	
-						case "New":						
+						case "New":		
+						case "View":						
 							echo "<button class='btn btn-small btn-primary disabled' type='button'>Pending</button>";
 							break;
 						case "Modify":						
@@ -245,7 +246,7 @@
                <tr>
                  <th>Decision</th>
                  <?php 
-				 if($status==='New'){					 
+				 if($status==='New'||$status==='View'){					 
 				 ?>
                  <td>
                  <form id="des" name="des" action="req_redirect_central.php?id=<?php echo $id ?>" method="post" onSubmit="reassure()">
@@ -472,8 +473,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>

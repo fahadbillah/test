@@ -70,7 +70,7 @@
             <h2>Welcome Mr. <?php echo $_SESSION["name"] ?></h2>
           </div>
           <div id="yooo">
-          <?php //echo $_SESSION["location"] ?>
+          <?php //echo $_SESSION["user_id"] ?>
           </div>
           <?php 
 		  		$perpage = 10;
@@ -140,7 +140,8 @@
                </td>
                <td>
                  <?php 
-				 	switch($status){
+				 	echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
+				 	/*switch($status){
 						case 'New':
 							 echo ' <button class="btn btn-primary btn-mini disabled">New</button>';
 							 break;
@@ -163,7 +164,7 @@
 							 echo ' <button class="btn btn-warning btn-mini disabled">Redirected</button>';
 							 break;
 						
-					}
+					}*/
 				?>  
                 </td>
                </tr>  
@@ -272,8 +273,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>

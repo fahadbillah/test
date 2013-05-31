@@ -86,33 +86,61 @@
 		  	if(isset($_REQUEST["stat_cng"]))
 				$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
 		  ?>
+          </div>          
+          <div id="notice">
+          
           </div>
           <div id="yooo">
 		  	<?php 
 			//echo $_SESSION['location'];
 				unset($req_list->user_data);
-				if(isset($_REQUEST['costSubmit']) && $_REQUEST['fcost']!=''){
-			   		$req_list->insert_actual_cost($_REQUEST["fcost"],$_REQUEST["id"]);	
+				$req_list->date_time();
+				$date_time = $req_list->date;
+				if(isset($_REQUEST['poSubmit']) && $_REQUEST['poCost']!=''){
+			   		//$req_list->insert_actual_cost($_REQUEST["poCost"],$_REQUEST["id"]);	
+					$req_list->insert_po($_REQUEST,$_REQUEST["id"]);	
 				}
 				if(isset($_REQUEST['decision1'])){
-					//echo $_REQUEST['decision1'];
-			   		$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
-			   		$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
-			   		$req_list->change_req_status_main($_REQUEST["id"],$_REQUEST['decision1']);
-			   		if($req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]))
-						$req_list->assign_local_account_scm($_REQUEST["id"]);					
+					if($_SESSION['rand'] == $_REQUEST["prevent"]){
+						//echo $_REQUEST['decision1'];
+						$decision = $_REQUEST['decision1'];
+						$destination = NULL;
+						$isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
+						$isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
+						if($isBoss){
+							if($isLocal){
+								$destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
+								if($destination == 'local'){
+									$req_list->assign_local_account_scm($_REQUEST["id"]);			
+								}
+								else if($destination == 'central'){	
+									$req_list->send_to_hub_update($_REQUEST["id"],'central');
+									$decision = 'View';	
+								}
+							}
+							else
+								$req_list->assign_local_account_scm($_REQUEST["id"]);	
+						}
+						$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
+						$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
+						$req_list->change_req_status_main($_REQUEST["id"],$decision);
+					}
+					else 
+						echo "<span class='label label-warning'>Form resubmission prevented.</span> ";					
 				}
 				if(isset($_REQUEST['decision2']))
 			   		echo $_REQUEST['decision2'];
 				if(isset($_REQUEST['decision3']))
-			   		echo $_REQUEST['decision3'];
+			   		echo $_REQUEST['decision3'];					
+				
+				$_SESSION['rand'] = rand(1, 10000000);
 			?>
           </div>           
              <div>
              <table class="table table-striped">
              <?php 
 				//unset($req_list->req_data); 
-				
+				$only_view = $req_list->getRelation($_SESSION["user_id"],$_REQUEST["id"]);
 				$pst = $req_list->getPost($_SESSION["user_id"],$_REQUEST["id"]);
 			 	$req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
 				//var_dump($req_list->req_data);
@@ -154,28 +182,84 @@
                  <th>Estimated Costing</th>
                  <td>
 				 <?php 
+				 	if($pst == 'Boss' && $only_view != 'View' && $status=='New'){
+				 ?>
+                 
+                 <form class="form-inline" id="local_boss_cost_edit" name="local_boss_cost_edit">
+                 	<input id="cost_edit_box_for_local_boss" name="cost_edit_box_for_local_boss" type="text" value="<?php echo $costing?>" disabled>
+                    <input id="req_id_to_edit_cost" name="req_id_to_edit_cost" type="text" value="<?php echo $_REQUEST['id']?>" style="display:none" >
+                    <?php //if($status=='New'){?>
+                    <input class="btn btn-primary" id="cost_edit" name="cost_edit" value="Edit" type="button">
+                    <input style="display:none" class="btn btn-primary" id="cost_edit_finish" name="cost_edit_finish" value="Submit" type="button">
+                    <?php //}?>
+                 </form>
+				 <?php 
+					}
+					else
 						echo $costing ;
 				 ?>
                </tr> 
                <tr>
-                 <th>Final Costing</th>
+                 <th>Purchase Order</th>
                  <td>
                <?php 
-				if($actual_cost_by_scm == 0){	
+				if($po_info == ''){	
 				   	if($pst=='SCM'){		   
 			   ?>
-                 <form id="actualCost" name="actualCost" method="post">
-                 	<input type="text" id="fcost" name="fcost"/>
-                    <input type="submit" class="btn" name="costSubmit" id="costSubmit" />
+                 <input class="checkbox" type="checkbox" id="pos" name="pos"/> <span id="chk">P.O. Available</span>
+                 <form style="display:none" class="form-horizontal"id="poForm" name="poForm" method="post" action="req_validation_local.php?id=<?php echo $_REQUEST['id'] ?>">             
+                  <div class="control-group">
+                    <label class="control-label" for="poNo">P.O. No.</label>
+                    <div class="controls">
+                 	  <input type="text" id="poNo" name="poNo"/>
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <label class="control-label" for="poCost">Purchase Amount</label>
+                    <div class="controls">
+                 	  <input type="text" id="poAmount" name="poAmount"/>
+                      <select id="amount" name="amount">
+                        <option>Select Unit</option>
+                        <?php 
+						  $unit = $req_list->getUnitType();
+						  var_dump($unit);
+						  if($unit){
+						    foreach($unit as $unt){
+							  extract($unt);
+                     		  echo '<option>'.$name.'</option>';
+						    }
+						  }
+						?>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <label class="control-label" for="poCost">Purchase Cost</label>
+                    <div class="controls">
+                 	  <input type="text" id="poCost" name="poCost"/>
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <label class="control-label" for="poDetails">Details</label>
+                    <div class="controls">
+                      <textarea name="poDetails" rows="3"></textarea>
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <div class="controls">
+                      <input id="date" name="date" value="<?php echo $date_time ?>" style="display:none"/>
+                      <input type="submit" class="btn" name="poSubmit" id="poSubmit" />
+                    </div>
+                  </div>
                  </form> 
                <?php 
 				   	} 
 					else{
-						echo 'Final cost not submitted by SCM';
+						echo 'Purchase Order not submitted.';
 					}
 				}
 				else{		
-				 echo $actual_cost_by_scm;
+				 echo $po_info;
 				}
 				?>	
                  </td>
@@ -183,13 +267,18 @@
                  <th>Status</th>
                  <td>
 				 <?php
+				 if($only_view != 'View'){
 				 	switch($status)
 					{
-						case "Solved":	
+						case "Received":
+						case "Partially Received":	
 						case "Approved":		
-						case "Clear From Accounts":	
 						case "Redirect":					
-						case "Delivered":						
+						case "Delivered":				
+						case "Partially Delivered":		
+						case "Document Delivered":		
+						case "Document Received":		
+						case "Closed":						
 							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
 							break;
 						case "Pending":	
@@ -199,10 +288,13 @@
 						case "Modify":						
 							echo "<button class='btn btn-small btn-danger disabled' type='button'>Need Modification</button>";
 							break;
-						case "Closed":						
-							echo "<button class='btn btn-small btn-danger disabled' type='button'>Closed</button>";
+						case "View":						
+							echo "<button class='btn btn-small btn-primary disabled' type='button'>Only View</button>";
 							break;
 					}
+				 }
+				 else
+				 	echo "<button class='btn btn-small btn-primary disabled' type='button'>Only View</button>";
 				 ?>
                  </td>
                </tr>  
@@ -222,12 +314,20 @@
                  <td>
                  <form id="des" name="des" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
                  <?php 	
+				 	$this_user_status = $req_list->getReqStatus($_REQUEST["id"],$_SESSION["user_id"]);					
 					$button = $req_list->getButton($status);
+					//echo $button;
 					if($pst){
-					 if(($status==='Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='Accountant')||($status==='Clear From Accounts' && $pst==='SCM')||($status==='Solved' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss'))
+					/*if(($status==='Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='Accountant')||($status==='Clear From Accounts' && $pst==='SCM')||($status==='Solved' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss' && $only_view != 'View'))*/
+					 /*if(($status==='Delivered' && $pst==='Raiser')||($status==='Partially Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='SCM')||($status==='Partially Received' && $pst==='SCM')||($status==='Received' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss' && $only_view != 'View'))*/
+					 if($req_list->status_comparison($this_user_status,$status,$pst))
 						echo $button;						 
-					 else
-						echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
+					 else{
+						if($only_view)
+							echo "<button class='btn btn-small btn-success disabled' type='button'>Only View</button>";
+						else
+							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
+					 }
 					}
 					else
 						echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
@@ -235,6 +335,7 @@
                      <!--<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
                      <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
                      <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>-->
+                     <input id="prevent" name="prevent" value="<?php echo $_SESSION['rand']?>" style="display:none"/>
                  </form>
                  </td>    
                  <td>
@@ -399,8 +500,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>
@@ -413,9 +512,6 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
-    <script src="js/all_functions.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 100%; }
@@ -425,7 +521,9 @@
     .submit { margin-left: 12em; }
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
-	<script>	   
+	<script>	 
+	$("#cost_edit").click(changeButtonForCostEdit)
+	$("#cost_edit_finish").click(changeButtonForCostEditFinish)
 	$("#des").submit(function(e){
 		if (!confirm("Do you confirm submit?"))
 		{
@@ -451,6 +549,16 @@
               });
 		  
 	  }
+	  $('#pos').click(function(){
+		  if($('#pos').is(':checked')){
+		  	$('#poForm').show('slow')
+			$('#chk').html('P.O. Not Available')
+		  }
+		  else{
+		  	$('#poForm').hide('slow')
+			$('#chk').html('P.O. Available')
+		  }
+	  })
     </script>
     
     

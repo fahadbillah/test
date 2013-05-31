@@ -188,10 +188,12 @@ class User extends Database
 		else 
 			return NULL;
 	}
-	public function get_all_masters()
+	public function get_all_masters($master='')
 	{
-		$query="SELECT * FROM master_business";
-		
+		if($master=='')
+			$query="SELECT * FROM master_business";
+		else
+			$query="SELECT * FROM master_business WHERE name = '$master'";
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
@@ -535,7 +537,10 @@ class User extends Database
 		//echo 'new_req executed</br>';
 		//echo $costing.$type_of_req.'</br>';
 		$last_req_id = $this->mysqli->insert_id;
-		$hub = $this->determine_local_main($costing,$location_id);
+		$this->send_to_hub($last_req_id,$location_id);
+		$this->add_admin_local($location_id,$last_req_id);
+		$this->add_user_to_admin_table($idusers,$last_req_id);	
+		/*$hub = $this->determine_local_main($costing,$location_id);
 		//var_dump($hub);
 		if($hub == 'local'){
 			$this->send_to_hub($last_req_id,$location_id);
@@ -545,7 +550,7 @@ class User extends Database
 		else if($hub == 'central'){
 			$this->add_user_to_admin_table($idusers,$last_req_id);	
 			$this->send_to_hub($last_req_id,'central');
-		}
+		}*/
 	}
 	public function send_to_hub($last_req_id,$location_id)
 	{		
@@ -554,6 +559,14 @@ class User extends Database
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added the hub.</span> ";			
+	}
+	public function send_to_hub_update($req_id,$location_id)
+	{		
+		//echo 'send_to_hub executed</br>';
+		$query="UPDATE req_hub SET location='$location_id' WHERE req_id = '$req_id'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
+		
+		echo "<span class='label label-success'>Destination is successfully updated.</span> ";			
 	}
 	public function determine_local_main($costing,$location)
 	{
@@ -2158,7 +2171,8 @@ class User extends Database
 	{
 		$this->date_time();
 		$id = $this->mysqli->real_escape_string($id);
-		$location = $this->getReqDestination($id); //$this->mysqli->real_escape_string($location);
+		$location = $this->getReqDestination($id); 
+		//$this->mysqli->real_escape_string($location);
 		//$idL = $this->get_location_id($location);
 		$account = (int)$this->get_local_accountant($location);
 		$scm = (int)$this->get_local_scm($location);
@@ -2594,36 +2608,58 @@ class User extends Database
 		else
 			echo "<span class='label label-warning'>No status found for this requisition of this uesr.</span> ";
 	}
+	public function getReqStatusMain($req_id){
+		unset($this->user_data_temp);
+		$query="SELECT status FROM requisition WHERE id = '$req_id'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				return $rows['status'];		
+			}						
+		}
+		else
+			echo "<span class='label label-warning'>No status found for this requisition of this uesr.</span> ";
+	}
+				//'<button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button><button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>'
 	public function getButton($status){
 		unset($this->user_data_temp1);		
 		switch($status){
 			case 'New':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
-				<button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
-				<button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>';
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button>'; 
 				break;
 			case 'Delivered':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Solved">Solved</button>
-                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>';
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Received">Received</button>';
+				break;
+			case 'Partially Delivered':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Received">Partially Receive</button>';
 				break;
 			case 'Approved':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Clear From Accounts">Clear</button>
-                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>';
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
+					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
 				break;
 			case 'Clear From Accounts':
 				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Delivered</button>
-                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>';
+					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
 				break;
-			case 'Solved':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Closed">Closed</button>
-                     <button class="btn btn-small btn-warning" type="submit" id="decision" name="dReview" value="Review">Review</button>';
+			case 'Received':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Document Delivered">Document Deliver</button>';
+				break;
+			case 'Document Delivered':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Document Received">Document Receive</button>';
+				break;
+			case 'Document Received':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Closed">Close</button>';
+				break;
+			case 'Partially Received':
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
+					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
 				break;
 			case 'Redirect':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
-				<button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
-				<button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>';
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button>';
 				break;
 			case 'Closed':
+			case 'View':
 				$this->user_data_temp1 = '';
 				break;
 		}	
@@ -2794,6 +2830,311 @@ class User extends Database
 			$this->user_data_temp[0]['name']= 'No category';
 			return $this->user_data_temp;
 		}
+	}
+	public function updateCostingByLocalBoss($newCosting,$reqId){		
+		$newCosting = $this->mysqli->real_escape_string($newCosting);		
+		$query="update requisition SET costing = '$newCosting' where id = $reqId";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+		
+		echo "<span class='label label-success'>Costing updated.</span> ";
+	}
+	public function get_req_costing($req_id){
+		unset($this->user_data_temp);
+		$query="SELECT costing FROM requisition WHERE id = '$req_id'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){								
+				return $rows['costing'];		
+			}						
+			return $this->user_data_temp;
+		}
+		else
+			echo "<span class='label label-warning'>Requisition cosing is not set.</span> ";			
+	}
+	public function get_req_location($req_id){
+		$query="SELECT location_id FROM requisition WHERE id = '$req_id'";			
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				return $rows['location_id'];		
+			}						
+		}
+		else
+			echo "<span class='label label-warning'>Requisition location is not set.</span> ";
+		
+	}
+	public function check_req_final_destination($req_id){
+		$cost = $this->get_req_costing($req_id);
+		$location = $this->get_req_location($req_id);
+		return $this->determine_local_main($cost,$location);
+		/*if($hub == 'local'){
+			$this->send_to_hub($last_req_id,$location_id);
+			$this->add_admin_local($location_id,$last_req_id);
+			$this->add_user_to_admin_table($idusers,$last_req_id);				
+		}
+		else if($hub == 'central'){
+			$this->add_user_to_admin_table($idusers,$last_req_id);	
+			$this->send_to_hub($last_req_id,'central');
+		}*/
+	}
+	public function checkLocal($location_id,$req_id){
+		$locations = explode('|',$location_id);
+		$req_location = $this->get_req_location($req_id);
+		$isCentral = false;
+		$isLocal = false;
+		if(in_array('central',$locations))
+			$isCentral = true;
+		if(in_array($req_location,$locations))
+			$isLocal = true;
+		if($isCentral && $isLocal)
+			return true;
+		if($isLocal)
+			return true;
+		if($isCentral)
+			return false;
+		if(!$isCentral && !$isLocal)
+			return false;
+	}
+	public function test($id){
+		$idArr = array();
+		//var_dump($idArr);
+		$year = 2;
+		$semester = 1;
+		$roll = 4;
+		$dept = 3;
+		$temp = $semester+$roll+$dept;
+		$yr = substr($id, 0, -$temp);
+		$idArr['year'] = $yr;
+		//array_push($idArr, $yr);
+		//echo 'Year - '.$yr;
+		//echo '</br>';
+		$temp = $roll+$dept;
+		$sm = substr($id, $year, -$temp);
+		$idArr['semester'] = $sm;
+		//array_push($idArr, $sm);
+		//echo 'Semester - '.$sm;
+		//echo '</br>';
+		$rl = substr($id, $year+$semester, -$dept);
+		$idArr['roll'] = $rl;
+		//array_push($idArr, $rl);
+		//echo 'Roll - '.$rl;
+		//echo '</br>';
+		$dpt = substr($id, $year+$semester+$roll);
+		$idArr['dept'] = $dpt;
+		//array_push($idArr, $dpt);
+		return $idArr;
+		//echo 'Dept - '.$dpt;
+		/*echo '</br>';
+		$temp = $semester+$roll+$dept;
+		echo 'Dept - '.$sm;*/
+
+		/*echo $yr;
+		echo '</br>';
+		echo $yr;
+		echo '</br>';
+		echo $yr;*/
+		//print_r($arr);
+		//var_dump($arr);
+		//echo '</br>';
+		//echo count($arr);
+		echo '</br>';
+	
+	}
+	public function input_stage($name,$instruction){	
+		$name = $this->trimming(strtolower($name));	
+		$instruction = $this->trimming(strtolower($instruction));	
+		$query="INSERT INTO stages_of_requisition SET name='$name', instruction='$instruction'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+		echo "<span class='label label-success'>A new stage added.</span> ";
+	}
+	public function trimming($str){
+		$str = ltrim($str);
+		$str = rtrim($str);
+		return $str;
+	} 
+	public function get_stage(){
+		unset($this->user_data);
+		$query="SELECT * FROM stages_of_requisition";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){								
+				$this->user_data[]=$rows;					
+			}						
+			return $this->user_data;
+		}		
+		else
+			echo "<span class='label label-warning'>No stage found.</span> ";				
+	}
+	public function get_single_stage($edit){
+		unset($this->user_data);
+		$query="SELECT * FROM stages_of_requisition WHERE id = '$edit'";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){								
+				$this->user_data[]=$rows;					
+			}						
+			return $this->user_data;
+		}		
+		else
+			echo "<span class='label label-warning'>No stage found.</span> ";				
+	}
+	public function delete_stage($delete){
+		//echo $delete;				
+		$query="DELETE FROM stages_of_requisition WHERE id='$delete'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+		echo "<span class='label label-warning'>Deleted.</span> ";
+	}	
+	public function edit_stage($id,$name,$instructions){
+		echo $name.' '.$instructions;		
+		$query="update stages_of_requisition SET name = '$name',instruction = '$instructions' where id = '$id'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+		
+		echo "<span class='label label-success'>Edited.</span> ";
+	}
+	public function getRelation($user_id,$req_id){
+		$query="SELECT status FROM admins WHERE admin_id = '$user_id' and req_id ='$req_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){								
+				return $rows['status'];					
+			}						
+		}		
+		return false;
+	}
+	public function getUnitType(){	
+		$query="SELECT name FROM unit_master";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){	
+				//array_push($unit[0], $rows['name']);							
+				$unit[] = $rows;					
+			}		
+			return $unit;				
+		}		
+		return false;
+	}
+	public function status_comparison($user,$main,$pst){
+		//echo $pst;
+		if($user=='Partially Delivered' && $main=='Partially Received')
+			return true;
+		if($user=='Delivered' && $main=='Received')
+			return true;
+		else if($user=='Partially Received' && $main=='Partially Delivered')
+			return true;
+		else if($user=='Partially Received' && $main=='Delivered')
+			return true;
+		else if($user=='New' && $main=='Redirect' && $pst=='Boss')
+			return true;
+		else if($user=='New' && $main=='Delivered')
+			return true;
+		else if($user=='New' && $main=='Partially Delivered')
+			return true;
+		else if($user=='New' && $main=='New' && $pst!='Raiser')
+			return true;
+		else if($user=='Approved' && $main=='Approved' && $pst=='SCM')
+			return true;
+		else if($user=='Approved' && $main=='Document Delivered' && $pst=='Accountant')
+			return true;
+		else if($user=='Document Received' && $main=='Document Received')
+			return true;
+		else
+			return false;
+		
+	}
+	public function insert_po($po_form,$req_id){
+		$this->date_time();			
+		$query="SELECT po_info FROM requisition where id = '$req_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){	
+				//array_push($unit[0], $rows['name']);							
+				$temp = $rows;					
+			}
+			if($temp==''){	
+				$temp1 = serialize($po_form);
+				$query="update requisition SET po_info = '$temp1' where id = '$req_id'";
+				$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+				echo "<span class='label label-success'>A new P.O added.</span> ";
+			}
+			else{
+				$temp1 = serialize($po_form);
+				$temp.= '|'.$temp1;
+				$query="update requisition SET po_info = '$temp' where id = '$req_id'";
+				$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+				echo "<span class='label label-success'>P.O updated.</span> ";
+			}			
+		}		
+		return false;
+	}
+	public function getSingleEntityId($single_entity_master){
+		//unset($this->user_data);
+		$query="SELECT id FROM master_business where name = '$single_entity_master'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){							
+				return $rows['id'];					
+			}					
+		}		
+	    echo "<span class='label label-success'>No data found for single entity master.</span> ";
+	}
+	public function add_new_single_entity($single_entity_master,$single_entity){
+		$id = $this->getSingleEntityId($single_entity_master);
+		$fDigit = $id/10000;
+		$finish = $id+9999;
+		$current= 0;
+		$newID = 0;
+		var_dump($finish);
+		//return $fDigit;
+		$query="SELECT id FROM projects WHERE id BETWEEN '$id' AND '$finish' ORDER by id DESC limit 1";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){							
+				$current = (int)$rows['id'];					
+			}
+			$newID = $current + 10;
+			$query="INSERT INTO projects SET name = '$single_entity', id = '$newID', master = '$single_entity_master'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+			echo "<span class='label label-success'>Entity added.</span> ";	
+		}
+		else{
+			$final = $id + 10;						
+			$query="INSERT INTO projects SET name = '$single_entity', id = '$final', master = '$single_entity_master'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+			echo "<span class='label label-success'>Entity added.</span> ";
+			
+		}
+	}
+	public function get_all_single_entity(){
+		unset($this->user_data_temp);
+		$this->get_all_masters('Single Entity');		
+		$entity = (int)$this->user_data_temp[0]['id'];
+		$finish = $entity + 9999;
+		$query="SELECT name,id FROM projects WHERE id BETWEEN '$entity' AND '$finish'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){							
+				$current[]= $rows;					
+			}	
+			return $current;		
+		}
+		else
+			echo "<span class='label label-success'>Entity not found.</span> ";
 	}
 }	
 ?>

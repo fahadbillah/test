@@ -120,7 +120,7 @@
         <div class="container">
           <!--Body content-->
           <div class="page-header">
-            <h3>Welcome Mr. Zulkernain<?php /*echo $_SESSION["name"]*/ ?></h3>
+            <h3><?php /*echo $_SESSION["name"]*/ ?></h3>
           </div>
           <div id="yooo">
           <?php 
@@ -143,7 +143,7 @@
               <td>        
                <li>
                  <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$id.' '.$title."</a>";
+				 	echo"<a href='req_redirect_central.php?id=".$id."&read_status=read'>".$id.' '.$title."</a>";
 				?>  
                </li>
                </td>
@@ -278,8 +278,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>

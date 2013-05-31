@@ -3,10 +3,10 @@
 	
 	session_start();
 	
-	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
+	/*if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
-	}
+	}*/
 	
 	$super_admin = new User();	
 	
@@ -64,7 +64,7 @@
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/datepicker.css" rel="stylesheet">
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elementsb -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -114,7 +114,7 @@
              <?php 
 			 	unset($super_admin->req_data);
 				//$super_admin->super_admin_req_list_by_type(0,10,"New",$_SESSION["idusers"]);
-				$super_admin->get_requisition_list(0,10,$_SESSION["location_central"]);
+				$super_admin->get_requisition_list(0,10,'central'); //$_SESSION["location_central"]
 				  if($super_admin->good_to_go_flag>0){
 					 foreach($super_admin->req_data as $list)
 					 {
@@ -125,6 +125,7 @@
 				 	echo"<a href='req_redirect_central.php?id=".$id."&read_status=read'>".$id.' '.$title."</a>";
 					switch($status){
 						case 'New':
+						case 'View':
 							 echo ' <button class="btn btn-primary btn-mini disabled">New</button>';
 							 break;
 						case 'Pending':
@@ -159,8 +160,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>

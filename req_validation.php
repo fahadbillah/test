@@ -1,35 +1,10 @@
 <?php 
 	include_once "user.php";
-	session_start();
-		
-	/*if(!isset($_SESSION["designation"]))
-		$_SESSION["designation"] = 'site manager';
-	if(!isset($_SESSION["location"]))
-		$_SESSION["location"] = 10011.5;
-	if(!isset($_SESSION["autorizatin_level"]))
-		$_SESSION["autorizatin_level"] = 'Approve';
-	if(!isset($_SESSION["user_id"]))
-		$_SESSION["user_id"] = '24';*/
-	/*if(!isset($_SESSION["loggedin"]))
+	session_start();	
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 	{ 	  
-	  header("Location: signin.php?status=notloggedin");
-	}
-	
-	if(isset($_SESSION["designation"]))
-	{
-		switch($_SESSION["designation"])
-		{
-			case "super admin";
-			case "site manager";
-			case "site supervisor";
-			  break;
-		 	default:
-			  header("Location: signin.php?status=notauthorized"); 
-			  break;		 		
-		}	 	  
-	}	*/
-	
-	
+		header("Location: signin.php?status=notloggedin");
+	}	
 	$req_list = new User();
 	
 	
@@ -101,7 +76,7 @@
           </ul>
           
           <div class="page-header">
-            <h2>Requisition <?php echo $_REQUEST["id"]." ".$_SESSION["location"][0]." ".$_SESSION["user_id"] ?></h2>
+            <h2>Requisition <?php echo $_REQUEST["id"] ?></h2>
           </div>
           <div id="notice">
           <?php 
@@ -111,15 +86,38 @@
 		  	if(isset($_REQUEST["stat_cng"]))
 				$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
 		  ?>
+          </div>          
+          <div id="notice">
+          
           </div>
           <div id="yooo">
 		  	<?php 
+			//echo $_SESSION['location'];
 				unset($req_list->user_data);
+				if(isset($_REQUEST['costSubmit']) && $_REQUEST['fcost']!=''){
+			   		$req_list->insert_actual_cost($_REQUEST["fcost"],$_REQUEST["id"]);	
+				}
 				if(isset($_REQUEST['decision1'])){
-			   		$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
-			   		$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$_REQUEST['decision1']);
-			   		$req_list->change_req_status_main($_REQUEST["id"],$_REQUEST['decision1']);
-			   		$req_list->assign_local_account_scm($_REQUEST["id"],$_SESSION['location'][0]);					
+					//echo $_REQUEST['decision1'];
+					$decision = $_REQUEST['decision1'];
+					$destination = NULL;
+					$isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
+					$isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
+					if($isBoss && $isLocal){
+						$destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
+						if($destination == 'local'){
+							$req_list->assign_local_account_scm($_REQUEST["id"]);			
+						}
+						else if($destination == 'central'){	
+							$req_list->send_to_hub_update($_REQUEST["id"],'central');
+							$decision = 'approved_to_central';	
+						}
+					}
+			   		$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
+			   		$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
+			   		$req_list->change_req_status_main($_REQUEST["id"],$decision);
+			   		if($isBoss && !$fromCentral)
+						$req_list->assign_local_account_scm($_REQUEST["id"]);					
 				}
 				if(isset($_REQUEST['decision2']))
 			   		echo $_REQUEST['decision2'];
@@ -131,7 +129,10 @@
              <table class="table table-striped">
              <?php 
 				//unset($req_list->req_data); 
+				$only_view = $req_list->getRelation($_SESSION["user_id"],$_REQUEST["id"]);
+				$pst = $req_list->getPost($_SESSION["user_id"],$_REQUEST["id"]);
 			 	$req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
+				//var_dump($req_list->req_data);
 			 	foreach($req_list->req_data as $list)
 				{
 					extract($list);			   
@@ -155,6 +156,11 @@
                  <th>Type of Requisition</th>
                  <td><?php echo $type_of_req ?>
                  </td>
+               </tr>
+               <tr>
+                 <th>Raised From</th>
+                 <td><?php echo $location_id ?>
+                 </td>
                </tr>   
                <tr>
                  <th>Requisition by</th>
@@ -162,37 +168,57 @@
                  </td>
                </tr>  
                <tr>
-                 <th>Costing</th>
-                 <td><?php echo $costing ?>
-                 </td>
-               </tr> <?php if($_SESSION['designation'] == 'Manager'){ ?>
-               <tr>
-                 <th>Admins</th>
+                 <th>Estimated Costing</th>
                  <td>
 				 <?php 
-				 	unset($req_list->user_data);
-				 	$req_list->get_list_of_admins($_REQUEST['id']);
-					foreach($req_list->user_data as $admin){
-						extract($admin);
-						echo $req_list->idusers_to_id($admin_id)." | ";
-					}
+				 	if($pst == 'Boss' && $only_view != 'View'){
 				 ?>
-                 </td>
+                 
+                 <form class="form-inline" id="local_boss_cost_edit" name="local_boss_cost_edit">
+                 	<input id="cost_edit_box_for_local_boss" name="cost_edit_box_for_local_boss" type="text" value="<?php echo $costing?>" disabled>
+                    <input id="req_id_to_edit_cost" name="req_id_to_edit_cost" type="text" value="<?php echo $_REQUEST['id']?>" style="display:none" >
+                    <input class="btn btn-primary" id="cost_edit" name="cost_edit" value="Edit" type="button">
+                    <input style="display:none" class="btn btn-primary" id="cost_edit_finish" name="cost_edit_finish" value="Submit" type="button">
+                 </form>
+				 <?php 
+					}
+					else
+						echo $costing ;
+				 ?>
                </tr> 
                <tr>
-                 <th>Add Admin</th>
-                 <td><a href="#add_admin" role="button" class="btn btn-small" data-toggle="modal"><i class="icon-user icon-white"></i> Add Admin</a>
+                 <th>Final Costing</th>
+                 <td>
+               <?php 
+				if($actual_cost_by_scm == 0){	
+				   	if($pst=='SCM'){		   
+			   ?>
+                 <form class="form-inline" id="actualCost" name="actualCost" method="post">
+                 	<input type="text" id="fcost" name="fcost"/>
+                    <input type="submit" class="btn" name="costSubmit" id="costSubmit" />
+                 </form> 
+               <?php 
+				   	} 
+					else{
+						echo 'Final cost not submitted by SCM';
+					}
+				}
+				else{		
+				 echo $actual_cost_by_scm;
+				}
+				?>	
                  </td>
-               </tr> <?php } ?>
-               <tr>
+               </tr>            
                  <th>Status</th>
                  <td>
 				 <?php
+				 if($only_view != 'View'){
 				 	switch($status)
 					{
 						case "Solved":	
 						case "Approved":		
 						case "Clear From Accounts":	
+						case "Redirect":					
 						case "Delivered":						
 							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
 							break;
@@ -203,10 +229,16 @@
 						case "Modify":						
 							echo "<button class='btn btn-small btn-danger disabled' type='button'>Need Modification</button>";
 							break;
+						case "View":						
+							echo "<button class='btn btn-small btn-primary disabled' type='button'>Only View</button>";
+							break;
 						case "Closed":						
 							echo "<button class='btn btn-small btn-danger disabled' type='button'>Closed</button>";
 							break;
 					}
+				 }
+				 else
+				 	echo "<button class='btn btn-small btn-primary disabled' type='button'>Only View</button>";
 				 ?>
                  </td>
                </tr>  
@@ -222,64 +254,34 @@
                </tr>
                <tr>
                  <th>Decision</th>
-                 <?php 
-				 if($status==='New'){					 
-				 ?>
+                 
                  <td>
-                 <form id="des" name="des" action="req_validation.php?id=<?php echo $id ?>" method="post" onSubmit="reassure()">
-                     <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
+                 <form id="des" name="des" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
+                 <?php 	
+					$button = $req_list->getButton($status);
+					if($pst){
+					 if(($status==='Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='Accountant')||($status==='Clear From Accounts' && $pst==='SCM')||($status==='Solved' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss' && $only_view != 'View'))
+						echo $button;						 
+					 else{
+						if($only_view)
+							echo "<button class='btn btn-small btn-success disabled' type='button'>Only View</button>";
+						else
+							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
+					 }
+					}
+					else
+						echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
+				 ?>
+                     <!--<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approved</button>
                      <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
-                     <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>
+                     <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>-->
                  </form>
-                 </td>                 
-                 <?php 
-				 }
-				 else if($status==='Delivered'){
-				 ?>   
+                 </td>    
                  <td>
 				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Delivered</button>";
+				 
 				 ?>
-                 </td>         
-                 <?php 
-				 }
-				 else if($status==='Approved'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Approved</button>";
-				 ?>
-                 </td>         
-                 <?php 
-				 }
-				 else if($status==='Clear From Accounts'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Clear From Accounts</button>";
-				 ?>
-                 </td>         
-                 <?php 
-				 }
-				 else if($status==='Solved'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Solved</button>";
-				 ?>
-                 </td>        
-                 <?php 
-				 }
-				 else if($status==='Closed'){
-				 ?>   
-                 <td>
-				 <?php 
-				 echo "<button class='btn btn-small btn-success disabled' type='button'>Closed</button>";
-				 ?>
-                 </td>      
-                 <?php 
-				 }
-				 ?>  
+                 </td>  
                </tr>             
              </table>
              <?php 
@@ -294,9 +296,75 @@
                 </table>
              </div>             
              <div class="accordion" id="accordion2">
+             <?php 
+			   /*unset($req_list->user_data);
+			   $req_list->get_comments($_REQUEST["id"]);
+			   
+			   $sn = 1;	
+			   		   
+			   foreach($req_list->comment_data as $cmnt)
+				{
+					extract($cmnt);	
+					$req_list->get_user_details($comment_by,"name");	
+					if($sn == $req_list->additional_data){
+			 ?>
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a id="comment_heading" class="accordion-toggle" onClick="<?php if($_SESSION["idusers"] != $comment_by){?>make_read(<?php echo $id ?>)<?php }?>" data-toggle="collapse" data-parent="#accordion2" href="#<?php echo "collapse".$sn ?>">
+                    <?php 
+						echo substr($comment,0,50).".... Comment # ".$sn." by ".$req_list->user_data[0]["name"]." time ".$date; 
+						if($comment_by!= $_SESSION["idusers"])
+						{
+							if($flag=="unread")
+								echo "<strong> New*</strong>";
+							else
+								echo " Old";
+						}
+					?>
+					<i class="icon-comment"></i>
+                  </a>
+                </div>
+                <div id="<?php echo "collapse".$sn ?>" class="accordion-body collapse in">
+                  <div id="comment" class="accordion-inner">
+                    <?php echo $comment ?>
+                  </div>
+                </div>
+              </div> 
+              <?php
+				}
+				else{
+			  ?>
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a id="comment_heading" class="accordion-toggle" onClick="<?php if($_SESSION["idusers"] != $comment_by){?>make_read(<?php echo $id ?>)<?php }?>" data-toggle="collapse" data-parent="#accordion2" href="#<?php echo "collapse".$sn ?>">
+                    <?php 
+						echo substr($comment,0,50).".... Comment # ".$sn." by ".$req_list->user_data[0]["name"]." time ".$date; 
+						if($comment_by!= $_SESSION["idusers"])
+						{
+							if($flag=="unread")
+								echo "<strong> New*</strong>";
+							else
+								echo " Old";
+						}
+					?>
+					<i class="icon-comment"> </i>
+                  </a>
+                </div>
+                <div id="<?php echo "collapse".$sn ?>" class="accordion-body collapse">
+                  <div id="comment" class="accordion-inner">
+                    <?php echo $comment ?>
+                  </div>
+                </div>
+              </div> 
+              <?php
+					}
+					$sn++;}
+				unset($req_list->user_data); 
+				unset($req_list->comment_data);*/							  
+			  ?>             
             </div>
              <div>
-                 <form name="comments" action="req_validation.php?id=<?php echo $_REQUEST["id"]?>" method="post">
+                 <form name="comments" action="req_validation_local.php?id=<?php echo $_REQUEST["id"]?>" method="post">
                   <fieldset>
                     <textarea name="comment" rows="3"></textarea>
                     <span class="help-block">Write your comment here.</span>
@@ -337,7 +405,7 @@
         <div id="changeStatus" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <br>
         <br>
-        <form id="status" name="status" class="form-horizontal" method="post" action="req_validation.php?id=<?php echo $_REQUEST["id"] ?>">
+        <form id="status" name="status" class="form-horizontal" method="post" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>">
           <div class="control-group">
             <label class="control-label" for="status_list">Change Status</label>
             <div class="controls">
@@ -371,8 +439,6 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>
@@ -385,21 +451,35 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
-    * { font-family: Verdana; font-size: 98%; }
+    * { font-family: Verdana; font-size: 100%; }
     label { width: 10em; float: left; }
     label.error { float: none; color: red; padding-left: .5em; vertical-align: top; }
     p { clear: both; }
     .submit { margin-left: 12em; }
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
-	<script>	   
-	  function reassure(){
-		 alert('Do you really want to approve? ')
-	  }
+	<script>	 
+	$("#cost_edit").click(changeButtonForCostEdit)
+	$("#cost_edit_finish").click(changeButtonForCostEditFinish)
+	$("#des").submit(function(e){
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	}); 
+	$("#edit").click(function(e){
+		$("#editedCost").removeAttr("disabled")
+	}); 
+	  /*function reassure(){
+		if (!confirm("Do you confirm submit?"))
+		{
+			preventDefault();
+			return;
+		} 
+	  }*/
 	  
 	  function make_read($id){
 		  $.post('comment_handler.php', {handler_type: "makeRead", id: $id},

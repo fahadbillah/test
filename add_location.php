@@ -62,6 +62,24 @@
 		else 
 			echo "<span class='label label-warning'>A field was empty.</span>";	
 	}
+	if(isset($_REQUEST['add_single_entity_submit'])){
+		//print_r($_REQUEST);
+		if(!empty($_REQUEST['single_entity_master'])&&!empty($_REQUEST['single_entity'])){
+			//echo 'worksss';
+			$location->add_new_single_entity($_REQUEST['single_entity_master'],$_REQUEST['single_entity']);
+		}
+		else 
+			echo "<span class='label label-warning'>A field was empty.</span>";	
+	}
+	if(isset($_REQUEST['add_single_entity_office_submit'])){
+		//print_r($_REQUEST);
+		if(!empty($_REQUEST['single_entity_name'])&&!empty($_REQUEST['office_factory'])){
+			//echo 'worksss';
+			$location->add_new_single_entity_off_fac($_REQUEST['single_entity_name'],$_REQUEST['office_factory']);
+		}
+		else 
+			echo "<span class='label label-warning'>A field was empty.</span>";	
+	}
 	?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -134,6 +152,8 @@
 		<a href="#add_site" role="button" class="btn" data-toggle="modal">Add Site</a>
         <a href="#add_master" role="button" class="btn" data-toggle="modal">Add New Master</a>
         <a href="#add_project" role="button" class="btn" data-toggle="modal">Add New Project</a>
+        <a href="#add_single_entity" role="button" class="btn" data-toggle="modal">Add New Single Entity</a>
+        <a href="#entity_off_fac" role="button" class="btn" data-toggle="modal">Add New Single Entity Office Factory</a>
    	  </div>
     </div>
 	<!-- All modals -->
@@ -264,7 +284,33 @@
     </form>
     </div>
 
-	<div id="add_project" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div id="add_single_entity" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Add Single Entity</h3>
+      </div>
+      <br>
+    <form id="add_project_form" name="add_project_form" class="form-horizontal" action="add_location.php" method="post">
+      <div class="control-group">
+        <label class="control-label" for="master">Master</label>
+        <div class="controls">          
+          <input id="single_entity_master" name="single_entity_master" value="Single Entity" type="text" readonly>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="entity">Entity</label>
+        <div class="controls">
+          <input id="single_entity" name="single_entity" type="text">
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" id="add_single_entity_submit" name="add_single_entity_submit" value="submit" class="btn">Submit</button>
+        </div>
+      </div>
+    </form>
+    </div>
+    <div id="add_project" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Add Project</h3>
@@ -300,14 +346,49 @@
         </div>
       </div>
     </form>
-    </div>
+    </div>   
+
+	<div id="entity_off_fac" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Add Single Entity</h3>
+      </div>
+      <br>
+    <form id="add_entity_office_form" name="add_entity_office_form" class="form-horizontal" action="add_location.php" method="post"><div class="control-group">
+        <label class="control-label" for="inputEmail">Single Entity Office / Factory</label>
+        <div class="controls">
+          <select name="single_entity_name" id="single_entity_name">
+                 <option value="" label="Select Single Entity wow"></option>  
+                 <?php
+					$ent = $location->get_all_single_entity(); 
+					//var_dump($ent);
+					foreach($ent as $ett)
+					{
+						extract($ett);
+				?>	
+				  <option value="<?php echo $id ?>"><?php echo $name ?></option>    
+				<?php }?>  
+                </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="inputEmail">Office / Factory</label>
+        <div class="controls">
+          <input name="office_factory" id="office_factory" type="text">
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" id="add_single_entity_office_submit" name="add_single_entity_office_submit" class="btn">Submit</button>
+        </div>
+      </div>
+    </form>
+    </div>    
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
     <script src="js/jquery.validate.js"></script>
-    <script src="js/bootstrap-datepicker.js"></script>
-	<script src="./starter_files/jquery.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>
