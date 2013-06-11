@@ -2,7 +2,12 @@
 	include_once "user.php";
 	
 	session_start();
-		
+	if($_SESSION["designation"]!=='Hub Admin')
+	{ 	  
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->

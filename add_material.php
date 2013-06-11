@@ -7,7 +7,12 @@
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
 	}
-	
+	if($_SESSION["designation"]!=='Hub Admin')
+	{ 	  
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");

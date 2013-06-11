@@ -121,9 +121,11 @@
 						echo "<span class='label label-warning'>Form resubmission prevented.</span> ";									
 				}
 				$_SESSION['rand'] = rand(1, 10000000);
+				//var_dump($new_req->getExtractedArray($new_req->get_all_user_location($_SESSION["user_id"]),'location_id'));
+				//echo $_SESSION["location"];
 			?>
              </div>             
-			  <form id="new_req_form" class="form-horizontal" action="add_new_req.php" method="post">             
+			  <form id="new_req_form" name="new_req_form" class="form-horizontal" action="add_new_req.php" method="post">             
               <div class="control-group">
                 <label class="control-label" for="location">Location</label>
                 <div class="controls">
@@ -164,21 +166,21 @@
               <div class="control-group">
                 <label class="control-label" for="title">Title</label>
                 <div class="controls">
-                  <input name="title" type="text" placeholder="Text input">
+                  <input name="title" id="title" type="text" placeholder="Text input">
                   <span class="help-inline">Subject of Requisition</span>
                 </div>
               </div>  
               <div class="control-group">
                 <label class="control-label" for="description">Description</label>
                 <div class="controls">
-                  <textarea name="description" rows="3"></textarea>
+                  <textarea name="description" id="description" rows="3"></textarea>
                 </div>
               </div>    
               <div class="control-group">
                 <label class="control-label" for="costing">Costing</label>      
                 <div class="controls">          
                   <div class="input-append">
-                    <input name="costing" type="text" placeholder="Number input">
+                    <input name="costing" id="costing" type="text" placeholder="Number input">
                     <span class="add-on">Taka</span>                   
                   </div>
                     <span class="help-inline">More than 5 lakh require site superviser's varification</span> 
@@ -202,7 +204,7 @@
               <div class="control-group">
                 <div class="controls">
                   <input id="prevent" name="prevent" value="<?php echo $_SESSION['rand']?>" style="display:none"/>
-                  <input name="submit" value="Submit Reuisition" type="submit" class="btn">
+                  <input name="submit" id="submit" value="Submit Requisition" type="submit" class="btn">
                 </div>
               </div>
 			</form>                      
@@ -255,6 +257,19 @@
 		  	$('#field_for_other').html('<div class="control-group"><label class="control-label" for="title"></label><div class="controls"><input name="other_type" type="text" placeholder="Text input"><span class="help-inline">Write Type Name</span></div></div>').show();
       }
 	
+	$("#new_req_form").submit(function(e){
+		 //    
+		if($("#location").val()==''||$("#type_of_req").val()==''||$("#title").val()==''||$("#description").val()=='' || $("#costing").val()==''||$("#datepicker").val()==''){
+			alert('empty field!')
+			e.preventDefault();
+			return;
+		}
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	}); 
     </script>
 
 </body></html>

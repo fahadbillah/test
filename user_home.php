@@ -8,6 +8,11 @@
 		header("Location: signin.php?status=notloggedin");
 	}
 	$user_home = new User();
+	if(!$user_home->user_home_page_authorization($_SESSION["user_id"])){
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 	?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->

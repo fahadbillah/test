@@ -6,10 +6,7 @@
 		header("Location: signin.php?status=notloggedin");
 	}	
 	$req_list = new User();
-	
-	
-	
-	?>
+?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -101,32 +98,39 @@
 					$req_list->insert_po($_REQUEST,$_REQUEST["id"]);	
 				}
 				if(isset($_REQUEST['decision1'])){
+					$decision = $_REQUEST['decision1'];
 					if($_SESSION['rand'] == $_REQUEST["prevent"]){
 						//echo $_REQUEST['decision1'];
-						$decision = $_REQUEST['decision1'];
-						$destination = NULL;
-						$isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
-						$isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
-						if($isBoss){
-							if($isLocal){
-								$destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
-								if($destination == 'local'){
-									$req_list->assign_local_account_scm($_REQUEST["id"]);			
-								}
-								else if($destination == 'central'){	
-									$req_list->send_to_hub_update($_REQUEST["id"],'central');
-									$decision = 'View';	
-								}
-							}
-							else
-								$req_list->assign_local_account_scm($_REQUEST["id"]);	
+						if($_REQUEST['decision1']=='Reject'){
+							$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
+							$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
+							$req_list->change_req_status_main($_REQUEST["id"],$decision);
 						}
-						$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
-						$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
-						$req_list->change_req_status_main($_REQUEST["id"],$decision);
+						else{
+							$destination = NULL;
+							$isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
+							$isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
+							if($isBoss){
+								if($isLocal){
+									$destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
+									if($destination == 'local'){
+										$req_list->assign_local_account_scm($_REQUEST["id"]);			
+									}
+									else if($destination == 'central'){	
+										$req_list->send_to_hub_update($_REQUEST["id"],'central');
+										$decision = 'View';	
+									}
+								}
+								else
+									$req_list->assign_local_account_scm($_REQUEST["id"]);	
+							}
+							$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
+							$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
+							$req_list->change_req_status_main($_REQUEST["id"],$decision);
+						}
 					}
 					else 
-						echo "<span class='label label-warning'>Form resubmission prevented.</span> ";					
+						echo "<span class='label label-warning'>Form resubmission prevented.</span> ";				
 				}
 				if(isset($_REQUEST['decision2']))
 			   		echo $_REQUEST['decision2'];
@@ -312,9 +316,9 @@
 						case "Pending":	
 						case "New":						
 							echo "<button class='btn btn-small btn-primary disabled' type='button'>Pending</button>";
-							break;
-						case "Modify":						
-							echo "<button class='btn btn-small btn-danger disabled' type='button'>Need Modification</button>";
+							break;					
+						case "Reject":						
+							echo "<button class='btn btn-small btn-danger disabled' type='button'>Rejected</button>";
 							break;
 						case "View":						
 							echo "<button class='btn btn-small btn-primary disabled' type='button'>Only View</button>";
@@ -336,7 +340,7 @@
                  <td><?php echo $deadline ?>
                  </td> 
                </tr>
-               <tr>
+               <tr>               
                  <th>Decision</th>
                  
                  <td>

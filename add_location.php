@@ -7,7 +7,12 @@
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
 	}
-	
+	if($_SESSION["designation"]!=='Hub Admin')
+	{ 	  
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");
@@ -149,12 +154,36 @@
         <h2>Location</h2>
       </div>
       <div id="main">
-		<a href="#add_micro_site" role="button" class="btn" data-toggle="modal">Add Micro Site</a>
-		<a href="#add_site" role="button" class="btn" data-toggle="modal">Add Site</a>
-        <a href="#add_master" role="button" class="btn" data-toggle="modal">Add New Master</a>
-        <a href="#add_project" role="button" class="btn" data-toggle="modal">Add New Project</a>
-        <a href="#add_single_entity" role="button" class="btn" data-toggle="modal">Add New Single Entity</a>
-        <a href="#entity_off_fac" role="button" class="btn" data-toggle="modal">Add New Single Entity Office Factory</a>
+      <table class="table table-hover">
+      <tr>
+      <td><a href="#add_master" role="button" class="btn" data-toggle="modal">Add New Master</a></td>
+      <td>Add master business</td>
+      </tr>
+      <tr>
+      <td><a href="#add_project" role="button" class="btn" data-toggle="modal">Add New Project</a></td>
+      <td>Add project of a master business</td>
+      </tr>
+      <tr>
+      <td><a href="#add_site" role="button" class="btn" data-toggle="modal">Add Site</a></td>
+      <td>Add site of a project</td>
+      </tr>
+      <tr>
+      <td><a href="#add_micro_site" role="button" class="btn" data-toggle="modal">Add Micro Site</a></td>
+      <td>Add micro site of a site</td>
+      </tr>
+      <tr>
+      <tr>
+      <td style="text-align:center"><strong>Section For Single Entity</strong></td>
+      </tr>
+      <tr>
+      <td><a href="#add_single_entity" role="button" class="btn" data-toggle="modal">Add New Industry</a></td>
+      <td>Add industry of single entity</td>
+      </tr>
+      <tr>
+      <td><a href="#entity_off_fac" role="button" class="btn" data-toggle="modal">Add New Office/Factory</a></td>
+      <td>Add office/factory of industry</td>
+      </tr>
+      </table>
    	  </div>
     </div>
 	<!-- All modals -->

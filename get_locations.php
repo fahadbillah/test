@@ -7,7 +7,7 @@
 	if(isset($_POST["val"])){
 		$value = (int)$_POST["val"];
 		$getLocations->get_location_by_id($value);
-		echo "<option>Select Location</option>";  
+		echo "<option>next</option>";  
 		foreach($getLocations->user_data as $d){
 			//echo $d;
 				echo "<option value='$d'>".$getLocations->convert_id_location($d)."</option>";  

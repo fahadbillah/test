@@ -1243,7 +1243,7 @@ class User extends Database
 			return $this->login_data;
 		}
 		else
-			echo "<span class='label label-warning'>no msite data found</span> ";
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 		return NULL;
 	}
 	public function add_location_to_user($user,$ms,$pr,$site,$msite)
@@ -1272,7 +1272,6 @@ class User extends Database
 	}
 	public function search_location()
 	{		
-		unset($this->login_data);
 		$query="SELECT * FROM locations";
 		
 		$result = $this->mysqli->query($query);
@@ -1283,12 +1282,12 @@ class User extends Database
 				
 			while($rows=$result->fetch_assoc()){
 									
-				$this->login_data[]=$rows;					
+				$location[]=$rows;					
 			}						
-			return $this->login_data;
+			return $location;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span> ";	
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";	
 			
 		$this->login_data = $num_result;
 		return $this->login_data;
@@ -1361,35 +1360,31 @@ class User extends Database
 			echo "<span class='label label-warning'>No comment available.</span> ";	
 		return $this->additional_data;
 	}
-		public function get_user_details($comment_by,$type = "")
-	{
+	public function get_user_details($comment_by,$type = "")
+	{//					
 		$comment_by = $this->mysqli->real_escape_string($comment_by);
 		$type = $this->mysqli->real_escape_string($type);	
 		
 		switch($type)
 		{
 			case "name":
-		 	 $query="SELECT name FROM users where idusers = '$comment_by'";
+		 	 $query="SELECT name FROM user_master where id = '$comment_by'";
 	         break;
 			 
 			case "designation":
-		 	 $query="SELECT designation FROM users where idusers = '$comment_by'";
+		 	 $query="SELECT designation FROM user_master where id = '$comment_by'";
 	         break;
 			 
-			case "email":
-		 	 $query="SELECT email FROM users where idusers = '$comment_by'";
+			case "office_code":
+		 	 $query="SELECT office_code FROM user_master where id = '$comment_by'";
 	         break;
 			 
-			case "contact":
-		 	 $query="SELECT contact FROM users where idusers = '$comment_by'";
-	         break;
-			 
-			case "staff_id":
-		 	 $query="SELECT staff_id FROM users where idusers = '$comment_by'";
+			case "authorization_level":
+		 	 $query="SELECT authorization_level FROM user_master where id = '$comment_by'";
 	         break;
 			 
 			default:
-		 	 $query="SELECT * FROM users where idusers = '$comment_by'";
+		 	 $query="SELECT * FROM user_master where id = '$comment_by'";
 	         break;				
 		}
 		
@@ -1400,8 +1395,11 @@ class User extends Database
 		if($num_result>0){
 				
 			while($rows=$result->fetch_assoc()){
-									
-				$this->user_data[]=$rows;					
+				if($type=='')
+					$this->user_data[]=$rows;
+				else{
+					return $rows[$type];
+				}					
 			}						
 			return $this->user_data;
 		}
@@ -2142,11 +2140,15 @@ class User extends Database
 			echo "<span class='label label-warning'>No requisition available.</span> ";	
 		return $this->additional_data;
 	}
+	/*public get_acc_scm_for_location($,$){
+		
+	}*/
 	public function redirect_to_dept($id, $dept)
 	{
 		$this->date_time();
 		$id = $this->mysqli->real_escape_string($id);
 		$idL = $this->get_location_id($location);
+		//$acc_for_location = $this->get_acc_scm_for_location($idL,'');
 		$account = $this->get_local_accountant($idL);
 		$scm = $this->get_local_scm($idL);
 		$activitiesAcc = 'accountant added,'.$this->date;
@@ -2182,9 +2184,12 @@ class User extends Database
 		$id = $this->mysqli->real_escape_string($id);
 		$location = $this->getReqDestination($id); 
 		//$this->mysqli->real_escape_string($location);
-		//$idL = $this->get_location_id($location);
-		$account = (int)$this->get_local_accountant($location);
-		$scm = (int)$this->get_local_scm($location);
+		//$idL = $this->get_location_id($location);		
+		var_dump($location);
+		$account = (int)$this->get_local_accountant($location,$id);	
+		var_dump($account);
+		$scm = (int)$this->get_local_scm($location,$id);	
+		var_dump($scm);
 		$activitiesAcc = 'accountant added,'.$this->date;
 		$activitiesScm = 'scm added,'.$this->date;
 		//echo $name,$designation,$office_code,$authority_level;		
@@ -2254,8 +2259,8 @@ class User extends Database
 		else
 			echo "<span class='label label-warning'>No requisition available.</span> ";	
 	}
-	public function get_local_accountant($location)
-	{		
+	public function get_local_accountant($location,$req_id)
+	{
 		unset($this->req_data);
 		$query="SELECT user_master.id 
 		FROM user_master 
@@ -2271,16 +2276,29 @@ class User extends Database
 					
 		if($num_result>0){
 				
-			while($rows=$result->fetch_assoc()){
-									
-				$this->req_data=$rows['id'];					
-			}						
-			return $this->req_data;
+			while($rows=$result->fetch_assoc()){									
+				$this->req_data[]=$rows['id'];					
+			}	
+			var_dump($this->req_data);
+			if(count($this->req_data)>1){
+				foreach($this->req_data as $user){
+					var_dump($user);
+					var_dump($req_id);
+					var_dump($this->check_scm_acc_by_loc($user,$req_id));
+					if($this->check_scm_acc_by_loc($user,$req_id))
+						return $user; 
+				}
+				var_dump($this->req_data);
+			}	
+			else{	
+				var_dump($this->req_data[0]);			
+				return $this->req_data[0];
+			}
 		}
 		else
 			echo "<span class='label label-warning'>No requisition available.</span> ";	
 	}
-	public function get_local_scm($location)
+	public function get_local_scm($location,$req_id='')
 	{		
 		unset($this->req_data);
 		$query="SELECT user_master.id 
@@ -2297,14 +2315,38 @@ class User extends Database
 					
 		if($num_result>0){
 				
-			while($rows=$result->fetch_assoc()){
-									
-				$this->req_data=$rows['id'];					
-			}						
-			return $this->req_data;
+			while($rows=$result->fetch_assoc()){									
+				$this->req_data[]=$rows['id'];					
+			}	
+			//var_dump($this->req_data);
+			if(count($this->req_data)>1){
+				foreach($this->req_data as $data){
+					if($this->check_scm_acc_by_loc($data,$req_id))
+						return $data; 
+				}
+			}	
+			else				
+				return $this->req_data[0];
 		}
 		else
 			echo "<span class='label label-warning'>No requisition available.</span> ";	
+	}
+	public function check_scm_acc_by_loc($data,$req_id){
+		$loc = $this->get_req_location($req_id);
+		var_dump($loc);		
+		$query="SELECT user_id FROM acc_scm_to_office WHERE location_id = '$loc'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){				
+				var_dump($rows);									
+				 if($rows['user_id']==$data){
+					var_dump($data);						
+				 	return true;			
+				 }
+			}						
+		}
+		return false;	
 	}
 	public function get_location($site='',$id='')
 	{		
@@ -2328,7 +2370,7 @@ class User extends Database
 			return $this->req_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span> ";	
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";	
 	}
 	public function get_location_id($location)
 	{		
@@ -2351,10 +2393,13 @@ class User extends Database
 		else
 			echo "<span class='label label-warning'>No location available.</span> ";	
 	}
-	public function get_location_by_id($id)
+	public function get_location_by_id($id='')
 	{		
 		unset($this->user_data);
-		$query="SELECT location_id FROM user_by_location WHERE user_id = '$id'";
+		if($id='site_factory')
+			$query="SELECT site_factory,location_id FROM locations";			
+		else
+			$query="SELECT location_id FROM locations";
 		
 		$result = $this->mysqli->query($query);
 		
@@ -2362,12 +2407,12 @@ class User extends Database
 					
 		if($num_result>0){
 			while($rows=$result->fetch_assoc()){
-				$this->user_data[] = $rows['location_id'];
+				$this->user_data[] = $rows;
 			}			
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span> ";	
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";	
 	}
 	
 	function convert_id_location($id){
@@ -2402,7 +2447,7 @@ class User extends Database
 		FROM user_master 
 		INNER JOIN requisition_user
 		ON requisition_user.user_id = user_master.id
-		WHERE requisition_user.location_id = 'central'";
+		WHERE requisition_user.location_id = 'central' and post = 'Boss'";
 				
 		$result = $this->mysqli->query($query);
 		
@@ -2417,7 +2462,7 @@ class User extends Database
 			return $this->user_data;
 		}
 		else
-			echo "<span class='label label-warning'>No location available.</span> ";	
+			echo "<span class='label label-warning'>"._FUNCTION_." error</span> ";	
 	}
 	public function get_req_log($req_id)
 	{		
@@ -2576,13 +2621,11 @@ class User extends Database
 		unset($this->user_data_temp);
 		$this->comment_data = array();
 		if($this->user_from_requisition_user($user_id)){
-			//echo "user_from_requisition_user executed";
 			array_push($this->comment_data,$this->user_data);
 		}
-		if($this->user_from_user_by_location($user_id)){
-			//echo "user_from_user_by_location executed";
+		/*if($this->user_from_user_by_location($user_id)){
 			array_push($this->comment_data,$this->user_data);
-		}
+		}*/
 		return $this->comment_data;
 	}
 	public function getPost($user_id,$req_id){
@@ -2635,7 +2678,7 @@ class User extends Database
 		unset($this->user_data_temp1);		
 		switch($status){
 			case 'New':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button>'; 
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>'; 
 				break;
 			case 'Delivered':
 				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Received">Received</button>';
@@ -2665,10 +2708,11 @@ class User extends Database
 					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
 				break;
 			case 'Redirect':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button>';
+				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>';
 				break;
 			case 'Closed':
 			case 'View':
+			case 'Reject':
 				$this->user_data_temp1 = '';
 				break;
 		}	
@@ -2740,7 +2784,7 @@ class User extends Database
 				}						
 			}
 			else
-				echo "<span class='label label-warning'>No micro site found for this requisition.</span> ";
+				echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 		//}
 				
 		if(count($temp)==2){			
@@ -2753,7 +2797,7 @@ class User extends Database
 				}
 			}
 			else
-				echo "<span class='label label-warning'>No micro site found for this requisition.</span> ";
+				echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 			return $this->user_data_temp1;
 		}
 	}
@@ -3226,6 +3270,41 @@ class User extends Database
 			$temp2[] = $temp1;
 		}
 		return $temp2;
+	}
+	public function get_central_acc_scm(){		
+		$query="SELECT user_id FROM requisition_user WHERE location_id = 'central' and post BETWEEN 'Accountant' AND 'SCM'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$uid[] = $rows['user_id'];				
+			}
+			return $uid;	
+		}
+		else
+			return false;
+	}
+	public function acc_scm_to_site_fact_office($user_id,$location_id){
+		$query="INSERT INTO acc_scm_to_office SET user_id = '$user_id', location_id = '$location_id'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted. error- ".__FUNCTION__);		
+			echo "<span class='label label-success'>Entity office/factory added.</span> ";
+	}
+	public function user_home_page_authorization($user_id){
+		$query="SELECT post FROM requisition_user WHERE user_id = '$user_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 					
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$uPost[] = $rows['post'];				
+			}
+			//var_dump($uPost);
+			if(in_array('Hub Admin',$uPost)||in_array('Hub',$uPost))
+				return false;	
+			else 
+				return true;
+		}
+		else
+			return false;
 	}
 }	
 ?>

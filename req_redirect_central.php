@@ -1,6 +1,12 @@
 <?php 
 	include_once "user.php";
 	session_start();
+	if($_SESSION["designation"]!=='Hub Admin')
+	{ 	  
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 	/*	
 	if(!isset($_SESSION["designation"]))
 		$_SESSION["designation"] = 'site manager';
@@ -100,7 +106,7 @@
           <!--Body content-->
          
           <ul class="breadcrumb">
-            <li><a href="list_of_req_user.php">Requisition</a> <span class="divider">/</span></li>
+            <li><a href="super_admin_central_hub.php">Central Hub</a> <span class="divider">/</span></li>
             <li class="active">Requisition ID <?php echo $_REQUEST["id"] ?> </li>
           </ul>
           

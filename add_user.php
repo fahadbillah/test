@@ -7,7 +7,12 @@
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
 	}
-	
+	if($_SESSION["designation"]!=='Hub Admin')
+	{ 	  
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 	/*if(!isset($_SESSION["loggedin"]))
 	{ 	  
 	  header("Location: signin.php?status=notloggedin");
@@ -65,7 +70,13 @@
 		else 
 			echo "<span class='label label-warning'>A field was empty.</span>";	
 	}
-	
+	if(isset($_REQUEST['off_fac_site_submit'])){
+		if(!in_array("", $_REQUEST)) {
+			$user->acc_scm_to_site_fact_office($_REQUEST['name_acc_scm'],$_REQUEST['off_fac_site']);
+		}
+		else 
+			echo "<span class='label label-warning'>A field was empty.</span>";	
+	}
 	if(isset($_REQUEST['add_location'])){
 		if(!empty($_REQUEST['user'])&&!empty($_REQUEST['ms'])&&!empty($_REQUEST['pr'])&&!empty($_REQUEST['site'])&&!empty($_REQUEST['msite'])) {
 			$user->add_location_to_user($_REQUEST['user'],$_REQUEST['ms'],$_REQUEST['pr'],$_REQUEST['site'],$_REQUEST['msite']);
@@ -142,11 +153,40 @@
         <h2>Add User</h2>
       </div>
       <div id="main">
-		<a href="#add_user" role="button" class="btn" data-toggle="modal">Add User</a>
-		<a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Location to User</a>
-		<a href="#add_top_local" role="button" class="btn" data-toggle="modal">Add Local Boss</a>
-   	 	<a href="#add_top_central" role="button" class="btn" data-toggle="modal">Add Central Boss</a>
-        <a href="#add_boss_limit" role="button" class="btn" data-toggle="modal">Add Boss Limit</a>
+      
+      <table class="table table-hover">
+      <tr>
+      <td style="text-align:center"><strong>Section For Local User</strong></td>
+      </tr>
+      <tr>
+      <td><a href="#add_user" role="button" class="btn" data-toggle="modal">Add Staff</a></td>
+      <td>Add new staff</td>
+      </tr>
+      <tr>
+      <td><a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Location to User</a></td>
+      <td>Assign location to a user</td>
+      </tr>
+      <tr>
+      <td><a href="#add_top_local" role="button" class="btn" data-toggle="modal">Add Local Boss</a></td>
+      <td>Add new local boss</td>
+      </tr>
+      <tr>
+      <td><a href="#add_boss_limit" role="button" class="btn" data-toggle="modal">Set Boss Limit</a></td>
+      <td>Set boss money limit</td>
+      </tr>
+      <tr>
+      <tr>
+      <td style="text-align:center"><strong>Section For Central User</strong></td>
+      </tr>
+      <tr>
+      <td><a href="#add_top_central" role="button" class="btn" data-toggle="modal">Add Central Boss/Accountant/SCM</a></td>
+      <td>Add new central boss/accountant/SCM</td>
+      </tr>
+      <tr>
+      <td><a href="#assign_acc_scm_to_office_factory_site" role="button" class="btn" data-toggle="modal">Assign Accountant/SCM</a></td>
+      <td>Assign accountant/SCM to office/factory/site</td>
+      </tr>
+      </table>  
    	  </div>
     </div>
 	<!-- All modals -->
@@ -276,9 +316,54 @@
         </div>
       </div>
     </form>
+    </div>    
+    <div id="assign_acc_scm_to_office_factory_site" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Add central boss,accountant and SCM</h3>
+      </div>
+      <br>
+    <form id="add_top_central_form" name="add_top_central_form" class="form-horizontal" action="add_user.php" method="post">
+       <div class="control-group">
+        <label class="control-label" for="inputEmail">User Name</label>
+        <div class="controls">
+          <select name="name_acc_scm" id="name_acc_scm">
+             <option value="" label="Select Central Accountant/SCM"></option>  
+             <?php
+			 	unset($user->comment_data);
+                $uid = $user->get_central_acc_scm(); 
+                foreach($uid as $ud)
+                {
+            ?>	
+              <option value="<?php echo $ud; ?>"><?php echo $user->get_user_details($ud,'name') ?></option>    
+            <?php }?>  
+            </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="inputEmail">Office/Factory/Site</label>
+        <div class="controls">
+          <select name="off_fac_site" id="off_fac_site">
+             <option value="" label="Select Office/Factory/Site"></option>  
+             <?php
+			 	unset($user->user_data);
+                $user->get_location_by_id('site_factory'); 
+                foreach($user->user_data as $loct)
+                {
+                    extract($loct);
+            ?>	
+              <option value="<?php echo $location_id ?>"><?php echo $site_factory ?></option>    
+            <?php }?>  
+            </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" value="off_fac_site_submit" id="off_fac_site_submit" name="off_fac_site_submit" class="btn">Submit</button>
+        </div>
+      </div>
+    </form>
     </div>
-    
-    
     <div id="add_top_central" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -287,7 +372,7 @@
       <br>
     <form id="add_top_central_form" name="add_top_central_form" class="form-horizontal" action="add_user.php" method="post">
       <div class="control-group">
-        <label class="control-label" for="inputEmail">Name</label>
+        <label class="control-label" for="inputEmail">User Name</label>
         <div class="controls">
           <input name="name_c" type="text">
         </div>
