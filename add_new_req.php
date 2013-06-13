@@ -1,29 +1,12 @@
 <?php 
 	include_once "user.php";
 	
-	session_start();
-	
+	session_start();	
 	$new_req = new User();
-	
-	/*if(!isset($_SESSION["loggedin"]))
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 	{ 	  
-	  header("Location: signin.php?status=notloggedin");
-	}
-	
-	if(isset($_SESSION["designation"]))
-	{
-		switch($_SESSION["designation"])
-		{
-			case "site manager":
-			case "site supervisor":
-			  break;
-		 	default:
-			  header("Location: signin.php?status=notauthorized"); 
-			  break;		 		
-		}	 	  
-	}*/
-		
-		
+		header("Location: signin.php?status=notloggedin");
+	}		
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -148,7 +131,7 @@
               <div class="control-group">
                 <label class="control-label" for="type_of_req">Type of Requisition</label>
                 <div class="controls">
-                  <select id="type_of_req" name="type_of_req" onChange="get_other_field()">
+                  <select id="type_of_req" name="type_of_req"> <!-- onChange="get_other_field()"-->
                     <option value="">Select Requisition Type</option>
                         <?php
 							$new_req->get_all_type_of_req(); 
@@ -245,6 +228,12 @@
     </style>
 	<script>
 	  //$.noConflict() 
+	  var materialList = ''
+	   $(document).ready(function () {
+		  $.post("get_material_list.php",{val:'all_list'},function(output){
+			  $('#msite').html(output).show();
+			});	
+		})
 	  jQuery(function($){
 		$("#datepicker").datepicker({ dateFormat: "dd-mm-yy" });
 	  });
@@ -256,7 +245,11 @@
 		  if(other.value == 'Other')
 		  	$('#field_for_other').html('<div class="control-group"><label class="control-label" for="title"></label><div class="controls"><input name="other_type" type="text" placeholder="Text input"><span class="help-inline">Write Type Name</span></div></div>').show();
       }
-	
+	$('#type_of_req').change(function(){
+		type = $('#'+this.id).val()
+		if(type.toLowerCase()=='material')
+			alert(type+' works')		
+	})
 	$("#new_req_form").submit(function(e){
 		 //    
 		if($("#location").val()==''||$("#type_of_req").val()==''||$("#title").val()==''||$("#description").val()=='' || $("#costing").val()==''||$("#datepicker").val()==''){

@@ -854,7 +854,8 @@ class User extends Database
 		}	
 		/*else
 			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
-	}	public function super_admin_req_list_by_location($start,$limit,$type,$location_id)
+	}	
+	public function super_admin_req_list_by_location($start,$limit,$type,$location_id)
 	{		
 		$query="SELECT * FROM requisition where location_id LIKE '$location_id%' and status = '$type' order by id desc limit $start,$limit";
 		
@@ -1168,13 +1169,13 @@ class User extends Database
 				
 			while($rows=$result->fetch_assoc()){
 									
-				$this->user_data=$rows['location_id'];					
+				$locations[]=$rows['location_id'];					
 			}						
-			return $this->user_data;
+			return $locations;
 		}
 		else
-			echo "<span class='label label-warning'>No user found.</span> ";	
-		return $num_result;
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+		return false;
 	}
 	public function get_user_by_locations($id)
 	{
@@ -3330,6 +3331,44 @@ class User extends Database
 		}	
 		else			
 			echo "<span class='label label-warning'>No requisition found under this id.</span> ";		
+	}
+	public function get_users_assigned_location($user_id){
+		$query="SELECT location_id FROM acc_scm_to_office WHERE user_id = '$user_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$locations[] = $rows['location_id'];				//var_dump($temp);				
+			}
+			return $locations;
+		}
+		else	
+			return false;	
+			//echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";			
+	}
+	public function get_location_name($location_id){
+		$query="SELECT site_factory FROM locations WHERE location_id = '$location_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				return $rows['site_factory'];				//var_dump($temp);				
+			}
+		}
+		else			
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";				
+	}
+	public function get_all_material(){
+		$query="SELECT * FROM material_master";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				return $rows['site_factory'];				//var_dump($temp);				
+			}
+		}
+		else			
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 	}
 }	
 ?>

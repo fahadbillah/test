@@ -144,9 +144,11 @@
                         </th>
                         <td>
 						<?php 
-							unset($user_details->user_data);
-							if($user_details->get_user_locations($_REQUEST["id"]))	
-								echo $user_details->user_data;
+							$assigned_loc = $user_details->get_user_locations($_REQUEST["id"]);
+							if($assigned_loc){
+								foreach($assigned_loc as $as_loc)
+									echo $as_loc;
+							}
 						?>
                    		</td>
                     </tr>                    

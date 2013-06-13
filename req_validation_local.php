@@ -89,7 +89,7 @@
 				$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
 		  ?>
           </div>          
-          <div id="notice">
+          <div id="notice1">
           
           </div>
           <div id="yooo">
@@ -398,7 +398,15 @@
 				 
 				 ?>
                  </td>  
-               </tr>             
+               </tr>    
+               <tr>
+                 <th></th>
+                 <td>
+                   <form action="print_req_page.php?id=<?php echo $_REQUEST["id"] ?>" method="post" target="_blank">
+                     <input type="submit" class="btn btn-large" value="Print This Requisition">
+                   </form>
+                 </td> 
+               </tr>          
              </table>
              <?php 
 				}	
@@ -406,7 +414,7 @@
 			   ?>                 
              </div>
              <div>
-                <legend>Comments</legend>
+                <!--<legend>Comments</legend>-->
              	<table>
                 
                 </table>
@@ -479,8 +487,8 @@
 				unset($req_list->comment_data);*/							  
 			  ?>             
             </div>
-             <div>
-                 <form name="comments" action="req_validation_local.php?id=<?php echo $_REQUEST["id"]?>" method="post">
+             <!--<div>
+                 <form name="comments" action="req_validation_local.php?id=<?php //echo $_REQUEST["id"]?>" method="post">
                   <fieldset>
                     <textarea name="comment" rows="3"></textarea>
                     <span class="help-block">Write your comment here.</span>
@@ -489,7 +497,7 @@
                     </label>
                   </fieldset>
                 </form>
-            </div>
+            </div>-->
              
         </div> 
         <!-- Modal -->

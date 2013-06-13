@@ -174,7 +174,7 @@
   	<div id="add_user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add Master</h3>
+        <h3 id="myModalLabel">Add Local Staff</h3>
       </div>
       <br>
     <form id="add_user_form" name="add_user_form" class="form-horizontal" action="add_user.php" method="post">
@@ -201,12 +201,12 @@
             </select>
         </div>
       </div>
-       <div class="control-group">
+       <!-- <div class="control-group">
         <label class="control-label" for="inputEmail">Office Code</label>
         <div class="controls">
           <input name="office_code" type="text">
         </div>
-      </div>
+      </div> -->
       <div class="control-group">
         <label class="control-label" for="inputEmail">Authority Level</label>
         <div class="controls">
@@ -302,7 +302,7 @@
         <h3 id="myModalLabel">Add central boss,accountant and SCM</h3>
       </div>
       <br>
-    <form id="add_top_central_form" name="add_top_central_form" class="form-horizontal" action="add_user.php" method="post">
+    <form id="add_top_central_form_1" name="add_top_central_form_1" class="form-horizontal" action="add_user.php" method="post">
        <div class="control-group">
         <label class="control-label" for="inputEmail">User Name</label>
         <div class="controls">
@@ -317,6 +317,11 @@
               <option value="<?php echo $ud; ?>"><?php echo $user->get_user_details($ud,'name') ?></option>    
             <?php }?>  
             </select>
+        </div>
+      </div>
+      <div id="location_output_ext" class="control-group" style="display:none">
+        <div id="location_output" class="controls">
+          
         </div>
       </div>
       <div class="control-group">
@@ -616,6 +621,16 @@
 			return;
 		} 
 	}); 
+	$('#name_acc_scm').change(get_users_assigned_location)
+	function get_users_assigned_location(e){
+		if(this.value!=''){
+			$.post('get_users_assigned_location.php', {id: this.value},
+			  function(o){
+				  $('#location_output_ext').show('slow')
+				  $('#location_output').html(o).show('slow');
+			  })
+		}
+	}
 	</script>
 		
 	  

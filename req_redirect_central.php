@@ -200,21 +200,19 @@
 				 <?php
 				 	switch($status)
 					{
-						case "Solved":	
-						case "Approved":		
-						case "Clear From Accounts":	
-						case "Delivered":				
-						case "Redirect":						
-							echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
-							break;
-						case "Pending":	
-						case "New":		
-						case "View":						
-							echo "<button class='btn btn-small btn-primary disabled' type='button'>Pending</button>";
-							break;
-						case "Modify":						
-							echo "<button class='btn btn-small btn-danger disabled' type='button'>Need Modification</button>";
-							break;
+						case 'New':
+						case 'View':
+						case 'Redirect':
+						case 'Approved':
+						case 'Partially Delivered':
+						case 'Delivered':
+						case 'Recieved':
+						case 'Partially Recieved':
+						case 'Document Recieved':
+						case 'Document Delivered':
+						case 'Close':
+							 echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
+							 break;
 					}
 				 ?>
                  </td>

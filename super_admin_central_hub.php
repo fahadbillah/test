@@ -135,7 +135,16 @@
 					switch($status){
 						case 'New':
 						case 'View':
-							 echo ' <button class="btn btn-primary btn-mini disabled">New</button>';
+						case 'Redirect':
+						case 'Approved':
+						case 'Partially Delivered':
+						case 'Delivered':
+						case 'Recieved':
+						case 'Partially Recieved':
+						case 'Document Recieved':
+						case 'Document Delivered':
+						case 'Close':
+							 echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
 							 break;
 						case 'Pending':
 							 echo ' <button class="btn btn-warning btn-mini disabled">Pending</button>';
