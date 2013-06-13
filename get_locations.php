@@ -7,11 +7,13 @@
 	if(isset($_POST["val"])){
 		$value = (int)$_POST["val"];
 		$getLocations->get_location_by_id($value);
-		echo "<option>next</option>";  
+		echo "<option>Select Location</option>";  
+		
+		$getLocations->get_location_by_id($value);
 		foreach($getLocations->user_data as $d){
-			//echo $d;
-				echo "<option value='$d'>".$getLocations->convert_id_location($d)."</option>";  
-		}
+				extract($d);
+				echo "<option value='$location_id'>$site_factory</option>";  
+			}
 	}
 	
 	/*if(isset($_POST["val"]) && isset($_POST["from"])){

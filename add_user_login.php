@@ -243,6 +243,13 @@
 		 	 $('#r_password_span').html("<span class='label label-success'>Password matched.</span>").show();
 			
       }
+	  $("form").submit(function(e){
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	}); 
 	</script>
 
 </body></html>

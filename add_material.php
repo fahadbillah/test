@@ -281,6 +281,13 @@
 			  $('#mSubCat').html(output).show();
 		});// main
 	}
+	$("form").submit(function(e){
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	}); 
 	</script>
 		
 	  

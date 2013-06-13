@@ -13,27 +13,6 @@
 		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
 		exit;
 	}
-	/*if(!isset($_SESSION["loggedin"]))
-	{ 	  
-	  header("Location: signin.php?status=notloggedin");
-	}
-	
-	if(isset($_SESSION["designation"]))
-	{
-		switch($_SESSION["designation"])
-		{
-			case "super admin";
-			case "site manager";
-			case "site supervisor";
-			  break;
-		 	default:
-			  header("Location: signin.php?status=notauthorized"); 
-			  break;		 		
-		}	 	  
-	}	*/
-	
-	/*if(!isset($_SESSION["spacial_case"]))
-		$_SESSION["spacial_case"] = "testing admin selection";*/
 	$user = new User();
 	
 	if(isset($_REQUEST['add_limit'])){
@@ -630,6 +609,13 @@
                   $('#site_factory').html(output).show();
               });
       }
+	  $("form").submit(function(e){
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	}); 
 	</script>
 		
 	  

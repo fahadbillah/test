@@ -6,6 +6,11 @@
 		header("Location: signin.php?status=notloggedin");
 	}	
 	$req_list = new User();
+	if(!$req_list->user_home_page_authorization($_SESSION["user_id"])){
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -127,6 +132,8 @@
 							$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
 							$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
 							$req_list->change_req_status_main($_REQUEST["id"],$decision);
+							if($decision=='Delivered'||$decision=='Partially Delivered')
+								$req_list->update_delivery_date($_REQUEST["id"]);
 						}
 					}
 					else 
@@ -340,6 +347,22 @@
                  <td><?php echo $deadline ?>
                  </td> 
                </tr>
+               <?php
+			     if($delivery_date!=''){
+					 $allDates = explode('|',$delivery_date);
+			   ?>
+               <tr>
+                 <th>Delivery Date and Time</th>
+                 <td>
+				 <?php 
+				   foreach($allDates as $ad)
+					echo $ad.'</br>' ;
+				 ?>
+                 </td> 
+               </tr>
+               <?php
+				 }
+			   ?>
                <tr>               
                  <th>Decision</th>
                  

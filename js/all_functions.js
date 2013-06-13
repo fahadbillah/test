@@ -7,6 +7,7 @@ $("#log_out").click(function(e){
 		return;
 	} 		
 })
+
  		
 function changeButtonForCostEdit(){
 	$('#cost_edit_box_for_local_boss').removeAttr('disabled')

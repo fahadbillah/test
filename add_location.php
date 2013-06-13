@@ -490,6 +490,13 @@
                   $('#site_factory').html(output).show();
               });
       }
+	  $("form").submit(function(e){
+		if (!confirm("Do you confirm submit?"))
+		{
+			e.preventDefault();
+			return;
+		} 
+	}); 
 	</script>
 		
 	  

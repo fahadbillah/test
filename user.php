@@ -2352,6 +2352,7 @@ class User extends Database
 	{		
 		//echo $id;
 		unset($this->req_data);
+		//var_dump($site.' '.$id);
 		//if($colName=='location_id')
 		if($site!='')
 			$query="SELECT id FROM locations WHERE site_factory = '$site'";
@@ -2415,7 +2416,7 @@ class User extends Database
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";	
 	}
 	
-	function convert_id_location($id){
+	public function convert_id_location($id){
 		//unset($this->additional_data);
 		//echo $id;
 		$temp = explode(".", $id);
@@ -3305,6 +3306,30 @@ class User extends Database
 		}
 		else
 			return false;
+	}
+	public function update_delivery_date($req_id){
+		$temp = '';
+		$this->date_time();
+		$dt = $this->date;	
+		$query="SELECT delivery_date FROM requisition WHERE id = '$req_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$dDate = $rows['delivery_date'];
+				var_dump($dDate);	
+				//var_dump($temp);				
+			}			
+			if($dDate!='')
+				$temp.=$dDate.'|'.$dt;
+			else
+				$temp = $dt;		
+			$query="update requisition SET delivery_date = '$temp' where id = '$req_id'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted. error- ".__FUNCTION__);	
+			echo 'date updated.';
+		}	
+		else			
+			echo "<span class='label label-warning'>No requisition found under this id.</span> ";		
 	}
 }	
 ?>
