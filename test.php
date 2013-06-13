@@ -1,11 +1,14 @@
 <?php 
 	include_once "user.php";
 	$test = new User();
-	var_dump($test->get_micro_site(5));
+	//print_r($test->get_all_material_cat());
+	var_dump($test->get_all_material(1,'id'));
 	return ;
-	foreach($test->user_data as $d){
+	$temp = $test->id_to_catagory($item_id);
+	foreach($temp as $d){
 			extract($d);
-			echo "<option value='$location_id'>'$site_factory'</option>";  
+			echo $id.' '.$name.' '.$type.' '.$sub_cat_of.' '.$date_added; 
+			echo '</br>';
 		}
 	//var_dump($test->get_local_accountant('central',91));
 	

@@ -39,7 +39,12 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-  <style>.tooltiptrolol { position: relative; cursor: help; text-decoration: none;} .tooltiptrolol span { display: none; position: absolute; top: 15px; left: 10px; padding: 5px; z-index: 100; background: #000; color: #fff; border-radius: 5px; box-shadow: 2px 2px rgba(0, 0, 0, 0.1); text-align: center; line-width: 1000px; text-indent: 0; font: normal bold 10px/13px Tahoma,sans-serif; white-space: nowrap;} span:hover.tooltiptrolol { font-size: 99%; } .tooltiptrolol:hover span { display: block; } .md img { display:inline; } .rageface { visibility:visible; }</style>
+  <style>
+  .tooltiptrolol { position: relative; cursor: help; text-decoration: none;} .tooltiptrolol span { display: none; position: absolute; top: 15px; left: 10px; padding: 5px; z-index: 100; background: #000; color: #fff; border-radius: 5px; box-shadow: 2px 2px rgba(0, 0, 0, 0.1); text-align: center; line-width: 1000px; text-indent: 0; font: normal bold 10px/13px Tahoma,sans-serif; white-space: nowrap;} span:hover.tooltiptrolol { font-size: 99%; } .tooltiptrolol:hover span { display: block; } .md img { display:inline; } .rageface { visibility:visible; }
+  td{
+	  position:relative;	  
+  }
+  </style>
   
   </head>
   <body>
@@ -152,14 +157,99 @@
                   <input name="title" id="title" type="text" placeholder="Text input">
                   <span class="help-inline">Subject of Requisition</span>
                 </div>
-              </div>  
+              </div> 
+              <div id="material" class="control-group" style="display:none">
+                <label class="control-label" for="title">Material Input</label>
+                <div class="controls">
+                 <!-- <form id="mat_form" name="mat_form" class="form-actions">-->
+                    <table class="table table-condensed table-hover">
+                      <tr>
+                        <th>Catagory</th>
+                        <td>
+                          <select id="mat_cat" name="mat_cat">
+                        	<option value="">Select Catagory</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Sub-Catagory</th>
+                        <td>
+                          <select id="mat_sub_cat" name="mat_sub_cat">
+                        	<option value="">Select Sub Catagory</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Item</th>
+                        <td>
+                          <select id="mat_item" name="mat_item">
+                        	<option value="">Select Item</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Quantity</th>
+                        <td><input type="text" id="mat_quantity" name="mat_quantity"> <span><strong>Unit</strong></span> <strong><span id="unit">--</span> </strong>
+                            <input type="button" data-loading-text="loading..." id="mat_add" value="Add" class="btn btn-small btn-primary"></td>
+                      </tr> 
+                      <tr id='mat_list'>
+                        <th>Material List</th>
+                        <td>
+                        <table class=" table table-condensed" style="margin-bottom: 0px;">
+                        </table>
+                        <table id="mat_list_table" class="table table-condensed">
+                        <tr id="mat_head">
+                        <th>No.</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Item Total</th>
+                        </tr>
+                        <tr id="costingRow">
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>Total Costing</th>
+                        <th id="costing"></th>
+                        </tr>
+                        </table>
+                        </td>
+                      </tr> 
+                      <tr>
+                        <!--<th>Costing</th>
+                        <td>
+                          <div class="input-append">
+                            <input readonly name="costing" id="costing" type="text">
+                            <span class="add-on">Taka</span>
+                          </div>
+                            <span class="help-inline">More than 5 lakh require site superviser's varification</span> 
+                        </td>-->
+                      </tr>
+                      <tr style="display:none">
+                        <th>Approved Quantity</th>
+                        <td><input type="text" id="mat_app_quantity" name="mat_app_quantity"></td>
+                      </tr> 
+                      <tr style="display:none">
+                        <th>Received Quantity</th>
+                        <td><input type="text" id="mat_rec_quantity" name="mat_rec_quantity"></td>
+                      </tr> 
+                      <tr>
+                        <th></th>
+                        <td>
+                          <input class="btn btn-primary" type="button" id="mat_submit" value="Submit">
+                        </td>
+                      </tr>          
+                    </table>
+<!--                  </form>-->    
+                </div> 
+              </div> 
               <div class="control-group">
                 <label class="control-label" for="description">Description</label>
                 <div class="controls">
                   <textarea name="description" id="description" rows="3"></textarea>
                 </div>
               </div>    
-              <div class="control-group">
+              <div id="costing_block" class="control-group">
                 <label class="control-label" for="costing">Costing</label>      
                 <div class="controls">          
                   <div class="input-append">
@@ -199,7 +289,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
  <!--   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>    -->
-    <script src="js/jquery.validate.js"></script>
+    <!--<script src="js/jquery.validate.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>
@@ -213,11 +303,12 @@
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
-    <script src="js/all_functions.js"></script>
-    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" />
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>-->
 	<script src="js/jquery-1.9.1.js"></script>
     <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="starter_files/bootstrap-button.js"></script>
+    <script src="js/all_functions.js"></script>
+    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" />
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
     label { width: 10em; float: left; }
@@ -227,13 +318,53 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
 	<script>
-	  //$.noConflict() 
 	  var materialList = ''
-	   $(document).ready(function () {
-		  $.post("get_material_list.php",{val:'all_list'},function(output){
-			  $('#msite').html(output).show();
-			});	
-		})
+	  var materialCatList = ''
+	  
+	  function init(){
+		  /*$.post("get_material_list.php",{val:'all_list'},function(output){
+			  $('#mat_cat').html(output).show();
+			  //alert(materialList);
+			});*/
+		  $.post("get_material_list.php",{val:'all_cat_list'},function(output){
+			  $('#mat_cat').html(output).show();
+			  //getMatCat(output)
+		 	  //alert(materialCatList);
+			});				  
+	  }	  
+	  $('#mat_sub_cat').change(function(){
+	      id = $('#'+this.id).val()
+		  if(id!=''){
+			  posting = $.post("get_material_list.php",{val:'item',id:id})
+			  posting.done(function(output){
+			  temp = output.split('|')				  
+			  $('#mat_item').html(temp[0]).show()	  
+			  $('#unit').text(temp[1]).show()
+			});
+		  }
+	  })
+	  $('#mat_cat').change(function(){
+		  id = $('#'+this.id).val()
+		  $.post("get_material_list.php",{val:'all_sub_cat_list',id:id},function(output){
+			  $('#mat_sub_cat').html(output).show();
+			 // getMatCat(output)
+		 	  //alert(materialCatList);
+			});		  
+	  })
+		
+		function getMatCat(mcl){
+			html = ''
+			html+='<option value="">Select Catagory</option>'
+			for(i=0;i<mcl.length;i++)
+				console.log(mcl[i]['type'])
+		}
+		function getMat(mcl){
+			html = ''
+			html+='<option value="">Select Material</option>'
+			for(i=0;i<mcl.length;i++)
+				console.log(mcl[i]['type'])
+		}
+		
 	  jQuery(function($){
 		$("#datepicker").datepicker({ dateFormat: "dd-mm-yy" });
 	  });
@@ -245,13 +376,21 @@
 		  if(other.value == 'Other')
 		  	$('#field_for_other').html('<div class="control-group"><label class="control-label" for="title"></label><div class="controls"><input name="other_type" type="text" placeholder="Text input"><span class="help-inline">Write Type Name</span></div></div>').show();
       }
+	  
 	$('#type_of_req').change(function(){
 		type = $('#'+this.id).val()
-		if(type.toLowerCase()=='material')
-			alert(type+' works')		
+		if(type.toLowerCase()=='material'){
+			$('#costing_block').hide('slow')			
+			$('#material').show('slow')		
+			//$('#mat_costing').html(html).show('slow')
+			
+		}
+		else{
+			$('#material').hide('slow')
+		}
 	})
+	
 	$("#new_req_form").submit(function(e){
-		 //    
 		if($("#location").val()==''||$("#type_of_req").val()==''||$("#title").val()==''||$("#description").val()=='' || $("#costing").val()==''||$("#datepicker").val()==''){
 			alert('empty field!')
 			e.preventDefault();
@@ -262,7 +401,55 @@
 			e.preventDefault();
 			return;
 		} 
-	}); 
+	});
+	
+	$('#mat_add').click(function(){
+ 		$('#mat_add').button('loading')
+		id = $('#mat_item').val()
+		qt = $('#mat_quantity').val()
+		head = $('#mat_head')//.html()
+		$('#mat_head').remove()
+		//alert(head)
+		 var mainArr = new Array()
+		  /* Put the results in a div */
+		posting = $.post( "get_material_list.php", { val:'singleItem',id:id,qt:qt})
+			 
+		posting.done(function( data ) {
+			//temp = data.split("|")] => Brick [category] => Building Material [subcategory] => Concrete Mixture [measurment_unit] => Piece [m_description] => 3X8 [cost_per_unit] 
+			/*console.log(data)
+			arr = data.split(',')
+			for(i=0;i<arr.length;i++){
+				sarr = arr[i].split(":")
+				mainArr[sarr[0]] = sarr[1]
+			}
+			alert(mainArr)  
+			iid = mainArr.find('id')  
+			name = mainArr.find('name') 
+			measurment_unit = mainArr.find('measurment_unit') 
+			cost_per_unit = mainArr.find('cost_per_unit') 
+			quantity = qt
+			html = ''
+			html+= '<tr>'
+			html+= '<td>'+iid+'</td>'
+			html+= '<td>'+name+'</td>'
+			html+= '<td>'+quantity+' '+data[0]['measurment_unit']+'</td>'
+			html+= '<td>'+data[0]['cost_per_unit']+'</td>'
+			total = quantity*data[0]['cost_per_unit']
+			html+= '<td>'+total+'</td>'
+			html+= '</tr>'      */
+			temp = data.split('|')
+			$( "#mat_list_table" ).prepend(temp[0])
+			$( "#mat_list_table" ).prepend(head)
+			$('#mat_add').button('reset')
+			totalCost = $('#costing').text()
+			if(totalCost=='')
+				totalCost = parseInt(temp[1])
+			else
+				totalCost = parseInt(totalCost) + parseInt(temp[1])
+			$('#costing').text(totalCost)
+		});
+	})
+	  init() 
     </script>
 
 </body></html>

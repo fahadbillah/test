@@ -3358,14 +3358,50 @@ class User extends Database
 		else			
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";				
 	}
-	public function get_all_material(){
-		$query="SELECT * FROM material_master";		
+	public function id_to_catagory($item_id){
+		$query="SELECT name FROM material_category where id = '$item_id'";		
 		$result = $this->mysqli->query($query);		
 		$num_result=$result->num_rows;		// determine number of rows result set 				
 		if($num_result>0){			
 			while($rows=$result->fetch_assoc()){
-				return $rows['site_factory'];				//var_dump($temp);				
+				$cat = $rows['name'];				//var_dump($temp);				
 			}
+			return $cat;
+		}
+		else			
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+	}
+	public function get_all_material($item_id,$type=''){		
+		if($type != 'id')
+			$cat = $this->id_to_catagory($item_id);
+		//var_dump($item_id);
+		//var_dump($type);
+		if($type == 'id')
+			$query="SELECT * FROM material_master where id = '$item_id'";	
+		if($type== 'Catagory')
+			$query="SELECT * FROM material_master where category = '$cat'";		
+		if($type== 'Subcatagory' || $type== '')
+			$query="SELECT * FROM material_master where subcategory = '$cat'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$all_mat[] = $rows;				//var_dump($temp);				
+			}
+			return $all_mat;
+		}
+		else			
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+	}
+	public function get_all_material_cat(){
+		$query="SELECT * FROM material_category";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$all_cat[] = $rows;				//var_dump($temp);				
+			}
+			return $all_cat;
 		}
 		else			
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
