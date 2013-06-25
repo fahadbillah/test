@@ -206,7 +206,13 @@
                  <th>Requisition by</th>
                  <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?>
                  </td>
+               </tr>    
+               <?php if($material_cart!='') {?>
+               <tr>
+                 <th>Material List</th>
+                 <td><?php  echo $req_list->convert_to_table($material_cart)?></td>
                </tr>  
+               <?php  }?>
                <tr>
                  <th>Costing</th>
                  <td><?php echo $costing ?>
@@ -474,8 +480,6 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }

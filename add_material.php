@@ -42,6 +42,9 @@
 	if(isset($_REQUEST['add_new_material'])){
 		$material->add_material($_REQUEST['mCat'],$_REQUEST['mSubCat'],$_REQUEST['mName'],$_REQUEST['mUnit'],$_REQUEST['mDes'],$_REQUEST['mCPU']);
 	}
+	if(isset($_REQUEST['submit_unit'])){
+		$material->setUnitType($_REQUEST['unit_name']);
+	}
 	?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -113,6 +116,7 @@
       <div id="main">
 		<a href="#add_material_category" role="button" class="btn" data-toggle="modal">Add Material Category</a>
 		<a href="#add_material" role="button" class="btn" data-toggle="modal">Add material</a>
+		<a href="#add_unit" role="button" class="btn" data-toggle="modal">Add Unit</a>
    	  </div>
     </div>
 	<!-- All modals -->
@@ -161,9 +165,14 @@
         <div class="controls">
           <select name="mUnit" id="mUnit">
               <option>Select Measurement Unit</option> 
-              <option>Piece</option>    
-              <option>KG</option>  
-              <option>Ton</option>  
+              <?php 
+			  	$unitForMat = $material->getUnitType();
+			  	foreach($unitForMat as $ufm){
+					extract($ufm);
+					echo "<option>".$name."</option>";
+				}
+			  
+			  ?> 
             </select>
         </div>
       </div>
@@ -233,13 +242,83 @@
         </div>
       </div>
     </form>
+    <div id="matCatNotice" class="container-fluid" style="display:none"></div>
+    <div class="container-fluid">
+    <table class="table table-condensed table-hover" >
+    <tr>
+    <th>Name</th>
+    <th>Catagory/Subcatagory</th>
+    <th>Subcatagory of</th>
+    <th>Remove</th>
+    </tr>
+    <?php 
+		$allCat = $material->get_all_material_cat();
+		foreach($allCat as $ac){
+			extract($ac);
+	?>
+    <tr>
+    <td><?php echo $name ?></td>
+    <td id="<?php echo 'cat_type_'.$id ?>"><?php echo $type ?></td>
+    <td>
+	<?php 
+		echo $material->id_to_category($sub_cat_of);
+	?>
+    </td>
+    <td><button type="button" class="btn btn-mini btn-danger deleteCat" id="<?php echo 'removecat_'.$id ?>">Remove</button></td>
+    </tr>
+    <?php 
+		}
+	?>
+    </table>
+    </div> 
     </div>
 	
+    <div id="add_unit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Add Material Category</h3>
+      </div>
+      <br>
+    <form id="add_unit_form" name="add_unit_form" class="form-horizontal" action="add_material.php" method="post">
+       <div class="control-group">
+        <label class="control-label" for="category">Add Unit</label>
+        <div class="controls">
+          <input type="text" id="unit_name" name="unit_name" >
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" value="submit_unit" id="submit_unit" name="submit_unit" class="btn">Submit</button>
+        </div>
+      </div>
+    </form>
+    <div id="unitNotice" class="container-fluid" style="display:none"></div>
+    <div class="container-fluid">
+    <table class="table table-condensed table-hover" >
+    <tr>
+    <th>Unit</th>
+    <th>Remove</th>
+    </tr>
+    <?php 
+		$allUnit = $material->getUnitType();
+		foreach($allUnit as $au){
+			extract($au);
+	?>
+    <tr>
+    <td><?php echo $name ?></td>
+    <td><button type="button" class="btn btn-mini btn-danger deleteUnit" id="<?php echo 'removeUnit_'.$id ?>">Remove</button></td>
+    </tr>
+    <?php 
+		}
+	?>
+    </table>
+    </div> 
+    </div>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.8.3.js"></script>
-    <script src="js/jquery.validate.js"></script>
+	<script src="js/jquery-1.9.1.js"></script>
+    <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
     <script src="./starter_files/bootstrap-modal.js"></script>
@@ -252,8 +331,6 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
@@ -288,6 +365,27 @@
 			return;
 		} 
 	}); 
+	$('.deleteUnit').click(function(){
+		id = this.id
+		id = id.split('_')
+		
+		posting = $.post('form_handler.php', {unitDeleteId: id[1]});
+		posting.done(function(data){
+			$($($('#removeUnit_'+id[1]).parent()).parent()).hide('slow').delay(1000).remove()
+			$('#unitNotice').html(data).show('slow').delay(3000).hide('slow')			
+		})
+	}) 
+	$('.deleteCat').click(function(){
+		id = this.id
+		id = id.split('_')
+		type = $('#cat_type_'+id[1]).text()
+		
+		posting = $.post('form_handler.php', {catDeleteId: id[1], type: type});
+		posting.done(function(data){
+			$($($('#removecat_'+id[1]).parent()).parent()).hide('slow').delay(1000).remove()
+			$('#matCatNotice').html(data).show('slow').delay(3000).hide('slow')			
+		})
+	})
 	</script>
 		
 	  

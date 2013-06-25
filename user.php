@@ -518,7 +518,7 @@ class User extends Database
 		echo "<span class='label label-success'>User added as '$post' for '$location' location.</span> ";
 		//echo $this->mysqli->insert_id;
 	}
-	public function new_req($idusers,$title,$description,$type_of_req,$costing,$datepicker,$location_id)
+	public function new_req($idusers,$title,$description,$type_of_req,$costing,$datepicker,$location_id,$mat_cart)
 	{
 		$idusers = (int)$this->mysqli->real_escape_string($idusers);
 		$title = $this->mysqli->real_escape_string($title);
@@ -527,10 +527,11 @@ class User extends Database
 		$costing = $this->mysqli->real_escape_string($costing);
 		$datepicker = $this->mysqli->real_escape_string($datepicker);
 		$location_id = $this->mysqli->real_escape_string($location_id);
+		$mat_cart = $this->mysqli->real_escape_string($mat_cart);
 		
 		
 		
-		$query="INSERT INTO requisition SET user_id='$idusers', title='$title', description='$description', type_of_req='$type_of_req', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
+		$query="INSERT INTO requisition SET user_id='$idusers', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
@@ -2832,15 +2833,14 @@ class User extends Database
 		}
 	}
 	public function id_to_category($mCat){
-		unset($this->user_data_temp1);
 		$query="SELECT name FROM material_category WHERE id = '$mCat'";			
 		$result = $this->mysqli->query($query);		
 		$num_result=$result->num_rows;		// determine number of rows result set 					
 		if($num_result>0){				
 			while($rows=$result->fetch_assoc()){									
-				$this->user_data_temp1=$rows['name'];		
+				$cat=$rows['name'];		
 			}						
-			return $this->user_data_temp1;
+			return $cat;
 		}
 	}
 	public function add_material($mCat,$mSubCat,$mName,$mUnit,$mDes,$mCPU){
@@ -2874,7 +2874,7 @@ class User extends Database
 	}
 	public function getMatSubCat($cat){
 		unset($this->user_data_temp);
-		$query="SELECT id,name FROM material_category WHERE sub_cat_of = '$cat'";			
+		$query="SELECT id,name FROM material_category WHERE sub_cat_of = '$cat'";
 		$result = $this->mysqli->query($query);		
 		$num_result=$result->num_rows;		// determine number of rows result set 					
 		if($num_result>0){				
@@ -3070,8 +3070,13 @@ class User extends Database
 		}		
 		return false;
 	}
+	public function setUnitType($name){	
+		$query="INSERT INTO unit_master SET name='$name'";	
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+		echo "<span class='label label-success'>A new unit added.</span> ";
+	}
 	public function getUnitType(){	
-		$query="SELECT name FROM unit_master";		
+		$query="SELECT * FROM unit_master";		
 		$result = $this->mysqli->query($query);		
 		$num_result=$result->num_rows;		// determine number of rows result set 				
 		if($num_result>0){			
@@ -3082,6 +3087,26 @@ class User extends Database
 			return $unit;				
 		}		
 		return false;
+	}
+	public function deleteUnitType($id){	
+		$query="DELETE FROM unit_master WHERE id='$id'";	
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+		echo "<span class='label label-success'>Unit deleted.</span> ";
+	}
+	public function deleteCat($id,$type){
+		//var_dump($type);
+		if($type=='Category'){
+			$query="DELETE FROM material_category WHERE id='$id'";	
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+			$query="DELETE FROM material_category WHERE sub_cat_of='$id'";	
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+			echo "<span class='label label-success'>Catagory with subcatagory deleted.</span> ";			
+		}
+		if($type=='Subcategory'){			
+			$query="DELETE FROM material_category WHERE id='$id'";	
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+			echo "<span class='label label-success'>Subcatagory deleted.</span> ";
+		}
 	}
 	public function status_comparison($user,$main,$pst){
 		//echo $pst;
@@ -3405,6 +3430,50 @@ class User extends Database
 		}
 		else			
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+	}
+	public function convert_to_boss_table($cart){
+		$temp = explode(',',$cart);
+		//$c = 1;
+		$html = '';
+		$html.= "<table id='cartForValidation' class='table table-condensed table-hover'>";
+		for($i=0;$i<count($temp);$i+=6){
+			$html.= '<tr id="tr_"'.$temp[$i].'>';
+			if($i<6)
+				$html.= "<th>".$temp[$i]."</th><th>".$temp[$i+1]."</th><th>".$temp[$i+2]."</th><th>".$temp[$i+3]."</th><th>".$temp[$i+4]."</th><th>Edit</th>";
+			else{
+				if($temp[$i+3]=='Total Costing')
+					$html.= "<th></th><th></th><th></th><th>".$temp[$i+3]."</th><th id='totalCost'>".$temp[$i+4]."</th><th></th>";
+				else{
+					$tempUnit = explode(' ',$temp[$i+2]);
+					$html.= "<td>".$temp[$i]."</td><td>".$temp[$i+1]."</td><td><input type='text' id='mat_cart_edit_field_".$temp[$i]."' value='".$tempUnit[0]."' disabled> ".$tempUnit[1]."</td><td id='singleUnitPrice_".$temp[$i]."'>".$temp[$i+3]."</td><td id='singleItemTotal_".$temp[$i]."' class = 'singleItemTotalPrice'>".$temp[$i+4]."</td><td><input type='button'  id='matCartEdit_".$temp[$i]."' class='btn btn-mini btn-danger cartEditForBoss' value='Edit'></td>";
+				}
+			$html.= '</tr>';
+			}
+			//$c++;
+		}
+		$html.= "</table>";	
+		return $html;	
+	}
+	public function convert_to_table($cart){
+		$temp = explode(',',$cart);
+		//$c = 1;
+		$html = '';
+		$html.= "<table class='table table-condensed table-hover'>";
+		for($i=0;$i<count($temp);$i+=6){
+			$html.= '<tr id="tr_"'.$temp[$i].'>';
+			if($i<6)
+				$html.= "<th>".$temp[$i]."</th><th>".$temp[$i+1]."</th><th>".$temp[$i+2]."</th><th>".$temp[$i+3]."</th><th>".$temp[$i+4]."</th><th id='mat_cart_edit'></th>";
+			else{
+				if($temp[$i+3]=='Total Costing')
+					$html.= "<th></th><th></th><th></th><th>".$temp[$i+3]."</th><th>".$temp[$i+4]."</th><th></th>";
+				else
+					$html.= "<td>".$temp[$i]."</td><td>".$temp[$i+1]."</td><td>".$temp[$i+2]."</td><td>".$temp[$i+3]."</td><td>".$temp[$i+4]."</td><td>".$temp[$i+5]."</td>";
+			$html.= '</tr>';
+			}
+			$c++;
+		}
+		$html.= "</table>";	
+		return $html;	
 	}
 }	
 ?>

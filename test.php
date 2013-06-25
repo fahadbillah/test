@@ -2,7 +2,11 @@
 	include_once "user.php";
 	$test = new User();
 	//print_r($test->get_all_material_cat());
-	var_dump($test->get_all_material(1,'id'));
+	$matCatSub = $test->getMatSubCat(1);
+	foreach($matCatSub as $subcat){
+		extract($subcat);
+		echo "<option value=".$id.">".$name."</option>"; 	
+	}
 	return ;
 	$temp = $test->id_to_catagory($item_id);
 	foreach($temp as $d){

@@ -87,14 +87,21 @@
 				{
 					//var_dump($_REQUEST);		
 					if($_SESSION['rand']==$_REQUEST["prevent"]){
-						if(!in_array("",$_REQUEST))
+						//print_r($_REQUEST);
+						//if(!in_array("",$_REQUEST))
+						if(!empty($_REQUEST['title'])&&!empty($_REQUEST['description'])&&!empty($_REQUEST['type_of_req'])&&!empty($_REQUEST['costingform'])&&!empty($_REQUEST['datepicker'])&&!empty($_REQUEST['location']))
 						{
 							extract($_REQUEST);
-							if(filter_var($costing, FILTER_VALIDATE_INT))
+							if(filter_var($costingform, FILTER_VALIDATE_INT))
 							{
 								//echo $type_of_req." ".$recurring_recurring." ".$title." ".$description." ".$costing." ".$datepicker;
-								
-								$id = $new_req->new_req($_SESSION["user_id"],$title,$description,$type_of_req,$costing,$datepicker,$location);
+								if(isset($_REQUEST['mat_cart'])){
+									$mat_cart = $_REQUEST['mat_cart'];
+									//echo $_REQUEST['mat_cart'];
+								}
+								else
+									$mat_cart = '';
+								$id = $new_req->new_req($_SESSION["user_id"],$title,$description,$type_of_req,$costingform,$datepicker,$location,$mat_cart);
 								//echo "id ".$id." has been added to requisition list";
 								
 								//echo $name.$email.$password.$contact.$master.$project.$site_factory.$designation;
@@ -162,7 +169,7 @@
                 <label class="control-label" for="title">Material Input</label>
                 <div class="controls">
                  <!-- <form id="mat_form" name="mat_form" class="form-actions">-->
-                    <table class="table table-condensed table-hover">
+                    <table id="mat_shopping_cart" class="table table-condensed table-hover">
                       <tr>
                         <th>Catagory</th>
                         <td>
@@ -204,6 +211,7 @@
                         <th>Quantity</th>
                         <th>Unit Price</th>
                         <th>Item Total</th>
+                        <th>Remove</th>
                         </tr>
                         <tr id="costingRow">
                         <th></th>
@@ -211,6 +219,7 @@
                         <th></th>
                         <th>Total Costing</th>
                         <th id="costing"></th>
+                        <th></th>
                         </tr>
                         </table>
                         </td>
@@ -224,21 +233,22 @@
                           </div>
                             <span class="help-inline">More than 5 lakh require site superviser's varification</span> 
                         </td>-->
+                        <input type="text" id="mat_cart" name="mat_cart" value="" style="display:none">
                       </tr>
-                      <tr style="display:none">
+                     <!-- <tr style="display:none">
                         <th>Approved Quantity</th>
                         <td><input type="text" id="mat_app_quantity" name="mat_app_quantity"></td>
                       </tr> 
                       <tr style="display:none">
                         <th>Received Quantity</th>
                         <td><input type="text" id="mat_rec_quantity" name="mat_rec_quantity"></td>
-                      </tr> 
-                      <tr>
+                      </tr> -->
+                      <!--<tr>
                         <th></th>
                         <td>
                           <input class="btn btn-primary" type="button" id="mat_submit" value="Submit">
                         </td>
-                      </tr>          
+                      </tr>-->          
                     </table>
 <!--                  </form>-->    
                 </div> 
@@ -253,7 +263,7 @@
                 <label class="control-label" for="costing">Costing</label>      
                 <div class="controls">          
                   <div class="input-append">
-                    <input name="costing" id="costing" type="text" placeholder="Number input">
+                    <input name="costingform" id="costingform" type="text" placeholder="Number input">
                     <span class="add-on">Taka</span>                   
                   </div>
                     <span class="help-inline">More than 5 lakh require site superviser's varification</span> 
@@ -277,13 +287,12 @@
               <div class="control-group">
                 <div class="controls">
                   <input id="prevent" name="prevent" value="<?php echo $_SESSION['rand']?>" style="display:none"/>
-                  <input name="submit" id="submit" value="Submit Requisition" type="submit" class="btn">
+                  <input name="submit" id="submit" value="Submit Requisition" type="submit" class="btn"> 
                 </div>
               </div>
 			</form>                      
         </div>
       </div>
-
 
     <!-- Le javascript
     ================================================== -->
@@ -301,9 +310,7 @@
     <script src="./starter_files/bootstrap-button.js"></script>
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
-    <script src="./starter_files/bootstrap-typeahead.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>-->
+    <script src="./starter_files/bootstrap-typeahead.js"></script>-->
 	<script src="js/jquery-1.9.1.js"></script>
     <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="starter_files/bootstrap-button.js"></script>
@@ -318,24 +325,19 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
 	<script>
-	  var materialList = ''
+	  var materialList = 0
 	  var materialCatList = ''
 	  
 	  function init(){
-		  /*$.post("get_material_list.php",{val:'all_list'},function(output){
-			  $('#mat_cat').html(output).show();
-			  //alert(materialList);
-			});*/
 		  $.post("get_material_list.php",{val:'all_cat_list'},function(output){
 			  $('#mat_cat').html(output).show();
-			  //getMatCat(output)
-		 	  //alert(materialCatList);
 			});				  
 	  }	  
 	  $('#mat_sub_cat').change(function(){
-	      id = $('#'+this.id).val()
-		  if(id!=''){
-			  posting = $.post("get_material_list.php",{val:'item',id:id})
+	      mid = $('#'+this.id).val()
+		  if(mid!=''){
+			  $('#mat_item option').text('Loading...')
+			  posting = $.post("get_material_list.php",{val:'item',id:mid})
 			  posting.done(function(output){
 			  temp = output.split('|')				  
 			  $('#mat_item').html(temp[0]).show()	  
@@ -344,13 +346,25 @@
 		  }
 	  })
 	  $('#mat_cat').change(function(){
-		  id = $('#'+this.id).val()
-		  $.post("get_material_list.php",{val:'all_sub_cat_list',id:id},function(output){
+		  mid = $('#'+this.id).val()
+		  html = '<option value="">Select Item</option>'
+		  $('#mat_sub_cat option').text('Loading...')
+		  $('#mat_item').html(html)
+		  posting = $.post("get_material_list.php",{val:'all_sub_cat_list',id:mid})
+		  posting.done(function(output){
 			  $('#mat_sub_cat').html(output).show();
 			 // getMatCat(output)
 		 	  //alert(materialCatList);
-			});		  
+			})		  
 	  })
+	  /*
+	  var posting = $.post( url, { s: term } );
+  posting.done(function( data ) {
+    var content = $( data ).find( '#content' );
+    $( "#result" ).empty().append( content );
+  });
+	  */
+	  
 		
 		function getMatCat(mcl){
 			html = ''
@@ -391,7 +405,19 @@
 	})
 	
 	$("#new_req_form").submit(function(e){
-		if($("#location").val()==''||$("#type_of_req").val()==''||$("#title").val()==''||$("#description").val()=='' || $("#costing").val()==''||$("#datepicker").val()==''){
+		if($("#type_of_req").val()==='Material'){
+			if($('#costing').text()==""){
+				alert('No material added to list')
+				e.preventDefault()	
+				return		
+			}
+			tempCost = parseInt($('#costing').text())
+			$('#mat_cart').val(processMatList())
+			$('#costingform').val(tempCost)
+			console.log(tempCost)
+			console.log(processMatList())
+		}
+		if($("#location").val()==''||$("#type_of_req").val()==''||$("#title").val()==''||$("#description").val()=='' || $("#costingform").val()==''||$("#datepicker").val()==''){
 			alert('empty field!')
 			e.preventDefault();
 			return;
@@ -403,42 +429,49 @@
 		} 
 	});
 	
+	function processMatList(){
+		cart = $('#mat_list_table')
+		heading = $('#mat_list_table tr:first-child') 
+		//allTr = $('#mat_list_table tr')
+		//allTd = $('#mat_list_table td')
+		//console.log(allTd)
+		//return
+		var arrTd = new Array()
+		var materialCart = new Array()
+		$('#mat_list_table tr').each(function( tr ) {
+			allTd = $(this).children()
+			allTd.each(function(td){
+				arrTd.push($(this).text())
+				//materialCart[tr][td] = $(this).text()
+			    //console.log(materialCart)			
+			})
+		});
+		materialCart.push(arrTd)
+		return materialCart
+		/*for(i=0;i<allTd.length;i++){
+			console.log
+		}*/
+	}
+	
 	$('#mat_add').click(function(){
  		$('#mat_add').button('loading')
-		id = $('#mat_item').val()
+		mid = $('#mat_item').val()
 		qt = $('#mat_quantity').val()
 		head = $('#mat_head')//.html()
 		$('#mat_head').remove()
 		//alert(head)
 		 var mainArr = new Array()
 		  /* Put the results in a div */
-		posting = $.post( "get_material_list.php", { val:'singleItem',id:id,qt:qt})
+		posting = $.post( "get_material_list.php", { val:'singleItem',mid:mid,qt:qt})
 			 
 		posting.done(function( data ) {
-			//temp = data.split("|")] => Brick [category] => Building Material [subcategory] => Concrete Mixture [measurment_unit] => Piece [m_description] => 3X8 [cost_per_unit] 
-			/*console.log(data)
-			arr = data.split(',')
-			for(i=0;i<arr.length;i++){
-				sarr = arr[i].split(":")
-				mainArr[sarr[0]] = sarr[1]
-			}
-			alert(mainArr)  
-			iid = mainArr.find('id')  
-			name = mainArr.find('name') 
-			measurment_unit = mainArr.find('measurment_unit') 
-			cost_per_unit = mainArr.find('cost_per_unit') 
-			quantity = qt
-			html = ''
-			html+= '<tr>'
-			html+= '<td>'+iid+'</td>'
-			html+= '<td>'+name+'</td>'
-			html+= '<td>'+quantity+' '+data[0]['measurment_unit']+'</td>'
-			html+= '<td>'+data[0]['cost_per_unit']+'</td>'
-			total = quantity*data[0]['cost_per_unit']
-			html+= '<td>'+total+'</td>'
-			html+= '</tr>'      */
 			temp = data.split('|')
-			$( "#mat_list_table" ).prepend(temp[0])
+			materialList++
+			btnStart = "<tr id='row_"+materialList+"'><td class='mat_list_sn'></td>"
+			btnEnd = "<td><input type='button' data-loading-text='loading...' value='Remove' class='mat_rmv_btn btn btn-small btn-danger' onclick='removeItem("+materialList+")'></td></tr>"
+			newTemp = btnStart+temp[0]+btnEnd
+			$( "#mat_list_table" ).prepend(newTemp)
+			createID(materialList)
 			$( "#mat_list_table" ).prepend(head)
 			$('#mat_add').button('reset')
 			totalCost = $('#costing').text()
@@ -449,6 +482,31 @@
 			$('#costing').text(totalCost)
 		});
 	})
+	
+	function createID(mid){		
+		all_item = $('.mat_list_sn')	
+		//all_item_btn = $('.mat_rmv_btn')
+		single_item_total = $('.mat_single_total')
+		for(i=0;i<all_item.length;i++){
+			k = i+1
+			all_item[i].innerHTML = k
+			//all_item_btn[i].id = 'item_'+k
+			//all_item_btn[i].onclick = 'removeItem(item_'+k+')'
+		}	
+		if(mid!=='')
+			single_item_total[0].id = 'item_'+mid+'_total'
+	}
+	
+	function removeItem(rmvId){
+		single_id = 'item_'+rmvId+'_total'  //item_3_total
+		single_tot = $("#"+single_id).text()
+		tot = parseInt($("#costing").text()) - parseInt(single_tot) 
+		$("#costing").text(tot)
+		$('#row_'+rmvId).hide('slow').delay(500).remove()
+		createID('')
+	}
+	
+	
 	  init() 
     </script>
 

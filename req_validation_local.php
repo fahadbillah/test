@@ -188,7 +188,20 @@
                  <th>Requisition by</th>
                  <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> <a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>
                  </td>
+               </tr>   
+               <?php if($material_cart!='') {?>
+               <tr>
+                 <th>Material List</th>
+                 <td>
+				 <?php  
+				 	if($pst == 'Boss' && $only_view != 'View' && $status=='New')
+				 		echo $req_list->convert_to_boss_table($material_cart);
+					else
+				 		echo $req_list->convert_to_table($material_cart);
+				 ?>
+                 </td>
                </tr>  
+               <?php  }?>
                <tr>
                  <th>Estimated Costing</th>
                  <td>
@@ -198,11 +211,11 @@
                  
                  <form class="form-inline" id="local_boss_cost_edit" name="local_boss_cost_edit">
                  	<input id="cost_edit_box_for_local_boss" name="cost_edit_box_for_local_boss" type="text" value="<?php echo $costing?>" disabled>
-                    <input id="req_id_to_edit_cost" name="req_id_to_edit_cost" type="text" value="<?php echo $_REQUEST['id']?>" style="display:none" >
-                    <?php //if($status=='New'){?>
+                    <input id="req_id_to_edit_cost" name="req_id_to_edit_cost" type="text" value="<?php echo $_REQUEST['id']?>" style="display:none" >                    
+              		<?php if($material_cart=='') {?>
                     <input class="btn btn-primary" id="cost_edit" name="cost_edit" value="Edit" type="button">
                     <input style="display:none" class="btn btn-primary" id="cost_edit_finish" name="cost_edit_finish" value="Submit" type="button">
-                    <?php //}?>
+                    <?php }?>
                  </form>
 				 <?php 
 					}
@@ -232,7 +245,7 @@
                         <option>Select Unit</option>
                         <?php 
 						  $unit = $req_list->getUnitType();
-						  var_dump($unit);
+						  //var_dump($unit);
 						  if($unit){
 						    foreach($unit as $unt){
 							  extract($unt);
@@ -621,6 +634,30 @@
 		  	$('#poForm').hide('slow')
 			$('#chk').html('P.O. Available')
 		  }
+	  })
+	  $('.cartEditForBoss').click(function(){
+		var total = 0
+		id = this.id.split('_')  
+		value = $('#'+this.id).val()
+		if(value=='Done'){
+			$('#'+this.id).val('Edit')
+			$('#mat_cart_edit_field_'+id[1]).prop("disabled", true)
+			qt = $('#mat_cart_edit_field_'+id[1]).val()
+			up = $('#singleUnitPrice_'+id[1]).text()
+			tot = parseInt(qt)*parseInt(up)
+			$('#singleItemTotal_'+id[1]).text(tot)
+			$('.singleItemTotalPrice').each(function( index ) {
+			  total += parseInt($(this).text())
+			  //console.log( index + ": " + $(this).text() );
+			})
+			$('#totalCost').text(total)
+			$('#cost_edit_box_for_local_boss').val(total)
+		}
+		else{
+			$('#'+this.id).val('Done')
+			$('#mat_cart_edit_field_'+id[1]).prop("disabled", false)//.removeAttr("disabled")
+		}
+		  //alert(id[1]) mat_cart_edit_field_".$temp[$i]."' value='".$tempUnit[0]."' disabled> ".$tempUnit[1]."</td><td id='singleUnitPrice_".$temp[$i]."'>".$temp[$i+3]."</td><td id='singleItemTotal_
 	  })
     </script>
     

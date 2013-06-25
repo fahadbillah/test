@@ -8,7 +8,16 @@
 	//if(count($args)==1){
 	if(array_key_exists('cost_edit_box_for_local_boss', $args)){
 		$form->updateCostingByLocalBoss($args['cost_edit_box_for_local_boss'],$args['req_id_to_edit_cost']);
-		//echo 'key - cost_edit_box_for_local_boss';
+	}
+	else if(array_key_exists('unitDeleteId', $args)){
+		//echo $args['unitDeleteId'];
+		//var_dump($args['unitDeleteId']);
+		$form->deleteUnitType($args['unitDeleteId']);
+	}
+	else if(array_key_exists('catDeleteId', $args)){
+		//echo $args['unitDeleteId'];
+		//var_dump($args['unitDeleteId']);
+		$form->deleteCat($args['catDeleteId'],$args['type']);
 	}
 	//else if(array_key_exists('cost_edit_box_for_local_boss', $args)){}
 	else
