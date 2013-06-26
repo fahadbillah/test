@@ -232,12 +232,40 @@
                 <td>
                 <input name="msite" type="text">
                 </td>
+              </tr> 
+              <tr>
+                <td></td>
+                <td>
+       			 <input name="add_new_ms" id="add_new_ms" class="btn" type="submit" />
+                </td>
               </tr>    
 			</table>
-      </div>
-      <div class="modal-footer">
-        <input name="add_new_ms" id="add_new_ms" type="submit" />
         </form>
+      </div>
+       <div class="container-fluid pre-scrollable" id="micro_site_list">
+        <table class="table table-condensed table-hover" id="micro_site_list_table">
+        <tr>
+        <th>Micro Site</th>
+        <th>Site</th>
+        <th>ID</th>
+        <th>Remove/Edit</th>
+        </tr>
+        <?php 
+        $location->get_micro_site('');
+       // var_dump($location->user_data_temp1);
+        foreach($location->user_data_temp1 as $mic){
+            extract($mic)
+        ?>
+        <tr>
+        <td><?php echo $name;?></td>
+        <td><?php echo $site;?></td>
+        <td><?php echo $id;?></td>
+        <td><input type="button" class="btn btn-mini btn-danger microSiteButton" id="<?php echo 'microSite_'.$id;?>" value="Remove"></td>
+        </tr>
+        <?php }?>
+        </table>
+        </div>
+      <div class="modal-footer">
       </div>
     </div>
     <div id="add_site" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -278,13 +306,42 @@
                 <td>
                 <input name="site_factory" type="text">
                 </td>
+              </tr>  
+              <tr>
+                <td></td>
+                <td>
+       			 <input name="add_new_location" id="add_new_location" class="btn" type="submit" />
+                </td>
               </tr>    
 			</table>
-      </div>
-      <div class="modal-footer">
-        <input name="add_new_location" id="add_new_location" type="submit" />
         </form>
       </div>
+      <div class="container-fluid pre-scrollable" id="site_list">
+        <table class="table table-condensed table-hover" id="site_list_table">
+        <tr>
+        <th>Site</th>
+        <th>ID</th>
+        <th>Project</th>
+        <th>Master</th>
+        <th>Remove/Edit</th>
+        </tr>
+        <?php 
+        $siteTemp = $location->search_location();
+        //var_dump($location->user_data_temp);
+        foreach($siteTemp as $si){
+            extract($si);
+			if($location_type!='Single Entity'){
+        ?>
+        <tr>
+        <td><?php echo $site_factory;?></td>
+        <td><?php echo $location_id;?></td>
+        <td><?php echo $project;?></td>
+        <td><?php echo $master;?></td>			
+        <td><input type="button" class="btn btn-mini btn-danger siteButton" id="<?php echo 'site_'.$id;?>" value="Remove"></td>
+        </tr>
+        <?php }}?>
+        </table>
+        </div>
     </div>
     
   	<div id="add_master" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -312,6 +369,27 @@
         </div>
       </div>
     </form>
+    <div class="container-fluid pre-scrollable" id="master_list">
+    <table class="table table-condensed table-hover" id="master_list_table">
+    <tr>
+    <th>Master Business</th>
+    <th>ID</th>
+    <th>Remove/Edit</th>
+    </tr>
+    <?php 
+	$location->get_all_masters();
+	//var_dump($location->user_data_temp);
+	foreach($location->user_data_temp as $mas){
+		extract($mas)
+	?>
+    <tr>
+    <td><?php echo $name;?></td>
+    <td><?php echo $id;?></td>
+    <td><input type="button" class="btn btn-mini btn-danger masterButton" id="<?php echo 'master_'.$id;?>" value="Remove"></td>
+    </tr>
+    <?php }?>
+    </table>
+    </div>
     </div>
 
 	<div id="add_single_entity" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -339,6 +417,27 @@
         </div>
       </div>
     </form>
+    <div class="container-fluid pre-scrollable" id="master_list">
+    <table class="table table-condensed table-hover" id="se_list_table">
+    <tr>
+    <th>Single Entity Business</th>
+    <th>ID</th>
+    <th>Remove/Edit</th>
+    </tr>
+    <?php 
+	$seTemp = $location->get_all_single_entity();
+	//var_dump($location->user_data_temp);
+	foreach($seTemp as $set){
+		extract($set)
+	?>
+    <tr>
+    <td><?php echo $name;?></td>
+    <td><?php echo $id;?></td>
+    <td><input type="button" class="btn btn-mini btn-danger seButton" id="<?php echo 'se_'.$id;?>" value="Remove"></td>
+    </tr>
+    <?php }?>
+    </table>
+    </div>
     </div>
     <div id="add_project" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
@@ -376,6 +475,29 @@
         </div>
       </div>
     </form>
+    <div class="container-fluid pre-scrollable" id="master_list">
+    <table class="table table-condensed table-hover" id="project_list_table">
+    <tr>
+    <th>Project</th>
+    <th>ID</th>
+    <th>Master</th>
+    <th>Remove/Edit</th>
+    </tr>
+    <?php 
+	$pTemp = $location->get_all_projects('','all');
+	//var_dump($location->user_data_temp);
+	foreach($pTemp as $pt){
+		extract($pt)
+	?>
+    <tr>
+    <td><?php echo $name;?></td>
+    <td><?php echo $id;?></td>
+    <td><?php echo $master;?></td>
+    <td><input type="button" class="btn btn-mini btn-danger seButton" id="<?php echo 'se_'.$id;?>" value="Remove"></td>
+    </tr>
+    <?php }?>
+    </table>
+    </div>
     </div>   
 
 	<div id="entity_off_fac" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

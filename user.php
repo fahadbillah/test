@@ -190,6 +190,7 @@ class User extends Database
 	}
 	public function get_all_masters($master='')
 	{
+		unset($this->user_data_temp);
 		if($master=='')
 			$query="SELECT * FROM master_business";
 		else
@@ -229,11 +230,14 @@ class User extends Database
 			echo "<span class='label label-success'>no project found.</span> ";	
 		return 0;
 	}
-	public function get_all_projects($master)
-	{		
+	public function get_all_projects($master,$type='')
+	{
+		unset($this->user_data_temp);
 		$master = $this->mysqli->real_escape_string($master);
-							
-		$query="SELECT * FROM projects where master= '$master'";
+		if($type=='')
+			$query="SELECT * FROM projects where master= '$master'";
+		if($type=='all')
+			$query="SELECT * FROM projects";
 		
 		$result = $this->mysqli->query($query);
 		
@@ -267,7 +271,7 @@ class User extends Database
 		
 		$result = $this->mysqli->query($query);
 		
-		var_dump($result);
+		//var_dump($result);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
 				
@@ -380,8 +384,14 @@ class User extends Database
 	public function get_micro_site($data)
 	{
 		unset($this->user_data_temp1);
-		if(is_int($data))
+		if(is_int($data)){
+			//var_dump('int');
 			$query="SELECT name FROM micro_site where id = '$data'";
+		}
+		else if($data==''){			
+			//var_dump('blank');
+			$query="SELECT * FROM micro_site";
+		}	
 		else
 			$query="SELECT * FROM micro_site where site = '$data'";
 		
@@ -2187,11 +2197,11 @@ class User extends Database
 		$location = $this->getReqDestination($id); 
 		//$this->mysqli->real_escape_string($location);
 		//$idL = $this->get_location_id($location);		
-		var_dump($location);
+		//var_dump($location);
 		$account = (int)$this->get_local_accountant($location,$id);	
-		var_dump($account);
+		//var_dump($account);
 		$scm = (int)$this->get_local_scm($location,$id);	
-		var_dump($scm);
+		//var_dump($scm);
 		$activitiesAcc = 'accountant added,'.$this->date;
 		$activitiesScm = 'scm added,'.$this->date;
 		//echo $name,$designation,$office_code,$authority_level;		
@@ -2281,19 +2291,19 @@ class User extends Database
 			while($rows=$result->fetch_assoc()){									
 				$this->req_data[]=$rows['id'];					
 			}	
-			var_dump($this->req_data);
+			//var_dump($this->req_data);
 			if(count($this->req_data)>1){
 				foreach($this->req_data as $user){
-					var_dump($user);
-					var_dump($req_id);
-					var_dump($this->check_scm_acc_by_loc($user,$req_id));
+					//var_dump($user);
+					//var_dump($req_id);
+					//var_dump($this->check_scm_acc_by_loc($user,$req_id));
 					if($this->check_scm_acc_by_loc($user,$req_id))
 						return $user; 
 				}
-				var_dump($this->req_data);
+				//var_dump($this->req_data);
 			}	
 			else{	
-				var_dump($this->req_data[0]);			
+				//var_dump($this->req_data[0]);			
 				return $this->req_data[0];
 			}
 		}
@@ -2335,15 +2345,15 @@ class User extends Database
 	}
 	public function check_scm_acc_by_loc($data,$req_id){
 		$loc = $this->get_req_location($req_id);
-		var_dump($loc);		
+		//var_dump($loc);		
 		$query="SELECT user_id FROM acc_scm_to_office WHERE location_id = '$loc'";		
 		$result = $this->mysqli->query($query);		
 		$num_result=$result->num_rows;		// determine number of rows result set 					
 		if($num_result>0){				
 			while($rows=$result->fetch_assoc()){				
-				var_dump($rows);									
+				//var_dump($rows);									
 				 if($rows['user_id']==$data){
-					var_dump($data);						
+					//var_dump($data);						
 				 	return true;			
 				 }
 			}						
@@ -3343,7 +3353,7 @@ class User extends Database
 		if($num_result>0){			
 			while($rows=$result->fetch_assoc()){
 				$dDate = $rows['delivery_date'];
-				var_dump($dDate);	
+				//var_dump($dDate);	
 				//var_dump($temp);				
 			}			
 			if($dDate!='')
@@ -3470,10 +3480,16 @@ class User extends Database
 					$html.= "<td>".$temp[$i]."</td><td>".$temp[$i+1]."</td><td>".$temp[$i+2]."</td><td>".$temp[$i+3]."</td><td>".$temp[$i+4]."</td><td>".$temp[$i+5]."</td>";
 			$html.= '</tr>';
 			}
-			$c++;
+			//$c++;
 		}
 		$html.= "</table>";	
 		return $html;	
+	}
+	public function update_material_list($mat_cart_list,$total_costing,$req_id){
+		$query="UPDATE requisition SET material_cart = '$mat_cart_list', costing = '$total_costing' where id = $req_id";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+		
+		echo "<span class='label label-success'>Cost and Material list updated.</span> ";
 	}
 }	
 ?>

@@ -1,7 +1,16 @@
 <?php	
 	include_once "user.php";
-	session_start();
+	session_start();	
+	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
+	{ 	  
+		header("Location: signin.php?status=notloggedin");
+	}	
 	$print = new User();
+	if(!$print->user_home_page_authorization($_SESSION["user_id"])){
+		echo 'You are not authorized to use this page.';
+		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+		exit;
+	}
 	//echo $_REQUEST['id'];
 	$print->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
 ?>
@@ -36,9 +45,9 @@
   </head>
   <body class="">
   <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
+      <div class="navbar-inner" style="padding-bottom: 0px;">
         <div class="container">
-          <img src="logo.png" height="47" width="167">
+          <img src="logo.png" height="47" width="167" style="padding-top: 11px;">
           <!--/.nav-collapse -->
         </div>
       </div>

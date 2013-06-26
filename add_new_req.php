@@ -430,27 +430,16 @@
 	});
 	
 	function processMatList(){
-		cart = $('#mat_list_table')
-		heading = $('#mat_list_table tr:first-child') 
-		//allTr = $('#mat_list_table tr')
-		//allTd = $('#mat_list_table td')
-		//console.log(allTd)
-		//return
 		var arrTd = new Array()
 		var materialCart = new Array()
 		$('#mat_list_table tr').each(function( tr ) {
 			allTd = $(this).children()
 			allTd.each(function(td){
-				arrTd.push($(this).text())
-				//materialCart[tr][td] = $(this).text()
-			    //console.log(materialCart)			
+				arrTd.push($(this).text())			
 			})
 		});
 		materialCart.push(arrTd)
 		return materialCart
-		/*for(i=0;i<allTd.length;i++){
-			console.log
-		}*/
 	}
 	
 	$('#mat_add').click(function(){

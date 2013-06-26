@@ -105,6 +105,10 @@
 				if(isset($_REQUEST['decision1'])){
 					$decision = $_REQUEST['decision1'];
 					if($_SESSION['rand'] == $_REQUEST["prevent"]){
+						//var_dump($_REQUEST["mat_cart_list"]);
+						//var_dump($_REQUEST["total_costing"]);
+						//var_dump(isset($_REQUEST["mat_cart_list"]));
+						//return;
 						//echo $_REQUEST['decision1'];
 						if($_REQUEST['decision1']=='Reject'){
 							$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
@@ -128,6 +132,11 @@
 								}
 								else
 									$req_list->assign_local_account_scm($_REQUEST["id"]);	
+								//"mat_cart_list"]);
+						//var_dump($_REQUEST["total_costing"]);
+								if($_REQUEST["mat_cart_list"]!='' && $_REQUEST["total_costing"]!=''){									
+								$req_list->update_material_list($_REQUEST["mat_cart_list"],$_REQUEST["total_costing"],$_REQUEST["id"]);
+								}
 							}
 							$req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
 							$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
@@ -404,6 +413,8 @@
                      <button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button>
                      <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>-->
                      <input id="prevent" name="prevent" value="<?php echo $_SESSION['rand']?>" style="display:none"/>
+                     <input type="text" id="mat_cart_list" name="mat_cart_list" style="display:none">
+                     <input type="text" id="total_costing" name="total_costing" style="display:none">
                  </form>
                  </td>    
                  <td>
@@ -601,6 +612,24 @@
 	$("#cost_edit").click(changeButtonForCostEdit)
 	$("#cost_edit_finish").click(changeButtonForCostEditFinish)
 	$("#des").submit(function(e){
+		if($('#cartForValidation').length>0){
+			var arrTd = new Array()
+			var materialCart = new Array()
+			$('#cartForValidation tr').each(function( tr ) {
+				allTd = $(this).children()
+				allTd.each(function(td){
+					if(td==2){
+						arrTd.push($(this).children().val())
+					}
+					else
+						arrTd.push($(this).text())			
+				})
+			});
+			materialCart.push(arrTd)
+			totalCost = $('#totalCost').text()
+			$('#mat_cart_list').val(materialCart)
+			$('#total_costing').val(totalCost)
+		}
 		if (!confirm("Do you confirm submit?"))
 		{
 			e.preventDefault();
