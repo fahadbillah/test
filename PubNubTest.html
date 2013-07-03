@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>My Chat</title>
+</head>
+
+<body>
+<div id='write'>
+<form id="chatBox" >
+<input type="text" id="name" />
+<input type="button" id="set" value="Set Name" />
+
+<input type="text" id="chat" style="display:none" />
+<input type="button" id="send" value="Send" style="display:none" />
+</form>
+</div>
+<div id='read'></div>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://cdn.pubnub.com/pubnub-3.5.3.min.js"></script>
+<script>
+(function(){
+	var userName
+    // Init
+    var pubnub = PUBNUB.init({
+        publish_key   : 'pub-c-418d01d0-a5b3-4730-98b5-f3d7531d7bc3',
+        subscribe_key : 'sub-c-9077b9a0-e3f8-11e2-afad-02ee2ddab7fe'
+    })
+
+    // LISTEN
+    pubnub.subscribe({
+        channel : "hello_world",
+        message : function(m){
+								publish('autoReply')
+							 	//console.log(m)
+								temp = m.split('|')
+								da = new Date()
+								crT = da.getHours()+'-'+da.getMinutes()+'-'+da.getSeconds()+'-'+da.getMilliseconds()
+							 	text = temp[0]+' *sent time - '+temp[1]+' recvd time - '+crT
+								html = '<span>'+text+'</span></br>'
+								$('#read').prepend(html)
+								//console.log() 
+							 },
+        connect : publish
+    })
+
+    // SEND
+    function publish(mes) {
+        pubnub.publish({
+            channel : "hello_world",
+            message : mes
+        })
+    }
+	$('#send').on("click", function(event){
+		d = new Date()
+		crT = d.getHours()+'-'+d.getMinutes()+'-'+d.getSeconds()+'-'+d.getMilliseconds()
+		//t = new Date().getTime()
+		console.log(crT)
+		temp = userName+' -> '+$('#chat').val()+'|'+crT
+		publish(temp)
+	})
+	$('#set').on("click", function(event){
+		userName = $('#name').val()
+		$('#name').attr('disabled','')
+		$(this).hide('slow')
+		$('#send').show('slow')
+		$('#chat').show('slow')
+	})
+})();
+</script>
+</body>
+</html>

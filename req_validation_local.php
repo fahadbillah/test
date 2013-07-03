@@ -170,7 +170,7 @@
 			 ?>
                <tr>
                  <th>Requisition ID</th>
-                 <td><?php echo $id ?>
+                 <td><?php echo $req_list->id_to_req_id($id) ?>
                  </td>
                </tr>  
                <tr>
@@ -194,8 +194,8 @@
                  </td>
                </tr>   
                <tr>
-                 <th>Requisition by</th>
-                 <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> <a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>
+                 <th>Created by</th>
+                 <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> <!--<a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>-->
                  </td>
                </tr>   
                <?php if($material_cart!='') {?>
@@ -232,6 +232,7 @@
 						echo $costing ;
 				 ?>
                </tr> 
+               <?php if(false){?>
                <tr>
                  <th>Purchase Order</th>
                  <td>
@@ -324,7 +325,9 @@
 				 }
 				?>
                  </td>
-               </tr>            
+               </tr>  
+               
+               <?php  } ?>          
                  <th>Status</th>
                  <td>
 				 <?php
@@ -415,6 +418,7 @@
                      <input id="prevent" name="prevent" value="<?php echo $_SESSION['rand']?>" style="display:none"/>
                      <input type="text" id="mat_cart_list" name="mat_cart_list" style="display:none">
                      <input type="text" id="total_costing" name="total_costing" style="display:none">
+                     <input type="text" id="grn" name="grn" style="display:none">
                  </form>
                  </td>    
                  <td>
@@ -444,6 +448,23 @@
                 </table>
              </div>             
              <div class="accordion" id="accordion2">
+             <!--<a href="#gnr" role="button" class="btn" data-toggle="modal">GNR Form</a>
+ 
+            
+            <div id="gnr" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">GNR Form</h3>
+              </div>
+              <div class="modal-body">
+                <p>GNR Body</p>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button class="btn btn-primary">Submit</button>
+              </div>
+            </div>-->
              <?php 
 			   /*unset($req_list->user_data);
 			   $req_list->get_comments($_REQUEST["id"]);
@@ -586,6 +607,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-1.8.3.js"></script>
+    <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="js/jquery.validate.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>
@@ -600,6 +622,7 @@
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
     <script src="js/all_functions.js"></script>
+    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.3.custom.min.css" />
     <style type="text/css">
     * { font-family: Verdana; font-size: 100%; }
     label { width: 10em; float: left; }
@@ -608,10 +631,42 @@
     .submit { margin-left: 12em; }
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
-	<script>	 
+	<script>//grnTitle grnReqType grnRcvdLoc grnRcvdBy grnRcvdDate grnChalanNo grnNote
+	var firstClick = true	 
+	//$('#decision').click(checkForGRN)
 	$("#cost_edit").click(changeButtonForCostEdit)
 	$("#cost_edit_finish").click(changeButtonForCostEditFinish)
 	$("#des").submit(function(e){
+		if($('#decision').val()=='Partially Received' || $('#decision').val()=='Received'){
+			if(firstClick){
+				$('#grnDiv').show('slow')
+				firstClick = false
+				e.preventDefault();
+				return
+			}
+			else{
+				htm = new Array()
+				htm.push($('#grnTitle').val())
+				htm.push($('#grnReqType').val())
+				htm.push($('#grnRcvdLoc').val())
+				htm.push($('#grnRcvdBy').val())
+				htm.push($('#grnRcvdDate').val())
+				htm.push($('#grnChalanNo').val())
+				htm.push($('#grnNote').val())
+				e.preventDefault();
+				alert(htm.serializeArray())
+				$('#grn').val(htm.serializeArray())
+				return
+				/*html=''
+				html+=$('#grnTitle').val()
+				html+='|'+$('#grnReqType').val()
+				html+='|'+$('#grnRcvdLoc').val()
+				html+='|'+$('#grnRcvdBy').val()
+				html+='|'+$('#grnRcvdDate').val()
+				html+='|'+$('#grnChalanNo').val()
+				html+='|'+$('#grnNote').val()*/
+			}
+		}
 		if($('#cartForValidation').length>0){
 			var arrTd = new Array()
 			var materialCart = new Array()
@@ -647,6 +702,10 @@
 		} 
 	  }*/
 	  
+	function checkForGRN(e){
+		if($(this).val()=='Partially Received')
+			alert('works')//$('#grnFormDiv').show();		
+	}
 	  function make_read($id){
 		  $.post('comment_handler.php', {handler_type: "makeRead", id: $id},
               function(output){
@@ -688,6 +747,9 @@
 		}
 		  //alert(id[1]) mat_cart_edit_field_".$temp[$i]."' value='".$tempUnit[0]."' disabled> ".$tempUnit[1]."</td><td id='singleUnitPrice_".$temp[$i]."'>".$temp[$i+3]."</td><td id='singleItemTotal_
 	  })
+	  jQuery(function($){
+		$("#grnRcvdDate").datepicker({ dateFormat: "dd-mm-yy" });
+	  });
     </script>
     
     

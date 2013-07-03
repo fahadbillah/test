@@ -352,11 +352,12 @@
 	}
 	  
 	function getSub(){
-		var catVal = $("#mCat").val();
-		$.post('material_subcategory.php', {cat: catVal},
-			function(output){
+		var catVal = $("#mCat").val()
+		$('#mSubCat option').text('Loading...')
+		posting = $.post('material_subcategory.php', {cat: catVal});
+		posting.done(function(output){
 			  $('#mSubCat').html(output).show();
-		});// main
+		})
 	}
 	$("form").submit(function(e){
 		if (!confirm("Do you confirm submit?"))

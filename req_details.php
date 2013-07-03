@@ -111,11 +111,11 @@
          
           <ul class="breadcrumb">
             <li><a href="list_of_req_user.php">Requisition</a> <span class="divider">/</span></li>
-            <li class="active">Requisition ID <?php echo $_REQUEST["id"] ?> </li>
+            <li class="active">Requisition ID <?php echo $req_list->id_to_req_id($_REQUEST["id"]) ?> </li>
           </ul>
           
           <div class="page-header">
-            <h2>Requisition <?php echo $_REQUEST["id"] ?></h2>
+            <h2>Requisition <?php echo $req_list->id_to_req_id($_REQUEST["id"]) ?></h2>
           </div>
           <div id="yooo">
           <?php if($_SESSION["designation"]=="site manager" || $_SESSION["designation"]=="site supervisor") {?>
@@ -179,7 +179,7 @@
 			 ?>
                <tr>
                  <th>Requisition ID</th>
-                 <td><?php echo $id ?>
+                 <td><?php echo $req_list->id_to_req_id($id) ?>
                  </td>
                </tr>  
                <tr>

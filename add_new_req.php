@@ -327,23 +327,26 @@
 	<script>
 	  var materialList = 0
 	  var materialCatList = ''
-	  
+	  var unitItm = Array()
+	  var itmUnitId
 	  function init(){
 		  $.post("get_material_list.php",{val:'all_cat_list'},function(output){
 			  $('#mat_cat').html(output).show();
 			});				  
 	  }	  
 	  $('#mat_sub_cat').change(function(){
+		  htmItm = ''
 	      mid = $('#'+this.id).val()
 		  if(mid!=''){
 			  $('#mat_item option').text('Loading...')
 			  posting = $.post("get_material_list.php",{val:'item',id:mid})
 			  posting.done(function(output){
-			  temp = output.split('|')				  
-			  $('#mat_item').html(temp[0]).show()	  
-			  $('#unit').text(temp[1]).show()
+			 	$('#mat_item').html(output).show()	
 			});
 		  }
+	  })
+	  $('#mat_item').change(function(){
+		  $('#unit').text($('#mat_item option:selected')[0].className)
 	  })
 	  $('#mat_cat').change(function(){
 		  mid = $('#'+this.id).val()
@@ -495,7 +498,20 @@
 		createID('')
 	}
 	
+	function isEven(n) 
+	{
+	   return isNumber(n) && (n % 2 == 0);
+	}
 	
+	function isOdd(n)
+	{
+	   return isNumber(n) && (n % 2 == 1);
+	}
+	
+	function isNumber(n)
+	{
+	   return n == parseFloat(n);
+	}
 	  init() 
     </script>
 

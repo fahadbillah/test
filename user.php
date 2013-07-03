@@ -528,6 +528,12 @@ class User extends Database
 		echo "<span class='label label-success'>User added as '$post' for '$location' location.</span> ";
 		//echo $this->mysqli->insert_id;
 	}
+	public function get_com_req_id($location_id){
+		$query="SELECT id FROM requisition where location_id = '$location_id'";	
+		$result = $this->mysqli->query($query);
+		$num_result=$result->num_rows;		// determine number of rows result set 
+		return $num_result;
+	}
 	public function new_req($idusers,$title,$description,$type_of_req,$costing,$datepicker,$location_id,$mat_cart)
 	{
 		$idusers = (int)$this->mysqli->real_escape_string($idusers);
@@ -539,9 +545,9 @@ class User extends Database
 		$location_id = $this->mysqli->real_escape_string($location_id);
 		$mat_cart = $this->mysqli->real_escape_string($mat_cart);
 		
-		
-		
-		$query="INSERT INTO requisition SET user_id='$idusers', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
+		$com_req_id = $this->get_com_req_id($location_id);
+		$com_req_id++;
+		$query="INSERT INTO requisition SET com_req_id='$com_req_id', user_id='$idusers', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
@@ -2059,14 +2065,14 @@ class User extends Database
 			echo "<span class='label label-warning'>No user available.</span> ";	
 		return $this->additional_data;
 	}
-	public function add_new_user($name,$designation,$office_code,$authority_level)
+	public function add_new_user($name,$designation,$authority_level)
 	{
 		$name = $this->mysqli->real_escape_string($name);
 		$designation = $this->mysqli->real_escape_string($designation);
-		$office_code = $this->mysqli->real_escape_string($office_code);
+		//$office_code = $this->mysqli->real_escape_string($office_code);
 		$authority_level = $this->mysqli->real_escape_string($authority_level);
 		//echo $name,$designation,$office_code,$authority_level;					
-		$query="INSERT INTO user_master SET name='$name', designation='$designation', office_code='$office_code', authorization_level='$authority_level', active_status='active'";
+		$query="INSERT INTO user_master SET name='$name', designation='$designation',  authorization_level='$authority_level', active_status='active'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>User added successfully.</span> ";	
@@ -2694,10 +2700,10 @@ class User extends Database
 				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>'; 
 				break;
 			case 'Delivered':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Received">Received</button>';
+				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Received">Received</button>';
 				break;
 			case 'Partially Delivered':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Received">Partially Receive</button>';
+				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Received">Partially Receive</button>';
 				break;
 			case 'Approved':
 				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
@@ -2730,6 +2736,41 @@ class User extends Database
 				break;
 		}	
 		return $this->user_data_temp1;
+	}
+	public function getGrnForm(){
+		$html="<div id='grnDiv' style='display:none;'><table class='table table-condensed table-hover' id='grnTable'>
+        <tr>
+        <th>Title</th>
+        <th><input type='text' id='grnTitle' name='grnTitle'></th>
+        </tr>
+        <tr>
+        <th>Requisition Type</th>
+        <td><input type='text' id='grnReqType' name='grnReqType'></td>
+        </tr>
+        <tr>
+        <th>Recieved Location</th>
+        <td><input type='text' id='grnRcvdLoc' name='grnRcvdLoc'></td>
+        </tr>
+        <tr>
+        <th>Recieved By</th>
+        <td><input type='text' id='grnRcvdBy' name='grnRcvdBy'></td>
+        </tr>
+        <tr>
+        <th>Recieved Date</th>
+        <td><input type='text' id='grnRcvdDate' name='grnRcvdDate'></td>
+        </tr>
+        <tr>
+        <th>Chalan No.</th>
+        <td><input type='text' id='grnChalanNo' name='grnChalanNo'></td>
+        </tr>
+        <tr>
+        <th>Note</th>
+        <td><textarea id='grnNote' name='grnNote'></textarea></td>
+        </tr>
+        </table></div>";
+		         
+
+		return $html;
 	}
 	public function checkBoss($req_id,$user_id){		
 		unset($this->user_data_temp);
@@ -2777,11 +2818,18 @@ class User extends Database
 			echo "<span class='label label-warning'>No admin found for this requisition.</span> ";
 	}
 	public function add_boss_limit($user_id,$limit){
-		$id = (int)$user_id;
+		$this->date_time();
+		$da = $this->date;
+		
+		//var_dump($user_id);
+		//var_dump($limit);
+		$uid = (int)$user_id;		//limit	user_id limit	user_id	
 		$lim = (int)$limit;
-		$query="INSERT INTO money_limit SET limit = '$lim', user_id = '$id'";
-		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
-		echo "<span class='label label-success'>Pm send successfully.</span> ";
+		//var_dump($uid);
+		//var_dump($lim);
+		$query="INSERT INTO money_limit SET bosslimit='$lim', user_id='$uid'";	
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
+		echo "<span class='label label-success'>Boss limit added.</span> ";
 	}
 	public function location_id_to_name($location_id){
 		unset($this->user_data_temp1);
@@ -3300,12 +3348,12 @@ class User extends Database
 		}
 	}
 	public function form_unserialized($po_info){
-		$temp = explode('|',$po_info);
-		foreach($temp as $t){
-			$temp1 = unserialize($t);
+		//$temp = explode('|',$po_info);
+		//foreach($temp as $t){
+			$temp1 = unserialize($po_info);
 			array_splice($temp1, -1);
 			$temp2[] = $temp1;
-		}
+		//}
 		return $temp2;
 	}
 	public function get_central_acc_scm(){		
@@ -3362,7 +3410,7 @@ class User extends Database
 				$temp = $dt;		
 			$query="update requisition SET delivery_date = '$temp' where id = '$req_id'";
 			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted. error- ".__FUNCTION__);	
-			echo 'date updated.';
+			echo "<span class='label label-success'>Date updated.</span> ";
 		}	
 		else			
 			echo "<span class='label label-warning'>No requisition found under this id.</span> ";		
@@ -3490,6 +3538,18 @@ class User extends Database
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>Cost and Material list updated.</span> ";
+	}
+	public function id_to_req_id($id){		
+		$query="SELECT com_req_id FROM requisition where id='$id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				return $rows['com_req_id'];				//var_dump($temp);				
+			}
+		}
+		else			
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 	}
 }	
 ?>

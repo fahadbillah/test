@@ -252,7 +252,7 @@
         </tr>
         <?php 
         $location->get_micro_site('');
-       // var_dump($location->user_data_temp1);
+       	//var_dump($location->user_data_temp1);
         foreach($location->user_data_temp1 as $mic){
             extract($mic)
         ?>
@@ -535,6 +535,7 @@
         </div>
       </div>
     </form>
+      
     </div>    
     <!-- Le javascript
     ================================================== -->

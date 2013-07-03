@@ -94,42 +94,21 @@
 				$start = $calc - $perpage;
 				
 			(isset($_REQUEST['page'])) ? $stpage = $_REQUEST['page']-1 : $stpage = 0; 
-		  	/*$user_post = array_unique($user_home->getPost($_SESSION["user_id"]));
-			foreach($user_post as $up){
-				extract($up);	
-				
-			}*/
+			
+				 	
 		  ?>
-          <div class="well well-large">
-             <h4>All Requisition</h4>
+         <!-- <div class="well well-large">-->
+             <div class="span5 well well-large">
+             <h4>New Requisition</h4>
              <table class="table table-striped">
              <ul>     
              <?php 
-			 	/*switch($post){
-					case "Boss":
-						$upost = 'Boss';
-						break;
-					case "Accountant":
-						$upost = 'Accountant';
-						break;
-					case "SCM":
-						$upost = 'SCM';
-						break;
-					default:
-						$upost = 'Raiser';			
-				}*/
-				/*if(in_array("Boss", $user_post))
-					$upost = 'Boss';
-				else if(in_array("Accountant", $user_post))
-					$upost = 'Accountant';
-				else if(in_array("SCM", $user_post))
-					$upost = 'SCM';
+			 	if(isset($_REQUEST['type'])&&$_REQUEST['type']=='byNew')
+					$tempStart = $start;
 				else
-					$upost = 'Raiser';*/
-				//$user_home->getLink($upost,$_SESSION["user_id"]);
+					$tempStart = 0;
 			 	unset($user_home->req_data);
-				//$user_home->user_home_req_list_by_type(0,10,"New",$_SESSION["idusers"]);
-				$user_home->get_request_list($stpage,$perpage,$_SESSION["user_id"]);
+				$user_home->get_request_list($tempStart,$perpage,$_SESSION["user_id"]);
 				  if($user_home->good_to_go_flag>0){
 					 foreach($user_home->req_data as $list)
 					 {
@@ -139,37 +118,13 @@
               <td>        
                <li>
                  <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$id.' '.$title."</a>";
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
 				?>  
                </li>
                </td>
                <td>
                  <?php 
 				 	echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
-				 	/*switch($status){
-						case 'New':
-							 echo ' <button class="btn btn-primary btn-mini disabled">New</button>';
-							 break;
-						case 'Closed':
-							 echo ' <button class="btn btn-warning btn-mini disabled">Closed</button>';
-							 break;
-						case 'Solved':
-							 echo ' <button class="btn btn-success btn-mini disabled">Solved</button>';
-							 break;
-						case 'Delivered':
-							 echo ' <button class="btn btn-warning btn-mini disabled">Delivered</button>';
-							 break;
-						case 'Approved':
-							 echo ' <button class="btn btn-warning btn-mini disabled">Approved</button>';
-							 break;
-						case 'Clear From Accounts':
-							 echo ' <button class="btn btn-warning btn-mini disabled">Clear From Accounts</button>';
-							 break;
-						case 'Redirected':
-							 echo ' <button class="btn btn-warning btn-mini disabled">Redirected</button>';
-							 break;
-						
-					}*/
 				?>  
                 </td>
                </tr>  
@@ -185,25 +140,7 @@
 				unset($user_home->req_data);
 				
 				if($user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
-				{
-				
-				//print_r($req_list->req_data);
-				
-				/*$perpage = 5;
-
-				if(isset($_GET["page"]))				
-				{				
-				  $page = intval($_GET["page"]);				
-				}				
-				else			
 				{			
-				  $page = 1;				
-				}
-								
-				$calc = $perpage * $page;
-				
-				$start = $calc - $perpage;	*/
-				
 				$sort_type = "Pending";			
 			?>
               <tr> 
@@ -234,14 +171,14 @@
                         {					
                             $j = $page - 1;
                                                 
-                            echo "<li><a id='page_a_link' href='user_home.php?page=$j'><< Prev</a></li>";					
+                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=byNew'><< Prev</a></li>";					
                         }
                     
                         for($i=1; $i <= $totalPages; $i++)					
                         {					
                             if($i<>$page)					
                             {					
-                                echo "<li><a href='user_home.php?page=$i' id='page_a_link'>$i</a></li>";					
+                                echo "<li><a href='user_home.php?page=$i&type=byNew' id='page_a_link'>$i</a></li>";					
                             }					
                             else					
                             {					
@@ -258,7 +195,7 @@
                         {					
                             $j = $page + 1;
                                             
-                            echo "<li><a href='user_home.php?page=$j' id='page_a_link'>Next >></a></li>";					
+                            echo "<li><a href='user_home.php?page=$j&type=byNew' id='page_a_link'>Next >></a></li>";					
                         }					
                     }
 				}
@@ -267,9 +204,221 @@
                 <td>
               </tr>
              </table>
-            
-          </div>                            
-        </div>
+            </div><div class="span5 well well-large">
+             <h4>Recent Deadline Requisition</h4>
+             <table class="table table-striped">
+             <ul>     
+             <?php 
+			 	if(isset($_REQUEST['type'])&&$_REQUEST['type']=='byUrgent')
+					$tempStart = $start;
+				else
+					$tempStart = 0;
+			 	unset($user_home->req_data);
+				$user_home->get_request_list($tempStart,$perpage,$_SESSION["user_id"]);
+				  if($user_home->good_to_go_flag>0){
+					 foreach($user_home->req_data as $list)
+					 {
+						extract($list);
+			  ?>           
+               <tr> 
+              <td>        
+               <li>
+                 <?php 
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
+				?>  
+               </li>
+               </td>
+               <td>
+                 <?php 
+				 	echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
+				?>  
+                </td>
+               </tr>  
+               <?php 
+					 }
+				 }
+					else
+					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
+		  ?>             
+             </ul> <?php 
+	
+				
+				unset($user_home->req_data);
+				
+				if($user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
+				{			
+				$sort_type = "Pending";			
+			?>
+              <tr> 
+               <td  align="center" class="pagination">
+                   <ul>
+					<?php
+                    
+                    if(isset($page))
+                    
+                    {
+                        unset($user_home->req_data);
+                    
+                        $user_home->total_user_req_list($_SESSION["user_id"]);
+                    
+                    //echo $req_list->req_data;
+                    
+                        if($user_home->req_data)					
+                        {					
+                            $total = $user_home->req_data;					
+                        }
+                    
+                        $totalPages = ceil($total / $perpage);
+                        if($page <=1 )					
+                        {					
+                            echo "<li><a id='page_links' href='' style='font-weight:bold;'>Prev</a></li>";					
+                        }                
+                        else					
+                        {					
+                            $j = $page - 1;
+                                                
+                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=byUrgent'><< Prev</a></li>";					
+                        }
+                    
+                        for($i=1; $i <= $totalPages; $i++)					
+                        {					
+                            if($i<>$page)					
+                            {					
+                                echo "<li><a href='user_home.php?page=$i&type=byUrgent' id='page_a_link'>$i</a></li>";					
+                            }					
+                            else					
+                            {					
+                                echo "<li><a id='page_links' style='font-weight:bold;'>$i</a></li>";					
+                            }
+                        
+                        }
+                    
+                        if($page == $totalPages )					
+                        {					
+                            echo "<li><a id='page_links' style='font-weight:bold;'>Next</a></li>";					
+                        }					
+                        else					
+                        {					
+                            $j = $page + 1;
+                                            
+                            echo "<li><a href='user_home.php?page=$j&type=byUrgent' id='page_a_link'>Next >></a></li>";					
+                        }					
+                    }
+				}
+                    ?>
+                  </ul>
+                <td>
+              </tr>
+             </table>
+            </div><div class="span10 well well-large">
+             <h4>Solved Requisition</h4>
+             <table class="table table-striped">
+             <ul>     
+             <?php 
+			 	if(isset($_REQUEST['type'])&&$_REQUEST['type']=='bySolved')
+					$tempStart = $start;
+				else
+					$tempStart = 0;
+			 	unset($user_home->req_data);
+				$user_home->get_request_list($tempStart,$perpage,$_SESSION["user_id"]);
+				  if($user_home->good_to_go_flag>0){
+					 foreach($user_home->req_data as $list)
+					 {
+						extract($list);
+			  ?>           
+               <tr> 
+              <td>        
+               <li>
+                 <?php 
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
+				?>  
+               </li>
+               </td>
+               <td>
+                 <?php 
+				 	echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
+				?>  
+                </td>
+               </tr>  
+               <?php 
+					 }
+				 }
+					else
+					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
+		  ?>             
+             </ul> <?php 
+	
+				
+				unset($user_home->req_data);
+				
+				if($user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
+				{			
+				$sort_type = "Pending";			
+			?>
+              <tr> 
+               <td  align="center" class="pagination">
+                   <ul>
+					<?php
+                    
+                    if(isset($page))
+                    
+                    {
+                        unset($user_home->req_data);
+                    
+                        $user_home->total_user_req_list($_SESSION["user_id"]);
+                    
+                    //echo $req_list->req_data;
+                    
+                        if($user_home->req_data)					
+                        {					
+                            $total = $user_home->req_data;					
+                        }
+                    
+                        $totalPages = ceil($total / $perpage);
+                        if($page <=1 )					
+                        {					
+                            echo "<li><a id='page_links' href='' style='font-weight:bold;'>Prev</a></li>";					
+                        }                
+                        else					
+                        {					
+                            $j = $page - 1;
+                                                
+                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=bySolved'><< Prev</a></li>";					
+                        }
+                    
+                        for($i=1; $i <= $totalPages; $i++)					
+                        {					
+                            if($i<>$page)					
+                            {					
+                                echo "<li><a href='user_home.php?page=$i&type=bySolved' id='page_a_link'>$i</a></li>";					
+                            }					
+                            else					
+                            {					
+                                echo "<li><a id='page_links' style='font-weight:bold;'>$i</a></li>";					
+                            }
+                        
+                        }
+                    
+                        if($page == $totalPages )					
+                        {					
+                            echo "<li><a id='page_links' style='font-weight:bold;'>Next</a></li>";					
+                        }					
+                        else					
+                        {					
+                            $j = $page + 1;
+                                            
+                            echo "<li><a href='user_home.php?page=$j&type=bySolved' id='page_a_link'>Next >></a></li>";					
+                        }					
+                    }
+				}
+                    ?>
+                  </ul>
+                <td>
+              </tr>
+             </table>
+            </div>
+          <!--</div>  -->                          
+        </div> 
       </div>
 
 

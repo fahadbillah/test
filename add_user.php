@@ -17,6 +17,8 @@
 	
 	if(isset($_REQUEST['add_limit'])){
 		if(!in_array("", $_REQUEST)){
+			//var_dump($_REQUEST['boss']);
+			//var_dump($_REQUEST['money_limit']);
 			$user->add_boss_limit($_REQUEST['boss'],$_REQUEST['money_limit']);
 		}
 		else 
@@ -34,7 +36,7 @@
 	if(isset($_REQUEST['add_exec_central'])){
 		if(!in_array("", $_REQUEST)){
 			//echo $_REQUEST['name_c']." ".$_REQUEST['designation_c']." ".$_REQUEST['office_code_c']." ".$_REQUEST['authority_level_c'];
-			$id_r = $user->add_new_user($_REQUEST['name_c'],$_REQUEST['designation_c'],$_REQUEST['office_code_c'],$_REQUEST['authority_level_c']);
+			$id_r = $user->add_new_user($_REQUEST['name_c'],$_REQUEST['designation_c'],$_REQUEST['authority_level_c']); //$_REQUEST['office_code_c'],
 			$user->add_new_exec($id_r,'central',$_REQUEST['post_c']);
 			//$_REQUEST['post_c']
 		}
@@ -44,7 +46,7 @@
 	
 	if(isset($_REQUEST['add_new_user'])){
 		if(!in_array("", $_REQUEST)){
-			$user->add_new_user($_REQUEST['name'],$_REQUEST['designation'],$_REQUEST['office_code'],$_REQUEST['authority_level']);
+			$user->add_new_user($_REQUEST['name'],$_REQUEST['designation'],$_REQUEST['authority_level']);//,$_REQUEST['office_code']
 		}
 		else 
 			echo "<span class='label label-warning'>A field was empty.</span>";	
@@ -142,7 +144,7 @@
       <td>Add new staff</td>
       </tr>
       <tr>
-      <td><a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Location to User</a></td>
+      <td><a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Local Raiser</a></td>
       <td>Assign location to a user</td>
       </tr>
       <tr>
@@ -235,7 +237,7 @@
     <div id="add_location_to_user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add location to user</h3>
+        <h3 id="myModalLabel">Add Local Raiser</h3>
       </div>
       <br>
     <form id="add_location_to_user_form" name="add_location_to_user_form" class="form-horizontal" action="add_user.php" method="post">
@@ -378,12 +380,12 @@
             </select>
         </div>
       </div>
-       <div class="control-group">
+       <!--<div class="control-group">
         <label class="control-label" for="inputEmail">Office Code</label>
         <div class="controls">
           <input name="office_code_c" type="text">
         </div>
-      </div>
+      </div>-->
       <div class="control-group">
         <label class="control-label" for="inputEmail">Authority Level</label>
         <div class="controls">
@@ -546,33 +548,43 @@
 	})	*/
 	
 	function getLocations(){
-		singleVal = $("#user1").val();
-		$.post("get_locations.php",{val:singleVal},function(output){
+		singleVal = $("#user1").val();		
+		$('#loc option').text('Loading...')
+		posting = $.post("get_locations.php",{val:singleVal});	
+		posting.done(function(output){
 			  $('#loc').html(output).show();
-			});	  
+			})  
 	}
 	function getMaster(){
-		$.post("get_master.php",function(output){
+		$('#ms option').text('Loading...')
+		posting = $.post("get_master.php");	  
+		posting.done(function(output){
 			  $('#ms').html(output).show();
-			});	  
+			})
 	}
 	function getProject(){
 		singleVal = $("#ms").val();
-		$.post("get_master.php",{val:singleVal,from:'ms'},function(output){
+		$('#pr option').text('Loading...')
+		posting = $.post("get_master.php",{val:singleVal,from:'ms'});	 
+		posting.done(function(output){
 			  $('#pr').html(output).show();
-			});	  
+			}) 
 	}
 	function getSite(){
 		singleVal = $("#pr").val();
-		$.post("get_master.php",{val:singleVal,from:'pr'},function(output){
+		$('#site option').text('Loading...')
+		posting = $.post("get_master.php",{val:singleVal,from:'pr'});
+		posting.done(function(output){
 			  $('#site').html(output).show();
-			});	  
+			})	  
 	}
 	function getMicroSite(){
 		singleVal = $("#site").val();
-		$.post("get_master.php",{val:singleVal,from:'site'},function(output){
+		$('#msite option').text('Loading...')
+		posting = $.post("get_master.php",{val:singleVal,from:'site'});	
+		posting.done(function(output){
 			  $('#msite').html(output).show();
-			});	  
+			})  
 	}
 	function displayVals() {
       var singleValues = $("#single").val();
@@ -621,8 +633,9 @@
 	}); 
 	$('#name_acc_scm').change(get_users_assigned_location)
 	function get_users_assigned_location(e){
-		if(this.value!=''){
-			$.post('get_users_assigned_location.php', {id: this.value},
+		if(this.value!=''){			
+			$('#location_output').text('Loading...')
+			posting = $.post('get_users_assigned_location.php', {id: this.value},
 			  function(o){
 				  $('#location_output_ext').show('slow')
 				  $('#location_output').html(o).show('slow');

@@ -13,10 +13,11 @@
 	}
 	if($type=='item' && isset($_POST['id'])){
 		//print_r($material_list->get_all_material());
+		echo "<option value=''>Select Item</option>";
 		foreach($material_list->get_all_material($_POST['id']) as $item){
 			extract($item);
 			//if($type=='Subcategory')
-			echo "<option value='$id'>".$name."</option>|".$measurment_unit;
+			echo "<option value='$id' class='".$measurment_unit."'>".$name."</option>";
 		}
 	}
 	if($type=='singleItem' && isset($_POST['mid'])){
