@@ -1,6 +1,6 @@
 <?php 
 	include_once "user.php";
-	
+	include_once "relevant_search.php";
 	session_start();
 	
 	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
@@ -76,6 +76,10 @@
               <li> <a href="add_new_req.php">Requisition</a> </li>
               <li> <a id="log_out" href="log_out.php">Log Out</a>  </li>
             </ul>
+            <form class="navbar-search pull-right">
+              <input type="text" class="search-query" placeholder="Search Requisition">
+              <button type="submit" class="btn btn-primary" style="margin-top: 0px"><i class="icon-search"></i></button>
+            </form>
           </div><!--/.nav-collapse -->
         </div>
       </div>
