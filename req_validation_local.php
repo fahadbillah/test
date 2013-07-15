@@ -208,10 +208,13 @@
 				 ?>
                  <td><i class="icon-user icon-white"></i> <?php echo $originalRequester[0].' Contact No.- '.$originalRequester[1]; ?> 
                  </td>
+                 <?php 
+					}
+					else
+						echo '<td>Requested by not inputed!</td>';
+				 ?>
                </tr>   
-               <?php }
-			   	else
-					echo 'Requested by not inputed!';
+               <?php 
 			    if($material_cart!='') {?>
                <tr>
                  <th>Material List</th>

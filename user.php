@@ -881,10 +881,40 @@ class User extends Database
 		/*else
 			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
+	public function get_solved_request_list($start,$limit,$user_id)
+	{		
+		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.status in ('Closed','Reject') 
+		ORDER BY requisition.id desc limit $start,$limit";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+				
+		$this->good_to_go_flag = $num_result;
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+								
+				$this->req_data[]=$rows;					
+			}						
+			return $this->req_data;
+		}	
+		else
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
+	}
 	public function get_request_list_by_urgent($start,$limit,$user_id,$status)
 	{	
 		//echo 'works';
 		$temp = explode('|',$status);
+		if(count($temp)==2)
+			$temp[2]= $temp[3]='';
+		else if(count($temp)==3)
+			$temp[3]='';
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
 		INNER JOIN admins
@@ -905,6 +935,32 @@ class User extends Database
 				$urgent[]=$rows;					
 			}						
 			return $urgent;
+		}	
+		//else
+			//echo "<span class='label label-warning'>No Urgent Requisition Available!</span> ";
+	}
+	public function get_active_request_list($start,$limit,$user_id)
+	{	
+		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.status <> 'Closed'
+		ORDER BY requisition.id desc limit $start,$limit";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+				
+		$this->good_to_go_flag = $num_result;
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+								
+				$this->req_data[]=$rows;					
+			}						
+			return $this->req_data;
 		}	
 		else
 			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
