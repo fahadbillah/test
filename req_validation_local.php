@@ -74,11 +74,12 @@
          
           <ul class="breadcrumb">
             <li><a href="list_of_req_user.php">Requisition</a> <span class="divider">/</span></li>
-            <li class="active">Requisition ID <?php echo $_REQUEST["id"] ?> </li>
+            <li class="active">Requisition ID <?php echo $req_list->id_to_req_id($_REQUEST["id"]) ?></li>
           </ul>
           
           <div class="page-header">
-            <h2>Requisition <?php echo $_REQUEST["id"] ?></h2>
+          <div id="req_id" style="visibility:hidden"><?php echo $_REQUEST["id"] ?></div>
+            <h2>Requisition <?php echo $req_list->id_to_req_id($_REQUEST["id"]) ?></h2>
           </div>
           <div id="notice">
           <?php 
@@ -170,7 +171,7 @@
 			 ?>
                <tr>
                  <th>Requisition ID</th>
-                 <td><?php echo $req_list->id_to_req_id($id) ?>
+                 <td><?php echo $com_req_id ?>
                  </td>
                </tr>  
                <tr>
@@ -197,8 +198,21 @@
                  <th>Created by</th>
                  <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> <!--<a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>-->
                  </td>
+               </tr>
+               <?php //if($user_requested_by_info!=''){?>  
+               <tr>
+                 <th>Requested by</th>
+                 <?php 
+				 	$originalRequester = explode('|',$user_requested_by_info);
+					if(count($originalRequester)>1){
+				 ?>
+                 <td><i class="icon-user icon-white"></i> <?php echo $originalRequester[0].' Contact No.- '.$originalRequester[1]; ?> 
+                 </td>
                </tr>   
-               <?php if($material_cart!='') {?>
+               <?php }
+			   	else
+					echo 'Requested by not inputed!';
+			    if($material_cart!='') {?>
                <tr>
                  <th>Material List</th>
                  <td>
@@ -388,6 +402,47 @@
                <?php
 				 }
 			   ?>
+               
+               <?php
+			     if($GRN = $req_list->getGRNList($_REQUEST["id"])){
+			   ?>
+               <tr>
+                 <th>GRN</th>
+                 <td>
+                 <table class="table table-condensed table-hover">
+                   <tr>									
+                     <th>Sn.</th>
+                     <th>GRN Id</th>
+                     <th>Reqisition Type</th>
+                     <th>Received Location</th>
+                     <th>Received By</th>
+                     <th>Received Date</th>
+                     <th>Chalan No.</th> 
+                     <th>Note</th>                
+                   </tr>
+				 <?php 
+	    		   $c = 1;
+				   foreach($GRN as $g){
+					   extract($g);
+					   echo '<tr>';
+					   echo '<td>'.$c.'</td>';
+					   echo '<td>'.$grn_id.'</td>';
+					   echo '<td>'.$grnReqType.'</td>';
+					   echo '<td>'.$grnRcvdLoc.'</td>';
+					   echo '<td>'.$grnRcvdBy.'</td>';
+					   echo '<td>'.$grnChalanNo.'</td>';
+					   echo '<td>'.$grnNote.'</td>';
+					   echo '<td>'.$grnRcvdDate.'</td>';
+					   echo '</tr>';
+					   $c++;
+				   }
+				 ?>
+                 </table>
+                 </td> 
+               </tr>
+               <?php
+				 }
+				?>
                <tr>               
                  <th>Decision</th>
                  
@@ -606,7 +661,7 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.8.3.js"></script>
+    <script src="js/jquery-1.9.1.js"></script>
     <script src="js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="js/jquery.validate.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
@@ -636,8 +691,60 @@
 	//$('#decision').click(checkForGRN)
 	$("#cost_edit").click(changeButtonForCostEdit)
 	$("#cost_edit_finish").click(changeButtonForCostEditFinish)
+	$(".pDecision").click(function(){
+		//alert('works')
+		if($(this).html()==="Create GRN"){
+			$('#grnDiv').show('slow')
+			$(this).html("Submit GRN")		
+		}
+		else if($(this).html()==="Submit GRN"){	
+				
+		//alert('Submit grn works')
+			/*$('#grnTitle').val()
+				$('#grnReqType').val()
+				$('#grnRcvdLoc').val()
+				$('#grnRcvdBy').val()
+				$('#grnRcvdDate').val()
+				$('#grnChalanNo').val()
+				$('#grnNote').val()*/
+				if($('#grnTitle').val()==''||$('#grnReqType').val()==''||$('#grnRcvdLoc').val()==''||$('#grnRcvdBy').val()==''||$('#grnRcvdDate').val()==''||$('#grnChalanNo').val()==''||$('#grnNote').val()==''){
+					alert('A field left blank!')
+					return
+				}
+				htm = new Array()
+				htm.push($('#grnTitle').val())
+				htm.push($('#grnReqType').val())
+				htm.push($('#grnRcvdLoc').val())
+				htm.push($('#grnRcvdBy').val())
+				htm.push($('#grnRcvdDate').val())
+				htm.push($('#grnChalanNo').val())
+				htm.push($('#grnNote').val())
+				/*$('#grnTitle').attr('','disabled')
+				$('#grnReqType').val().attr('','disabled')
+				$('#grnRcvdLoc').attr('','disabled')
+				$('#grnRcvdBy').attr('','disabled')
+				$('#grnRcvdDate').attr('','disabled')
+				$('#grnChalanNo').attr('','disabled')
+				$('#grnNote').attr('','disabled')*/
+				//($('#grnTitle').val())
+				$('#grnLoading th').html('Submitting...')	
+			var posting = $.post('form_handler.php', {grn: "grn",form: htm,req_id:$('#req_id').text()});
+			posting.done(function(output){
+				if(output=='0Data cannot be inserted. error- insert_grn')
+					alert('please refresh the page and insert GRN again')
+				else{
+				  //$('#grnDiv').html().hide('slow')
+				  $('#grnDiv').html(output).show('slow');
+				  $('#decision').html('Partially Receive')
+				  $('#decision').attr('type','submit')
+				  //$('.partDecision').attr('id','decision')
+				  //$('#decision').removeClass('pDecision')
+				}
+			  })
+		}
+	})
 	$("#des").submit(function(e){
-		if($('#decision').val()=='Partially Received' || $('#decision').val()=='Received'){
+		/*if($('#decision').val()=='Partially Received' || $('#decision').val()=='Received'){
 			if(firstClick){
 				$('#grnDiv').show('slow')
 				firstClick = false
@@ -657,16 +764,8 @@
 				alert(htm.serializeArray())
 				$('#grn').val(htm.serializeArray())
 				return
-				/*html=''
-				html+=$('#grnTitle').val()
-				html+='|'+$('#grnReqType').val()
-				html+='|'+$('#grnRcvdLoc').val()
-				html+='|'+$('#grnRcvdBy').val()
-				html+='|'+$('#grnRcvdDate').val()
-				html+='|'+$('#grnChalanNo').val()
-				html+='|'+$('#grnNote').val()*/
 			}
-		}
+		}*/
 		if($('#cartForValidation').length>0){
 			var arrTd = new Array()
 			var materialCart = new Array()
@@ -710,8 +809,7 @@
 		  $.post('comment_handler.php', {handler_type: "makeRead", id: $id},
               function(output){
                   $('#yooo').html(output).show();
-              });
-		  
+              });		  
 	  }
 	  $('#pos').click(function(){
 		  if($('#pos').is(':checked')){

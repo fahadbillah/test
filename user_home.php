@@ -13,6 +13,17 @@
 		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
 		exit;
 	}
+	/*$roles = $user_home->get_all_user_role($_SESSION["user_id"]);
+	try {
+		foreach($roles as $r){
+			extract($r);
+			echo $location_id.' '.$post.'<br>';
+			$stages = $user_home->get_user_req_stage_urgent($post);
+		}
+	} catch (Exception $e) {
+		echo 'Caught exception: ',  $e->getMessage(), "\n";
+	}
+	var_dump($stages);*/
 	?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -98,8 +109,8 @@
 				 	
 		  ?>
          <!-- <div class="well well-large">-->
-             <div class="span5 well well-large">
-             <h4>New Requisition</h4>
+             <div class="span10 well well-large">
+             <h4>New Requisition</h4><br>
              <table class="table table-striped">
              <ul>     
              <?php 
@@ -204,114 +215,10 @@
                 <td>
               </tr>
              </table>
-            </div><div class="span5 well well-large">
-             <h4>Recent Deadline Requisition</h4>
-             <table class="table table-striped">
-             <ul>     
-             <?php 
-			 	if(isset($_REQUEST['type'])&&$_REQUEST['type']=='byUrgent')
-					$tempStart = $start;
-				else
-					$tempStart = 0;
-			 	unset($user_home->req_data);
-				$user_home->get_request_list($tempStart,$perpage,$_SESSION["user_id"]);
-				  if($user_home->good_to_go_flag>0){
-					 foreach($user_home->req_data as $list)
-					 {
-						extract($list);
-			  ?>           
-               <tr> 
-              <td>        
-               <li>
-                 <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
-				?>  
-               </li>
-               </td>
-               <td>
-                 <?php 
-				 	echo ' <button class="btn btn-primary btn-mini disabled">'.$status.'</button>';
-				?>  
-                </td>
-               </tr>  
-               <?php 
-					 }
-				 }
-					else
-					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
-		  ?>             
-             </ul> <?php 
-	
-				
-				unset($user_home->req_data);
-				
-				if($user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
-				{			
-				$sort_type = "Pending";			
-			?>
-              <tr> 
-               <td  align="center" class="pagination">
-                   <ul>
-					<?php
-                    
-                    if(isset($page))
-                    
-                    {
-                        unset($user_home->req_data);
-                    
-                        $user_home->total_user_req_list($_SESSION["user_id"]);
-                    
-                    //echo $req_list->req_data;
-                    
-                        if($user_home->req_data)					
-                        {					
-                            $total = $user_home->req_data;					
-                        }
-                    
-                        $totalPages = ceil($total / $perpage);
-                        if($page <=1 )					
-                        {					
-                            echo "<li><a id='page_links' href='' style='font-weight:bold;'>Prev</a></li>";					
-                        }                
-                        else					
-                        {					
-                            $j = $page - 1;
-                                                
-                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=byUrgent'><< Prev</a></li>";					
-                        }
-                    
-                        for($i=1; $i <= $totalPages; $i++)					
-                        {					
-                            if($i<>$page)					
-                            {					
-                                echo "<li><a href='user_home.php?page=$i&type=byUrgent' id='page_a_link'>$i</a></li>";					
-                            }					
-                            else					
-                            {					
-                                echo "<li><a id='page_links' style='font-weight:bold;'>$i</a></li>";					
-                            }
-                        
-                        }
-                    
-                        if($page == $totalPages )					
-                        {					
-                            echo "<li><a id='page_links' style='font-weight:bold;'>Next</a></li>";					
-                        }					
-                        else					
-                        {					
-                            $j = $page + 1;
-                                            
-                            echo "<li><a href='user_home.php?page=$j&type=byUrgent' id='page_a_link'>Next >></a></li>";					
-                        }					
-                    }
-				}
-                    ?>
-                  </ul>
-                <td>
-              </tr>
-             </table>
-            </div><div class="span10 well well-large">
-             <h4>Solved Requisition</h4>
+            </div>
+            <div class="span10 well well-large">
+             <h4>Solved Requisition</h4><br>
+
              <table class="table table-striped">
              <ul>     
              <?php 
@@ -425,7 +332,7 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.8.3.js"></script>
+    <script src="js/jquery-1.9.1.js"></script>
     <script src="js/jquery.validate.js"></script>
     <script src="./starter_files/bootstrap-transition.js"></script>
     <script src="./starter_files/bootstrap-alert.js"></script>

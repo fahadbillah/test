@@ -534,7 +534,7 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		return $num_result;
 	}
-	public function new_req($idusers,$title,$description,$type_of_req,$costing,$datepicker,$location_id,$mat_cart)
+	public function new_req($idusers,$title,$description,$type_of_req,$costing,$datepicker,$location_id,$mat_cart,$requested_by,$requested_by_contact)
 	{
 		$idusers = (int)$this->mysqli->real_escape_string($idusers);
 		$title = $this->mysqli->real_escape_string($title);
@@ -544,15 +544,15 @@ class User extends Database
 		$datepicker = $this->mysqli->real_escape_string($datepicker);
 		$location_id = $this->mysqli->real_escape_string($location_id);
 		$mat_cart = $this->mysqli->real_escape_string($mat_cart);
-		
+		$requested_by = $this->mysqli->real_escape_string($requested_by);
+		$requested_by_contact = $this->mysqli->real_escape_string($requested_by_contact);
+		$user_requested_by_info = $requested_by.'|'.$requested_by_contact;
 		$com_req_id = $this->get_com_req_id($location_id);
 		$com_req_id++;
-		$query="INSERT INTO requisition SET com_req_id='$com_req_id', user_id='$idusers', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
+		$query="INSERT INTO requisition SET com_req_id='$com_req_id', user_id='$idusers', user_requested_by_info= '$user_requested_by_info', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
-		//echo 'new_req executed</br>';
-		//echo $costing.$type_of_req.'</br>';
 		$last_req_id = $this->mysqli->insert_id;
 		$this->send_to_hub($last_req_id,$location_id);
 		$adminStat = $this->add_admin_local($location_id,$last_req_id);
@@ -560,21 +560,9 @@ class User extends Database
 			$this->send_to_hub_update($last_req_id,'central');
 		}		
 		$this->add_user_to_admin_table($idusers,$last_req_id);	
-		/*$hub = $this->determine_local_main($costing,$location_id);
-		//var_dump($hub);
-		if($hub == 'local'){
-			$this->send_to_hub($last_req_id,$location_id);
-			$this->add_admin_local($location_id,$last_req_id);
-			$this->add_user_to_admin_table($idusers,$last_req_id);				
-		}
-		else if($hub == 'central'){
-			$this->add_user_to_admin_table($idusers,$last_req_id);	
-			$this->send_to_hub($last_req_id,'central');
-		}*/
 	}
 	public function send_to_hub($last_req_id,$location_id)
-	{		
-		//echo 'send_to_hub executed</br>';
+	{	
 		$query="INSERT INTO req_hub SET req_id='$last_req_id', location='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
@@ -892,6 +880,34 @@ class User extends Database
 		}	
 		/*else
 			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+	}
+	public function get_request_list_by_urgent($start,$limit,$user_id,$status)
+	{	
+		//echo 'works';
+		$temp = explode('|',$status);
+		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.status IN ('$temp[0]','$temp[1]','$temp[2]','$temp[3]')
+		ORDER BY admins.date desc limit $start,$limit";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+				
+		$this->good_to_go_flag = $num_result;
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+								
+				$urgent[]=$rows;					
+			}						
+			return $urgent;
+		}	
+		else
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
 	}
 	public function get_request_list($start,$limit,$user_id)
 	{	
@@ -2700,10 +2716,10 @@ class User extends Database
 				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>'; 
 				break;
 			case 'Delivered':
-				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Received">Received</button>';
+				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success pDecision" type="button" id="decision" name="decision1" value="Received">Create GRN</button>';
 				break;
 			case 'Partially Delivered':
-				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Received">Partially Receive</button>';
+				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success pDecision" type="button" id="decision" name="decision1" value="Partially Received">Create GRN</button>';
 				break;
 			case 'Approved':
 				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
@@ -2748,15 +2764,15 @@ class User extends Database
         <td><input type='text' id='grnReqType' name='grnReqType'></td>
         </tr>
         <tr>
-        <th>Recieved Location</th>
+        <th>Received Location</th>
         <td><input type='text' id='grnRcvdLoc' name='grnRcvdLoc'></td>
         </tr>
         <tr>
-        <th>Recieved By</th>
+        <th>Received By</th>
         <td><input type='text' id='grnRcvdBy' name='grnRcvdBy'></td>
         </tr>
         <tr>
-        <th>Recieved Date</th>
+        <th>Received Date</th>
         <td><input type='text' id='grnRcvdDate' name='grnRcvdDate'></td>
         </tr>
         <tr>
@@ -2767,9 +2783,12 @@ class User extends Database
         <th>Note</th>
         <td><textarea id='grnNote' name='grnNote'></textarea></td>
         </tr>
+        </tr>
+        <tr id='grnLoading' style='display:hidden'>
+        <th></th>
+        <td></td>
+        </tr>
         </table></div>";
-		         
-
 		return $html;
 	}
 	public function checkBoss($req_id,$user_id){		
@@ -3550,6 +3569,76 @@ class User extends Database
 		}
 		else			
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+	}
+	public function get_all_user_role($user_id){
+		$query="SELECT location_id,post FROM requisition_user where user_id='$user_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$roles[] = $rows;				//var_dump($temp);				
+			}
+		}
+		else			
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+		return $roles;
+	}
+	public function get_user_req_stage_urgent($post){
+		switch($post){
+			case 'Boss':
+				return "New";
+			case 'SCM':
+				return "Received|Partially Received|Approved";
+			case 'Raiser':
+				return "Delivered|Partially Delivered|Reject|Approved";
+			case 'Accountant':
+				return "Document Delivered";
+			default:
+				echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+		}		
+	}
+	public function insert_grn($grn,$req_id){
+		$finalResult = false;
+		$grnFinal = array();
+		//grnReqType grnRcvdLoc grnRcvdBy grnRcvdDate grnChalanNo grnNote
+		foreach($grn as $g){
+			$grnFinal[] = $this->mysqli->real_escape_string($g);
+		}
+		$query="SELECT * FROM grn_master where req_id='$req_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;
+		$tempId = $num_result+1;
+		//var_dump($num_result);
+		$grn_id = $req_id.'.'.$tempId;
+		$query="INSERT INTO grn_master SET req_id = '$req_id',grn_id = '$grn_id',grnReqType = '$grnFinal[0]', grnRcvdLoc = '$grnFinal[1]', grnRcvdBy = '$grnFinal[2]', grnRcvdDate = '$grnFinal[3]', grnChalanNo = '$grnFinal[4]', grnNote = '$grnFinal[5]'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted. error- ".__FUNCTION__);		
+		echo "<span class='label label-success'>Grn added.</span> ";
+		$finalResult = true;
+		return $finalResult;
+	}
+	public function grnExists($req_id){
+		$query="SELECT * FROM grn_master where req_id='$req_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;
+		if($num_result>0)
+			return true;
+		else 
+			return false;
+	}
+	public function getGRNList($req_id){
+		$query="SELECT * FROM grn_master where req_id='$req_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$GRNList[] = $rows;				//var_dump($temp);				
+			}
+			return $GRNList;
+		}
+		else			
+			return false;
+			//echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+		//return $roles;
 	}
 }	
 ?>

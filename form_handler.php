@@ -19,6 +19,11 @@
 		//var_dump($args['unitDeleteId']);
 		$form->deleteCat($args['catDeleteId'],$args['type']);
 	}
+	else if(array_key_exists('grn', $args)){
+		$result = $form->insert_grn($args['form'],$args['req_id']);
+		if($result=== NULL)
+			echo false;
+	}
 	//else if(array_key_exists('cost_edit_box_for_local_boss', $args)){}
 	else
 		echo 'key not exists';

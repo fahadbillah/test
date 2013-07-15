@@ -79,32 +79,21 @@
             <h2>New Requisition</h2>
           </div>
           <div id="yooo">
-          <?php 
-	
-				//echo $_SESSION["location"];
-				
+          <?php
 				if(isset($_REQUEST["submit"]))
 				{
-					//var_dump($_REQUEST);		
 					if($_SESSION['rand']==$_REQUEST["prevent"]){
-						//print_r($_REQUEST);
-						//if(!in_array("",$_REQUEST))
-						if(!empty($_REQUEST['title'])&&!empty($_REQUEST['description'])&&!empty($_REQUEST['type_of_req'])&&!empty($_REQUEST['costingform'])&&!empty($_REQUEST['datepicker'])&&!empty($_REQUEST['location']))
+						if(!empty($_REQUEST['title'])&&!empty($_REQUEST['description'])&&!empty($_REQUEST['type_of_req'])&&!empty($_REQUEST['costingform'])&&!empty($_REQUEST['datepicker'])&&!empty($_REQUEST['location'])&&!empty($_REQUEST['requested_by'])&&!empty($_REQUEST['requested_by_contact']))
 						{
 							extract($_REQUEST);
 							if(filter_var($costingform, FILTER_VALIDATE_INT))
 							{
-								//echo $type_of_req." ".$recurring_recurring." ".$title." ".$description." ".$costing." ".$datepicker;
 								if(isset($_REQUEST['mat_cart'])){
 									$mat_cart = $_REQUEST['mat_cart'];
-									//echo $_REQUEST['mat_cart'];
 								}
 								else
 									$mat_cart = '';
-								$id = $new_req->new_req($_SESSION["user_id"],$title,$description,$type_of_req,$costingform,$datepicker,$location,$mat_cart);
-								//echo "id ".$id." has been added to requisition list";
-								
-								//echo $name.$email.$password.$contact.$master.$project.$site_factory.$designation;
+								$id = $new_req->new_req($_SESSION["user_id"],$title,$description,$type_of_req,$costingform,$datepicker,$location,$mat_cart,$requested_by,$requested_by_contact);
 							}
 							else
 								echo "<span class='label label-warning'>Input number in costing field.</span> ";							
@@ -254,6 +243,12 @@
                 </div> 
               </div> 
               <div class="control-group">
+                <label class="control-label" for="description">Originally Requested By</label>
+                <div class="controls">
+                 <div class="input-prepend"> <span class="add-on">Name</span><input name="requested_by" id="requested_by" type="text"></div>
+                 <div class="input-prepend"> <span class="add-on">Contact</span><input name="requested_by_contact" id="requested_by_contact" type="text"></div>
+                </div>
+              </div> <div class="control-group">
                 <label class="control-label" for="description">Description</label>
                 <div class="controls">
                   <textarea name="description" id="description" rows="3"></textarea>
