@@ -37,6 +37,7 @@
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -76,10 +77,12 @@
               <li> <a href="add_new_req.php">Requisition</a> </li>
               <li> <a id="log_out" href="log_out.php">Log Out</a>  </li>
             </ul>
-            <form class="navbar-search pull-right">
-              <input type="text" class="search-query" placeholder="Search Requisition">
-              <button type="submit" class="btn btn-primary" style="margin-top: 0px"><i class="icon-search"></i></button>
+            <ul class="nav pull-right">
+            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
+            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button type="submit" class="btn">Search</button>
             </form>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -131,12 +134,14 @@
 						extract($list);
 			  ?>           
                <tr> 
-              <td>        
-               <li>
+              <td> <i class="icon-eye-open"></i> 
                  <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id)."</a>";
 				?>  
-               </li>
+              <td>  
+                 <?php 
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$title."</a>";
+				?> 
                </td>
                <td>
                  <?php 
@@ -147,75 +152,9 @@
                <?php 
 					 }
 		  	   ?>             
-             </ul> <?php 
-	
-				
-				unset($user_home->req_data);
-				
-				if(count($urgentReq>0))//$user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
-				{					
-			?>
-              <tr> 
-               <td  align="center" class="pagination">
-                   <ul>
-					<?php
-                    
-                    if(isset($page))
-                    
-                    {
-                        //unset($user_home->req_data);
-                    
-                        //$user_home->total_user_req_list($_SESSION["user_id"]);
-                    
-                    	$total = count($urgentReq);
-                    
-                       /* if($user_home->req_data)					
-                        {					
-                            $total = $user_home->req_data;					
-                        }*/
-                    
-                        $totalPages = ceil($total / $perpage);
-                        if($page <=1 )					
-                        {					
-                            echo "<li><a id='page_links' href='' style='font-weight:bold;'>Prev</a></li>";					
-                        }                
-                        else					
-                        {					
-                            $j = $page - 1;
-                                                
-                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=byNew'><< Prev</a></li>";					
-                        }
-                    
-                        for($i=1; $i <= $totalPages; $i++)					
-                        {					
-                            if($i<>$page)					
-                            {					
-                                echo "<li><a href='user_home.php?page=$i&type=byNew' id='page_a_link'>$i</a></li>";					
-                            }					
-                            else					
-                            {					
-                                echo "<li><a id='page_links' style='font-weight:bold;'>$i</a></li>";					
-                            }
-                        
-                        }
-                    
-                        if($page == $totalPages )					
-                        {					
-                            echo "<li><a id='page_links' style='font-weight:bold;'>Next</a></li>";					
-                        }					
-                        else					
-                        {					
-                            $j = $page + 1;
-                                            
-                            echo "<li><a href='user_home.php?page=$j&type=byNew' id='page_a_link'>Next >></a></li>";					
-                        }					
-                    }
-				}
-                    ?>
-                  </ul>
-                <td>
-              </tr>
+             </ul> 
              </table>
+              <a href="all_requsitions.php?type=byNew" >All Urgent Requisions</a>
             </div>
             <?php			
 				 }
@@ -230,7 +169,7 @@
              <table class="table table-striped">
              <ul>     
              <?php 
-			 	if(isset($_REQUEST['type'])&&$_REQUEST['type']=='bySolved')
+			 	if(isset($_REQUEST['type'])&&$_REQUEST['type']=='byActive')
 					$tempStart = $start;
 				else
 					$tempStart = 0;
@@ -242,12 +181,16 @@
 						extract($list);
 			  ?>           
                <tr> 
-              <td>        
-               <li>
+              <td>
+               <i class="icon-adn"></i>
                  <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id)."</a>";
 				?>  
-               </li>
+               </td> 
+              <td>
+                 <?php 
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$title."</a>";
+				?>  
                </td>
                <td>
                  <?php 
@@ -261,75 +204,9 @@
 					else
 					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
 		  ?>             
-             </ul> <?php 
-	
-				
-				unset($user_home->req_data);
-				
-				if($user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
-				{					
-			?>
-              <tr> 
-               <td  align="center" class="pagination">
-                   <ul>
-					<?php
-                    
-                    if(isset($page))
-                    
-                    {
-                        unset($user_home->req_data);
-                    
-                        $user_home->total_user_req_list($_SESSION["user_id"]);
-                    
-                    //echo $req_list->req_data;
-                    
-                        if($user_home->req_data)					
-                        {					
-                            $total = $user_home->req_data;					
-                        }
-                    
-                        $totalPages = ceil($total / $perpage);
-                        if($page <=1 )					
-                        {					
-                            echo "<li><a id='page_links' href='' style='font-weight:bold;'>Prev</a></li>";					
-                        }                
-                        else					
-                        {					
-                            $j = $page - 1;
-                                                
-                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=bySolved'><< Prev</a></li>";					
-                        }
-                    
-                        for($i=1; $i <= $totalPages; $i++)					
-                        {					
-                            if($i<>$page)					
-                            {					
-                                echo "<li><a href='user_home.php?page=$i&type=bySolved' id='page_a_link'>$i</a></li>";					
-                            }					
-                            else					
-                            {					
-                                echo "<li><a id='page_links' style='font-weight:bold;'>$i</a></li>";					
-                            }
-                        
-                        }
-                    
-                        if($page == $totalPages )					
-                        {					
-                            echo "<li><a id='page_links' style='font-weight:bold;'>Next</a></li>";					
-                        }					
-                        else					
-                        {					
-                            $j = $page + 1;
-                                            
-                            echo "<li><a href='user_home.php?page=$j&type=bySolved' id='page_a_link'>Next >></a></li>";					
-                        }					
-                    }
-				}
-                    ?>
-                  </ul>
-                <td>
-              </tr>
+             </ul>           
              </table>
+                <a href="all_requsitions.php?type=byActive" >All Current Requisions</a>  
             </div>
             <div class="span10 well well-large">
              <h4>Solved Requisitions</h4><br>
@@ -349,12 +226,16 @@
 						extract($list);
 			  ?>           
                <tr> 
-              <td>        
-               <li>
+              <td>       
+               <i class="icon-ok-sign"></i>
                  <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id).' '.$title."</a>";
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id)."</a>";
 				?>  
-               </li>
+               </td>
+              <td>       
+                 <?php 
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$title."</a>";
+				?>  
                </td>
                <td>
                  <?php 
@@ -368,75 +249,9 @@
 					else
 					 	echo "<span class='label label-warning'>No requisition is found under this type.</span> ";
 		  ?>             
-             </ul> <?php 
-	
-				
-				unset($user_home->req_data);
-				
-				if($user_home->check_any_req_in_table($_SESSION["user_id"],"user_id"))
-				{					
-			?>
-              <tr> 
-               <td  align="center" class="pagination">
-                   <ul>
-					<?php
-                    
-                    if(isset($page))
-                    
-                    {
-                        unset($user_home->req_data);
-                    
-                        $user_home->total_user_req_list($_SESSION["user_id"]);
-                    
-                    //echo $req_list->req_data;
-                    
-                        if($user_home->req_data)					
-                        {					
-                            $total = $user_home->req_data;					
-                        }
-                    
-                        $totalPages = ceil($total / $perpage);
-                        if($page <=1 )					
-                        {					
-                            echo "<li><a id='page_links' href='' style='font-weight:bold;'>Prev</a></li>";					
-                        }                
-                        else					
-                        {					
-                            $j = $page - 1;
-                                                
-                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=bySolved'><< Prev</a></li>";					
-                        }
-                    
-                        for($i=1; $i <= $totalPages; $i++)					
-                        {					
-                            if($i<>$page)					
-                            {					
-                                echo "<li><a href='user_home.php?page=$i&type=bySolved' id='page_a_link'>$i</a></li>";					
-                            }					
-                            else					
-                            {					
-                                echo "<li><a id='page_links' style='font-weight:bold;'>$i</a></li>";					
-                            }
-                        
-                        }
-                    
-                        if($page == $totalPages )					
-                        {					
-                            echo "<li><a id='page_links' style='font-weight:bold;'>Next</a></li>";					
-                        }					
-                        else					
-                        {					
-                            $j = $page + 1;
-                                            
-                            echo "<li><a href='user_home.php?page=$j&type=bySolved' id='page_a_link'>Next >></a></li>";					
-                        }					
-                    }
-				}
-                    ?>
-                  </ul>
-                <td>
-              </tr>
+             </ul> 
              </table>
+                <a href="all_requsitions.php?type=bySolved" >All Solved Requisions</a>
             </div>
           <!--</div>  -->                          
         </div> 

@@ -549,7 +549,8 @@ class User extends Database
 		$user_requested_by_info = $requested_by.'|'.$requested_by_contact;
 		$com_req_id = $this->get_com_req_id($location_id);
 		$com_req_id++;
-		$query="INSERT INTO requisition SET com_req_id='$com_req_id', user_id='$idusers', user_requested_by_info= '$user_requested_by_info', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
+		$newReqIDFormat = 'L'.$location_id.'U'.$idusers.'R'.$com_req_id;
+		$query="INSERT INTO requisition SET com_req_id='$newReqIDFormat', user_id='$idusers', user_requested_by_info= '$user_requested_by_info', title='$title', description='$description', type_of_req='$type_of_req', material_cart='$mat_cart', costing='$costing', deadline='$datepicker', status='New', location_id='$location_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>New requisition is successfully added.</span> ";
@@ -574,7 +575,7 @@ class User extends Database
 		$query="UPDATE req_hub SET location='$location_id' WHERE req_id = '$req_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_error()."Data cannot be inserted");		
 		
-		echo "<span class='label label-success'>Destination is successfully updated.</span> ";			
+		echo "<span class='label label-success'>".__FUNCTION__."</span> ";			
 	}
 	public function determine_local_main($costing,$location)
 	{
@@ -639,7 +640,7 @@ class User extends Database
 		$this->additional_data = $num_result;					
 		if($num_result>0){				
 			while($rows=$result->fetch_assoc()){									
-				$this->req_data=$rows["limit"];				
+				$this->req_data=$rows["bosslimit"];				
 			}						
 			return $this->req_data;
 		}
@@ -894,6 +895,7 @@ class User extends Database
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
 				
+		var_dump($num_result);	
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
@@ -910,11 +912,15 @@ class User extends Database
 	public function get_request_list_by_urgent($start,$limit,$user_id,$status)
 	{	
 		//echo 'works';
+		//var_dump($status);
 		$temp = explode('|',$status);
 		if(count($temp)==2)
 			$temp[2]= $temp[3]='';
 		else if(count($temp)==3)
 			$temp[3]='';
+		else if(count($temp)==1)
+			$temp[1]=$temp[2]=$temp[3]='';
+		//var_dump($temp);
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
 		INNER JOIN admins
@@ -926,6 +932,7 @@ class User extends Database
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
 				
+		var_dump($num_result);	
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
@@ -951,7 +958,7 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+		var_dump($num_result);		
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
@@ -1142,16 +1149,14 @@ class User extends Database
 	}
 	public function total_user_req_list($idusers,$user_type="user_id")
 	{
-		if($user_type=="user_id")
+		/*if($user_type=="user_id")
 			$query="SELECT * FROM admins where admin_id = '$idusers'";
 		if($user_type=="admin")
-			$query="SELECT * FROM admins where admin_id = '$idusers'";
-		
+			$query="SELECT * FROM admins where admin_id = '$idusers'";*/
+			
+		$query="SELECT * FROM admins where admin_id = '$idusers'";			
 		$result = $this->mysqli->query($query);
-		
-		$this->req_data = $result->num_rows;		// determine number of rows result set 
-				
-		return $this->req_data;	
+		return $result->num_rows;	
 	}
 	public function login($email,$not_yo_business)
 	{		
@@ -1203,19 +1208,8 @@ class User extends Database
 	}
 	public function check_any_req_in_table($value="",$colname="")
 	{	
-		/*if($value!="" && $colname!="") {	
-		  if($colname=="user_id")*/	
-		    $query="SELECT * FROM admins where admin_id = '$value'";
-		 /* if($colname=="admin")	
-		    $query="SELECT * FROM admins where admin = '$value'";
-		  if($colname=="location_id")	
-		    $query="SELECT * FROM admins where location_id = '$value'";		  
-		}		
-		if($value=="") 		
-		  $query="SELECT * FROM requisition order by submission_date desc";*/
-		
-		$result = $this->mysqli->query($query);
-		
+		$query="SELECT * FROM admins where admin_id = '$value'";		
+		$result = $this->mysqli->query($query);		
 		if($result->num_rows==0)		// determine number of rows result set 
 		{
 			echo "<span class='label label-info'>Please make your first requisition.</span> ";

@@ -48,6 +48,7 @@
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -86,6 +87,12 @@
               <li><a href="list_of_pages.php"><i class="icon-home icon-white"></i> Home</a></li>
               <li><a href="feedback.php"> feedback</a></li>              
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
+            </ul>
+            <ul class="nav pull-right">
+            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
+            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button type="submit" class="btn">Search</button>
+            </form>
             </ul>
           </div><!--/.nav-collapse -->
         </div>

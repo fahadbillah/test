@@ -55,6 +55,12 @@
               <li><a href="">About</a></li>
               <li><a href="">Contact</a></li>
             </ul>
+            <ul class="nav pull-right">
+            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
+            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button type="submit" class="btn">Search</button>
+            </form>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>

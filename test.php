@@ -1,11 +1,13 @@
 <?php 
 	include_once "user.php";
+	include_once "relevant_search.php";
 	$test = new User();
-	$temp = $test->getGRNList(100);
-	if($temp)
-		var_dump($temp);
-	else
-		echo 'false';
+	//$temp = $test->getGRNList(100);
+	//if($temp)
+	$temp = "মাত্র এক বছরের মধ্যেই বিশ্বের সবচেয়ে উঁচু ভবনের দিক থেকে দ্বিতীয় অবস্থানে চলে যাচ্ছে দুবাইয়ের বুর্জ খলিফা। ইতোমধ্যে চীনে সবচেয়ে উঁচু ভবন স্কাই সিটি নির্মাণ কাজ শুরু হয়েছে। আর মাত্র দশ মাসেই এই ভবনের নির্মাণ কাজ শেষ করার পরিকল্পনা গ্রহণ করা হয়েছে। খবর সিএনএন'র।";
+		var_dump(utf8_encode(utf8_encode($temp)));
+	//else
+		//echo 'false';
 	//explode('|',$test->get_user_req_stage_urgent('SCM'));
 	//var_dump($temp);
 	//var_dump($test->get_request_list_by_urgent(0,5,24,$temp));

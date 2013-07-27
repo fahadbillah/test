@@ -26,6 +26,7 @@
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
     <style>
       body {

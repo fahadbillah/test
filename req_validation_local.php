@@ -24,6 +24,7 @@
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -63,7 +64,12 @@
               <li> <a href="add_new_req.php">Requisition</a> </li>
               <li> <a id="log_out" href="log_out.php">Log Out</a>  </li>
             </ul>
-
+            <ul class="nav pull-right">
+            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
+            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button type="submit" class="btn">Search</button>
+            </form>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -121,8 +127,11 @@
 							$isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
 							$isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
 							if($isBoss){
+								var_dump('isBoss true');
 								if($isLocal){
+									var_dump('isLocal true');
 									$destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
+									var_dump($destination);
 									if($destination == 'local'){
 										$req_list->assign_local_account_scm($_REQUEST["id"]);			
 									}
@@ -131,11 +140,14 @@
 										$decision = 'View';	
 									}
 								}
-								else
-									$req_list->assign_local_account_scm($_REQUEST["id"]);	
+								else{
+									$req_list->assign_local_account_scm($_REQUEST["id"]);
+									var_dump('isLocal false central acc/scm assigned');	
+								}
 								//"mat_cart_list"]);
 						//var_dump($_REQUEST["total_costing"]);
 								if($_REQUEST["mat_cart_list"]!='' && $_REQUEST["total_costing"]!=''){									
+								var_dump('material cart working');
 								$req_list->update_material_list($_REQUEST["mat_cart_list"],$_REQUEST["total_costing"],$_REQUEST["id"]);
 								}
 							}
