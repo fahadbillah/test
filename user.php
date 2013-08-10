@@ -948,6 +948,17 @@ class User extends Database
 	}
 	public function get_active_request_list($start,$limit,$user_id)
 	{	
+		unset($this->req_data);
+		$getTotalQuery="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.status <> 'Closed'";
+
+		$preResult = $this->mysqli->query($getTotalQuery);		
+		$this->req_data = $preResult->num_rows;
+		var_dump($this->req_data);
+
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
 		INNER JOIN admins
@@ -958,16 +969,16 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-		var_dump($num_result);		
+		//var_dump($num_result);		
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
 								
-				$this->req_data[]=$rows;					
+				$active_req[]=$rows;					
 			}						
-			return $this->req_data;
+			return $active_req;
 		}	
 		else
 			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
@@ -1410,6 +1421,37 @@ class User extends Database
 			
 		$this->login_data = $num_result;
 		return $this->login_data;
+	}
+	public function search_requisition($key,$user_id,$start,$limit){
+		unset($this->req_data);
+		$query="SELECT requisition.id
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.com_req_id LIKE '%$key%'";
+		$result = $this->mysqli->query($query);
+		
+		$this->req_data = $result->num_rows;
+		//return $this->req_data;
+		$query1="SELECT requisition.id, requisition.title, requisition.status
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.com_req_id LIKE '%$key%' 
+		ORDER BY requisition.id desc limit $start,$limit";
+		$result1 = $this->mysqli->query($query1);		
+		$num_result=$result1->num_rows;		
+		
+		if($num_result>0){
+			
+			while($rows=$result1->fetch_assoc()){
+								
+				$requisitions = $rows;					
+			}						
+			return $requisitions;
+		}	
+		else
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";	
 	}	
 	public function set_authentication_steps($req_type)
 	{

@@ -79,8 +79,8 @@
             </ul>
             <ul class="nav pull-right">
             <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
-            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
-                <button type="submit" class="btn">Search</button>
+            	<input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button id="search_btn" type="submit" class="btn">Search</button>
             </form>
             </ul>
           </div><!--/.nav-collapse -->
@@ -174,9 +174,9 @@
 				else
 					$tempStart = 0;
 			 	unset($user_home->req_data);
-				$user_home->get_active_request_list($tempStart,$perpage,$_SESSION["user_id"]);
+				$active_list = $user_home->get_active_request_list($tempStart,$perpage,$_SESSION["user_id"]);
 				  if($user_home->good_to_go_flag>0){
-					 foreach($user_home->req_data as $list)
+					 foreach($active_list as $list)
 					 {
 						extract($list);
 			  ?>           
@@ -219,9 +219,9 @@
 				else
 					$tempStart = 0;
 			 	unset($user_home->req_data);
-				$user_home->get_solved_request_list($tempStart,$perpage,$_SESSION["user_id"]);
+				$solved_list = $user_home->get_solved_request_list($tempStart,$perpage,$_SESSION["user_id"]);
 				  if($user_home->good_to_go_flag>0){
-					 foreach($user_home->req_data as $list)
+					 foreach($solved_list as $list)
 					 {
 						extract($list);
 			  ?>           
@@ -286,8 +286,7 @@
     </style>
 	<script>
 		
-	  $('#datepicker').datepicker();
-	
+	  
     </script>
 
 </body></html>

@@ -7,19 +7,19 @@
 	{ 	  
 		header("Location: signin.php?status=notloggedin");
 	}
-	$user_home = new User();
+	$all_requisitions = new User();
 	$user_id = $_SESSION["user_id"];
-	if(!$user_home->user_home_page_authorization($user_id)){
+	if(!$all_requisitions->user_home_page_authorization($user_id)){
 		echo 'You are not authorized to use this page.';
 		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
 		exit;
 	}
-	$roles = $user_home->get_all_user_role($user_id);
+	$roles = $all_requisitions->get_all_user_role($user_id);
 	try {
 		foreach($roles as $r){
 			extract($r);
 			//echo $location_id.' '.$post.'<br>';
-			$stages = $user_home->get_user_req_stage_urgent($post);
+			$stages = $all_requisitions->get_user_req_stage_urgent($post);
 		}
 	} catch (Exception $e) {
 		echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -60,10 +60,8 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
   <style>.tooltiptrolol { position: relative; cursor: help; text-decoration: none;} .tooltiptrolol span { display: none; position: absolute; top: 15px; left: 10px; padding: 5px; z-index: 100; background: #000; color: #fff; border-radius: 5px; box-shadow: 2px 2px rgba(0, 0, 0, 0.1); text-align: center; line-width: 1000px; text-indent: 0; font: normal bold 10px/13px Tahoma,sans-serif; white-space: nowrap;} span:hover.tooltiptrolol { font-size: 99%; } .tooltiptrolol:hover span { display: block; } .md img { display:inline; } .rageface { visibility:visible; }</style>
-  
   </head>
   <body>
-
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -81,8 +79,8 @@
             </ul>
             <ul class="nav pull-right">
             <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
-            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
-                <button type="submit" class="btn">Search</button>
+            	<input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button id="search_btn" type="submit" class="btn">Search</button>
             </form>
             </ul>
           </div><!--/.nav-collapse -->
@@ -119,20 +117,23 @@
 		  ?>
           <?php 		  	
 					$tempStart = $start;		
-			 	unset($user_home->req_data);
+			 	unset($all_requisitions->req_data);
 				
 				switch($type){
 					case 'byNew':
-						$requisition = $user_home->get_request_list_by_urgent($tempStart,$perpage,$user_id,$stages);
+						$requisition = $all_requisitions->get_request_list_by_urgent($tempStart,$perpage,$user_id,$stages);
 						$typeHeader = 'Urgent';
+            $icon = "icon-eye-open";
 						break;
 					case 'byActive':
-						$requisition = $user_home->get_active_request_list($tempStart,$perpage,$user_id);
+						$requisition = $all_requisitions->get_active_request_list($tempStart,$perpage,$user_id);
 						$typeHeader = 'Active';
+            $icon = "icon-adn";
 						break;
 					case 'bySolved':
-						$requisition = $user_home->get_solved_request_list($tempStart,$perpage,$user_id);
+						$requisition = $all_requisitions->get_solved_request_list($tempStart,$perpage,$user_id);
 						$typeHeader = 'Solved';
+            $icon = "icon-ok-sign";
 						break;						
 				}
 				if($requisition!==NULL){
@@ -147,9 +148,9 @@
 						extract($list);
 			  ?>           
                <tr> 
-              <td> <i class="icon-eye-open"></i> 
+              <td> <i class=<?php echo $icon ?>></i> 
                  <?php 
-				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$user_home->id_to_req_id($id)."</a>";
+				 	echo"<a href='req_validation_local.php?id=".$id."&read_status=read'>".$all_requisitions->id_to_req_id($id)."</a>";
 				?>  
               <td>  
                  <?php 
@@ -167,11 +168,10 @@
 		  	   ?>             
              </ul>
             <?php 
-				unset($user_home->req_data);
+				//unset($all_requisitions->req_data);
 				if(count($requisition)>0)
 				{					
-			?>
-            
+			?>           
              </table>
               <div class="pagination" style="text-align:center">
                    <ul>
@@ -179,7 +179,7 @@
                     
                     if(isset($page))                    
                     {                    
-                    	$total = $user_home->total_user_req_list($user_id);                    
+                    	$total = $all_requisitions->req_data;                    
                         $totalPages = ceil($total / $perpage);
                         if($page <=1 )					
                         {					
@@ -189,14 +189,14 @@
                         {					
                             $j = $page - 1;
                                                 
-                            echo "<li><a id='page_a_link' href='user_home.php?page=$j&type=byNew'><< Prev</a></li>";					
+                            echo "<li><a id='page_a_link' href='all_requisitions.php?page=$j&type=byNew'><< Prev</a></li>";					
                         }
                     
                         for($i=1; $i <= $totalPages; $i++)					
                         {					
                             if($i<>$page)					
                             {					
-                                echo "<li><a href='user_home.php?page=$i&type=byNew' id='page_a_link'>$i</a></li>";					
+                                echo "<li><a href='all_requisitions.php?page=$i&type=byNew' id='page_a_link'>$i</a></li>";					
                             }					
                             else					
                             {					
@@ -213,7 +213,7 @@
                         {					
                             $j = $page + 1;
                                             
-                            echo "<li><a href='user_home.php?page=$j&type=byNew' id='page_a_link'>Next >></a></li>";					
+                            echo "<li><a href='all_requisitions.php?page=$j&type=byNew' id='page_a_link'>Next >></a></li>";					
                         }					
                     }
 				}

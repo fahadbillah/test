@@ -76,8 +76,8 @@
             </ul>
             <ul class="nav pull-right">
             <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
-            	<input type="text" class="span2 search-query" placeholder="Search Requisition">
-                <button type="submit" class="btn">Search</button>
+            	<input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
+                <button id="search_btn" type="submit" class="btn">Search</button>
             </form>
             </ul>
           </div><!--/.nav-collapse -->

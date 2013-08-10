@@ -1,5 +1,7 @@
 // My JavaScript Document
 		 //onClick="changeButtonForCostEdit()"
+		 
+var time = 0;
 $("#log_out").click(function(e){		
 	if (!confirm("Do you confirm log out?"))
 	{
@@ -8,6 +10,28 @@ $("#log_out").click(function(e){
 	} 		
 })
 
+function searchSuggestionStart(){
+	try {
+		clearInterval(time)//stopTimer()	
+	}
+	catch(err){
+		
+	}
+	time = setInterval(function(){
+			keyword = $('#search_box').val()
+			posting = $.post('search_requisition.php', keyword);
+			console.log(time)
+		},4000);		
+}
+function searchSuggestionEnd(){
+	console.log('focus out worksss')
+	clearInterval(time)
+	console.log(time)
+}
+
+$("#search_box").focusin(searchSuggestionStart)
+
+$("#search_box").focusout(searchSuggestionEnd)
  		
 function changeButtonForCostEdit(){
 	$('#cost_edit_box_for_local_boss').removeAttr('disabled')
