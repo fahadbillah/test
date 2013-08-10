@@ -154,7 +154,7 @@
 		  	   ?>             
              </ul> 
              </table>
-              <a href="all_requsitions.php?type=byNew" >All Urgent Requisions</a>
+              <a href="all_requisitions.php?type=byNew" >All Urgent Requisions</a>
             </div>
             <?php			
 				 }
@@ -206,7 +206,7 @@
 		  ?>             
              </ul>           
              </table>
-                <a href="all_requsitions.php?type=byActive" >All Current Requisions</a>  
+                <a href="all_requisitions.php?type=byActive" >All Current Requisions</a>  
             </div>
             <div class="span10 well well-large">
              <h4>Solved Requisitions</h4><br>
@@ -251,7 +251,7 @@
 		  ?>             
              </ul> 
              </table>
-                <a href="all_requsitions.php?type=bySolved" >All Solved Requisions</a>
+                <a href="all_requisitions.php?type=bySolved" >All Solved Requisions</a>
             </div>
           <!--</div>  -->                          
         </div> 

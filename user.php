@@ -884,6 +884,17 @@ class User extends Database
 	}
 	public function get_solved_request_list($start,$limit,$user_id)
 	{		
+		unset($this->req_data);
+		$getTotalQuery="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.status in ('Closed','Reject')";
+
+		$preResult = $this->mysqli->query($getTotalQuery);		
+		$this->req_data = $preResult->num_rows;
+		var_dump($this->req_data);
+
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
 		INNER JOIN admins
@@ -895,16 +906,16 @@ class User extends Database
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
 				
-		var_dump($num_result);	
+		//var_dump($num_result);	
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
 								
-				$this->req_data[]=$rows;					
+				$solved_list[]=$rows;					
 			}						
-			return $this->req_data;
+			return $solved_list;
 		}	
 		else
 			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
@@ -921,6 +932,18 @@ class User extends Database
 		else if(count($temp)==1)
 			$temp[1]=$temp[2]=$temp[3]='';
 		//var_dump($temp);
+
+		unset($this->req_data);
+		$getTotalQuery="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.status IN ('$temp[0]','$temp[1]','$temp[2]','$temp[3]')";
+
+		$preResult = $this->mysqli->query($getTotalQuery);		
+		$this->req_data = $preResult->num_rows;
+		var_dump($this->req_data);
+
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
 		INNER JOIN admins
@@ -932,7 +955,7 @@ class User extends Database
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
 				
-		var_dump($num_result);	
+		//var_dump($num_result);	
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){

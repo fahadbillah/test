@@ -189,14 +189,14 @@
                         {					
                             $j = $page - 1;
                                                 
-                            echo "<li><a id='page_a_link' href='all_requisitions.php?page=$j&type=byNew'><< Prev</a></li>";					
+                            echo "<li><a id='page_a_link' href='all_requisitions.php?page=$j&type=".$type."'><< Prev</a></li>";					
                         }
                     
                         for($i=1; $i <= $totalPages; $i++)					
                         {					
                             if($i<>$page)					
                             {					
-                                echo "<li><a href='all_requisitions.php?page=$i&type=byNew' id='page_a_link'>$i</a></li>";					
+                                echo "<li><a href='all_requisitions.php?page=$i&type=".$type."' id='page_a_link'>$i</a></li>";					
                             }					
                             else					
                             {					
@@ -213,7 +213,7 @@
                         {					
                             $j = $page + 1;
                                             
-                            echo "<li><a href='all_requisitions.php?page=$j&type=byNew' id='page_a_link'>Next >></a></li>";					
+                            echo "<li><a href='all_requisitions.php?page=$j&type=".$type."' id='page_a_link'>Next >></a></li>";					
                         }					
                     }
 				}
