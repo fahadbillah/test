@@ -1,6 +1,5 @@
 <?php 
 	include_once "user.php";
-	include_once "relevant_search.php";
 	session_start();
 	
 	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
@@ -206,7 +205,7 @@
 		  ?>             
              </ul>           
              </table>
-                <a href="all_requisitions.php?type=byActive" >All Current Requisions</a>  
+                <a href="all_requisitions.php?type=byActive" >All Active Requisions</a>  
             </div>
             <div class="span10 well well-large">
              <h4>Solved Requisitions</h4><br>

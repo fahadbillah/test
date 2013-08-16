@@ -20,63 +20,63 @@ class User extends Database
 	
 	function __destruct() {
 		
-       parent::__destruct();
-	   
-	   unset($user_data);
-	   
-	   unset($user_data_temp);
-   }
+		parent::__destruct();
+
+		unset($user_data);
+
+		unset($user_data_temp);
+	}
 
 	
 	private function my_hash($password) 
-    {        
+	{        
         $salt = '*63%Df*#@'; 		 // do not change this salt *63%Df*#@ 
         $hash = base64_encode( sha1($password . $salt, true) . $salt ); 
         return $hash; 
     }
-	public function add_user($user_id,$email,$password)
-	{
-		$name = $this->mysqli->real_escape_string($user_id);
-		$email = $this->mysqli->real_escape_string($email);
-		$password = $this->mysqli->real_escape_string($password);
-		
-		if($this->check_unique_mail($email)){
-			$password = $this->my_hash($password);		
-			$query="INSERT INTO user_login_details SET user_id='$user_id', email='$email', password='$password'";
-			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
-			$last_req_id = $this->mysqli->insert_id;
-			return $last_req_id;
-		}
-	}
-	public function update_unique_id($id,$unique_id)
-	{
-		$id = $this->mysqli->real_escape_string($id);
-		$unique_id = $this->mysqli->real_escape_string($unique_id);
-		
-		$query="update users SET staff_id = '$unique_id' where idusers = $id";
-		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
-		
-		echo "<span class='label label-success'>A new user added.</span> ";
-		
-	}
-		public function get_all_designation()
-	{		
-		$query="SELECT * FROM staff_level";
-		
-		$result = $this->mysqli->query($query);
-		
+    public function add_user($user_id,$email,$password)
+    {
+    	$name = $this->mysqli->real_escape_string($user_id);
+    	$email = $this->mysqli->real_escape_string($email);
+    	$password = $this->mysqli->real_escape_string($password);
+
+    	if($this->check_unique_mail($email)){
+    		$password = $this->my_hash($password);		
+    		$query="INSERT INTO user_login_details SET user_id='$user_id', email='$email', password='$password'";
+    		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+    		$last_req_id = $this->mysqli->insert_id;
+    		return $last_req_id;
+    	}
+    }
+    public function update_unique_id($id,$unique_id)
+    {
+    	$id = $this->mysqli->real_escape_string($id);
+    	$unique_id = $this->mysqli->real_escape_string($unique_id);
+
+    	$query="update users SET staff_id = '$unique_id' where idusers = $id";
+    	$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+
+    	echo "<span class='label label-success'>A new user added.</span> ";
+
+    }
+    public function get_all_designation()
+    {		
+    	$query="SELECT * FROM staff_level";
+
+    	$result = $this->mysqli->query($query);
+
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
 		}	
 	}
-	 
+
 	public function get_all_departments()
 	{		
 		$query="SELECT * FROM departments";
@@ -84,11 +84,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -97,7 +97,7 @@ class User extends Database
 	public function get_all_subordinate($designation)
 	{
 		$designation = $this->mysqli->real_escape_string($designation);
-							
+
 		$this->get_level($designation);
 		
 		foreach($this->user_data_temp as $data)
@@ -107,17 +107,17 @@ class User extends Database
 			$lvl =  $level;
 			
 		}
-	
+
 		$query="SELECT * FROM users where designation > '$lvl'";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -125,17 +125,17 @@ class User extends Database
 	}	public function get_level($designation)
 	{
 		$designation = $this->mysqli->real_escape_string($designation);
-									
+
 		$query="SELECT level FROM staff_level where designation = '$designation' or  level = '$designation' ";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -167,7 +167,7 @@ class User extends Database
 			return $this->user_data;
 		else
 			return $this->user_data = $unfinished_id."1";
-				
+
 	}
 	public function available_id($unfinished_id)
 	{		
@@ -176,11 +176,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -198,11 +198,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -211,17 +211,17 @@ class User extends Database
 	public function getLastProjectId($master)
 	{		
 		$master = $this->mysqli->real_escape_string($master);
-							
+
 		$query="SELECT id FROM projects where master= '$master' ORDER BY id asc";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -242,11 +242,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -274,11 +274,11 @@ class User extends Database
 		//var_dump($result);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -300,11 +300,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -319,11 +319,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1=$rows['id'];					
 			}						
 			return $this->user_data_temp1;
@@ -337,11 +337,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1[]=$rows;					
 			}						
 			return $this->user_data_temp1;
@@ -354,11 +354,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1[]=$rows;					
 			}						
 			return $this->user_data_temp1;
@@ -371,11 +371,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1[]=$rows;					
 			}						
 			return $this->user_data_temp1;
@@ -398,11 +398,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1[]=$rows;					
 			}						
 			return $this->user_data_temp1;
@@ -417,11 +417,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1=$rows['id'];					
 			}						
 			return $this->user_data_temp1;
@@ -437,11 +437,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1=$rows['id'];					
 			}						
 			return $this->user_data_temp1;
@@ -454,11 +454,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1=$rows['idusers'];					
 			}						
 			return $this->user_data_temp1;
@@ -471,11 +471,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1[]=$rows;					
 			}						
 			return $this->user_data_temp1;
@@ -488,11 +488,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1=$rows['location'];					
 			}						
 			return $this->user_data_temp1;
@@ -506,11 +506,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1[]=$rows;					
 			}						
 			return $this->user_data_temp1;
@@ -588,15 +588,15 @@ class User extends Database
 	}	public function select_central_hub()
 	{
 		$query = "SELECT * FROM hub_admins where location = 'Main Hub'";
-			
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data=$rows;					
 			}						
 		}
@@ -604,15 +604,15 @@ class User extends Database
 	public function select_local_hub($location_id)
 	{
 		$query = "SELECT * FROM hub_admins where location = '$location_id'";
-			
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data=$rows;					
 			}						
 		}
@@ -655,16 +655,16 @@ class User extends Database
 		$limit = $this->get_limit($id);
 		if($limit){
 			if($costing<=$limit) //money limit not crossed return true
-				return true;
+			return true;
 			else if($costing>=$limit)//money limit crossed return false
-				return false;
+			return false;
 		}
 		else{
 			echo "<span class='label label-warning'>Limit for '$location' boss not set.</span> ";
 			if($costing<=10000) //money limit not crossed return true
-				return true;
+			return true;
 			else if($costing>=10000)//money limit crossed return false
-				return false;			
+			return false;			
 		}
 	}
 	public function add_admin_local($location_id,$last_req_id)
@@ -729,11 +729,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data=$rows['id'];					
 			}						
 			return $this->req_data;
@@ -746,13 +746,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->user_data_temp1 = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -765,13 +765,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->user_data_temp1 = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -788,13 +788,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->user_data_temp1 = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -807,13 +807,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->user_data_temp1 = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -826,19 +826,19 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+		echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
 	public function super_admin_req_list_by_type($start,$limit,$type,$idusers)
 	{		
@@ -847,19 +847,19 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+		echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}	
 	public function super_admin_req_list_by_location($start,$limit,$type,$location_id)
 	{		
@@ -868,19 +868,19 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+		echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
 	public function get_solved_request_list($start,$limit,$user_id)
 	{		
@@ -893,7 +893,7 @@ class User extends Database
 
 		$preResult = $this->mysqli->query($getTotalQuery);		
 		$this->req_data = $preResult->num_rows;
-		var_dump($this->req_data);
+		//var_dump($this->req_data);
 
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
@@ -905,21 +905,63 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		//var_dump($num_result);	
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$solved_list[]=$rows;					
 			}						
 			return $solved_list;
 		}	
 		else
 			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
+	}	
+	public function sanitize_query($query){		
+		$query = trim($query);
+		$query = $this->mysqli->real_escape_string($query);
+		return $query;
 	}
+	public function search_requisition($key,$user_id,$start,$limit){
+		unset($this->req_data);
+		$key = $this->mysqli->real_escape_string($key);
+		$getTotalQuery = "SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.com_req_id like '%$key%'";
+
+		$preResult = $this->mysqli->query($getTotalQuery);		
+		$this->req_data = $preResult->num_rows;
+		//var_dump($this->req_data);
+
+		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
+		FROM requisition
+		INNER JOIN admins
+		ON requisition.id = admins.req_id
+		WHERE admins.admin_id = '$user_id' and requisition.com_req_id like '%$key%'
+		ORDER BY requisition.id desc limit $start,$limit";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+		//var_dump($num_result);		
+		$this->good_to_go_flag = $num_result;
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+
+				$search_result[]=$rows;					
+			}						
+			return $search_result;
+		}	
+		else
+			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";
+	}	
 	public function get_request_list_by_urgent($start,$limit,$user_id,$status)
 	{	
 		//echo 'works';
@@ -942,7 +984,7 @@ class User extends Database
 
 		$preResult = $this->mysqli->query($getTotalQuery);		
 		$this->req_data = $preResult->num_rows;
-		var_dump($this->req_data);
+		//var_dump($this->req_data);
 
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
@@ -954,14 +996,14 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		//var_dump($num_result);	
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$urgent[]=$rows;					
 			}						
 			return $urgent;
@@ -980,7 +1022,7 @@ class User extends Database
 
 		$preResult = $this->mysqli->query($getTotalQuery);		
 		$this->req_data = $preResult->num_rows;
-		var_dump($this->req_data);
+		//var_dump($this->req_data);
 
 		$query="SELECT requisition.id, requisition.title, requisition.status, admins.relation_to_req
 		FROM requisition
@@ -998,7 +1040,7 @@ class User extends Database
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$active_req[]=$rows;					
 			}						
 			return $active_req;
@@ -1018,13 +1060,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1044,13 +1086,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1070,13 +1112,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1096,13 +1138,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1122,13 +1164,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1148,13 +1190,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1169,13 +1211,13 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->user_data_temp1 = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -1186,8 +1228,8 @@ class User extends Database
 		/*if($user_type=="user_id")
 			$query="SELECT * FROM admins where admin_id = '$idusers'";
 		if($user_type=="admin")
-			$query="SELECT * FROM admins where admin_id = '$idusers'";*/
-			
+		$query="SELECT * FROM admins where admin_id = '$idusers'";*/
+
 		$query="SELECT * FROM admins where admin_id = '$idusers'";			
 		$result = $this->mysqli->query($query);
 		return $result->num_rows;	
@@ -1204,23 +1246,23 @@ class User extends Database
 		{		
 			$email = $this->mysqli->real_escape_string($email);
 			$not_yo_business = $this->mysqli->real_escape_string($not_yo_business);		
-		    $not_yo_business = $this->my_hash($not_yo_business);	
-		
+			$not_yo_business = $this->my_hash($not_yo_business);	
+
 			$query="SELECT user_master.*
-					FROM user_master
-					INNER JOIN user_login_details
-					ON user_master.id = user_login_details.user_id
-					WHERE user_login_details.email = '$email' and 
-					user_login_details.password = '$not_yo_business' limit 1";
+			FROM user_master
+			INNER JOIN user_login_details
+			ON user_master.id = user_login_details.user_id
+			WHERE user_login_details.email = '$email' and 
+			user_login_details.password = '$not_yo_business' limit 1";
 			
 			$result = $this->mysqli->query($query);
-		
+
 			$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 			if($num_result>0){
 				
 				while($rows=$result->fetch_assoc()){
-									
+
 					$this->login_data[]=$rows;					
 				}						
 			}	
@@ -1237,7 +1279,7 @@ class User extends Database
 			}
 			else
 				return $this->login_data;
-						
+
 		}
 	}
 	public function check_any_req_in_table($value="",$colname="")
@@ -1256,7 +1298,7 @@ class User extends Database
 	public function check_unique_mail($email)
 	{		
 		$email = $this->mysqli->real_escape_string($email);	
-	
+
 		$query="SELECT email FROM user_login_details where email = '$email'";
 		
 		$result = $this->mysqli->query($query);
@@ -1275,17 +1317,17 @@ class User extends Database
 		unset($this->user_data);
 		
 		$id = $this->mysqli->real_escape_string($id);
-				
+
 		$query="SELECT location_id FROM requisition_user WHERE user_id = '$id'";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$locations[]=$rows['location_id'];					
 			}						
 			return $locations;
@@ -1303,19 +1345,19 @@ class User extends Database
 		//$id = explode('.',$id);	
 		
 		$query="SELECT user_master.id, user_master.name, user_master.designation, user_master.office_code, user_master.authorization_level
-				FROM user_master
-				INNER JOIN user_by_location
-				ON user_master.id = user_by_location.user_id
-				WHERE user_by_location.location_id = '$id'";
+		FROM user_master
+		INNER JOIN user_by_location
+		ON user_master.id = user_by_location.user_id
+		WHERE user_by_location.location_id = '$id'";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -1332,11 +1374,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->login_data[]=$rows;					
 			}						
 			return $this->login_data;
@@ -1351,11 +1393,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->login_data[]=$rows;					
 			}						
 			return $this->login_data;
@@ -1395,18 +1437,18 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$location[]=$rows;					
 			}						
 			return $location;
 		}
 		else
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";	
-			
+
 		$this->login_data = $num_result;
 		return $this->login_data;
 	}
@@ -1416,66 +1458,35 @@ class User extends Database
 		$search = $this->mysqli->real_escape_string($search);	
 		
 		if($type=="designation")
-		  $query="SELECT * FROM user_master where designation = '$search'";
+			$query="SELECT * FROM user_master where designation = '$search'";
 		
 		if($type=="id")
-		  $query="SELECT * FROM user_master where id = '$search'";	
+			$query="SELECT * FROM user_master where id = '$search'";	
 		
 		if($type=="office_code")
-		  $query="SELECT * FROM user_master where office_code = '$search'";
-		  
+			$query="SELECT * FROM user_master where office_code = '$search'";
+
 		if($search=="" && $type=="")
-		  $query="SELECT * FROM user_master";
+			$query="SELECT * FROM user_master";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->login_data[]=$rows;					
 			}						
 			return $this->login_data;
 		}
 		else
 			echo "<span class='label label-warning'>No user found.</span> ";	
-			
+
 		$this->login_data = $num_result;
 		return $this->login_data;
 	}
-	public function search_requisition($key,$user_id,$start,$limit){
-		unset($this->req_data);
-		$query="SELECT requisition.id
-		FROM requisition
-		INNER JOIN admins
-		ON requisition.id = admins.req_id
-		WHERE admins.admin_id = '$user_id' and requisition.com_req_id LIKE '%$key%'";
-		$result = $this->mysqli->query($query);
-		
-		$this->req_data = $result->num_rows;
-		//return $this->req_data;
-		$query1="SELECT requisition.id, requisition.title, requisition.status
-		FROM requisition
-		INNER JOIN admins
-		ON requisition.id = admins.req_id
-		WHERE admins.admin_id = '$user_id' and requisition.com_req_id LIKE '%$key%' 
-		ORDER BY requisition.id desc limit $start,$limit";
-		$result1 = $this->mysqli->query($query1);		
-		$num_result=$result1->num_rows;		
-		
-		if($num_result>0){
-			
-			while($rows=$result1->fetch_assoc()){
-								
-				$requisitions = $rows;					
-			}						
-			return $requisitions;
-		}	
-		else
-			echo "<span class='label label-warning'>No requisition is found for this user.</span> ";	
-	}	
 	public function set_authentication_steps($req_type)
 	{
 		
@@ -1488,7 +1499,7 @@ class User extends Database
 	public function get_comments($id)
 	{
 		$id = $this->mysqli->real_escape_string($id);	
-	
+
 		$query="SELECT * FROM comment where comment_to = '$id'";
 		
 		$result = $this->mysqli->query($query);
@@ -1496,11 +1507,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1517,32 +1528,32 @@ class User extends Database
 		switch($type)
 		{
 			case "name":
-		 	 $query="SELECT name FROM user_master where id = '$comment_by'";
-	         break;
-			 
+			$query="SELECT name FROM user_master where id = '$comment_by'";
+			break;
+
 			case "designation":
-		 	 $query="SELECT designation FROM user_master where id = '$comment_by'";
-	         break;
-			 
+			$query="SELECT designation FROM user_master where id = '$comment_by'";
+			break;
+
 			case "office_code":
-		 	 $query="SELECT office_code FROM user_master where id = '$comment_by'";
-	         break;
-			 
+			$query="SELECT office_code FROM user_master where id = '$comment_by'";
+			break;
+
 			case "authorization_level":
-		 	 $query="SELECT authorization_level FROM user_master where id = '$comment_by'";
-	         break;
-			 
+			$query="SELECT authorization_level FROM user_master where id = '$comment_by'";
+			break;
+
 			default:
-		 	 $query="SELECT * FROM user_master where id = '$comment_by'";
-	         break;				
+			$query="SELECT * FROM user_master where id = '$comment_by'";
+			break;				
 		}
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
 				if($type=='')
 					$this->user_data[]=$rows;
@@ -1554,7 +1565,7 @@ class User extends Database
 		}
 		else
 			echo "<span class='label label-warning'>No user found.</span> ";	
-			
+
 		return $this->user_data;
 		
 	}
@@ -1569,16 +1580,16 @@ class User extends Database
 		
 		echo "<span class='label label-success'>Comment added successfully.</span> ";	
 	}
-		public function idusers_to_id($idusers)
+	public function idusers_to_id($idusers)
 	{
 		$idusers = $this->mysqli->real_escape_string($idusers);	
-	
+
 		$query="SELECT name FROM user_master where id = '$idusers'";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 		
-					
+
 		$this->additional_data = $num_result;
 		
 		if($num_result>0){			
@@ -1592,13 +1603,13 @@ class User extends Database
 	public function new_comment_available($id,$self)
 	{
 		$id = $this->mysqli->real_escape_string($id);	
-	
+
 		$query="SELECT flag FROM comment where comment_to = '$id' and flag = 'unread' and comment_by <> $self";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 		
-					
+
 		$this->additional_data = $num_result;
 		
 		if($num_result>0){		
@@ -1613,26 +1624,26 @@ class User extends Database
 			$query="SELECT * FROM pagination where user_type = 'staff' order by page_order";
 		else 
 			$query="SELECT * FROM pagination where user_type = 'administration' order by page_order";
-			
-	
+
+
 		//$query="SELECT * FROM pagination where user_type = '$user_type' order by page_order";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 		
-					
+
 		$this->additional_data = $num_result;
 		
 		if($num_result>0){			
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
 		}
 		else
 			echo "<li class='active'><a href='sing_in.php'><i class='icon-home icon-white'></i> Home</a></li>
-              <li><a href=''>Pages Not Defined For This User</a></li>";
+		<li><a href=''>Pages Not Defined For This User</a></li>";
 			//echo "<span class='label label-warning'>User type not found. So navbar can not be available</span> ";		
 			//header("Location: signin.php?status=notauthorized"); 
 	}
@@ -1643,20 +1654,20 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->req_data[]=$rows;					
 			}	
 			//echo $_SESSION["designation"];					
 			return $this->req_data;
 		}	
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+		echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}	
 	public function check_new_req()
 	{		
@@ -1665,7 +1676,7 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		return $result->num_rows;		// determine number of rows result set 
-				
+
 		/*$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
@@ -1677,7 +1688,7 @@ class User extends Database
 			return $this->req_data;
 		}	*/
 		/*else
-			echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+		echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
 	}
 	/*public function change_req_status($id,$status)
 	{
@@ -1745,11 +1756,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1767,11 +1778,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1808,7 +1819,7 @@ class User extends Database
 		$master = $this->mysqli->real_escape_string($master);
 		$department = $this->mysqli->real_escape_string($department);
 		$designation = $this->mysqli->real_escape_string($designation);
-			
+
 		$password = $this->my_hash($password);		
 		$query="INSERT INTO users SET name='$name', email='$email', contact='$contact', password='$password', master='$master', department='$department', designation='$designation'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
@@ -1831,11 +1842,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1853,11 +1864,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1875,11 +1886,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1897,11 +1908,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->comment_data[]=$rows;					
 			}						
 			return $this->comment_data;
@@ -1919,11 +1930,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -1957,11 +1968,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -1979,11 +1990,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -1999,7 +2010,7 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
 			
 			return true;
@@ -2023,8 +2034,8 @@ class User extends Database
 		if($this->check_available_location_id($tempId)!==false){
 			$tempAvailable = $this->user_data_temp1 + 1;
 		}else
-			$tempAvailable = $tempId.'1';
-						
+		$tempAvailable = $tempId.'1';
+
 		$query="INSERT INTO locations SET site_factory='$site_factory', project='$project', master='$master', location_id='$tempAvailable'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
@@ -2036,11 +2047,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp1=$rows['location_id'];					
 			}						
 			return $this->user_data_temp1;
@@ -2095,17 +2106,17 @@ class User extends Database
 	public function getLastSiteId($project)
 	{		
 		$project = $this->mysqli->real_escape_string($project);
-							
+
 		$query="SELECT id FROM sites_factories where project= '$project' ORDER BY id asc";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){
 			
 			while($rows=$result->fetch_assoc()){
-								
+
 				$this->user_data_temp[]=$rows;					
 			}						
 			return $this->user_data_temp;
@@ -2123,7 +2134,7 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
 			return true;	
 		}
@@ -2167,7 +2178,7 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
 			return true;	
 		}
@@ -2183,11 +2194,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}						
 			return $this->user_data;
@@ -2219,11 +2230,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;					
 			}
 			$this->date_time();
@@ -2276,11 +2287,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->req_data[]=$rows;					
 			}						
 			return $this->req_data;
@@ -2309,76 +2320,76 @@ class User extends Database
 		/*$query="INSERT INTO admins (admin_id, req_id, activities, status)
 						VALUES ('$account', '$id', '$activitiesAcc','New')
 						VALUES ('$scm', '$id', '$activitiesScm','New')";*/
-		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
-		
-		echo "<span class='label label-success'>User added successfully.</span> ";	
-	}
-	public function getReqDestination($id){
-		unset($this->req_data);
-		$query="SELECT location FROM req_hub WHERE req_id = '$id'";
-		$result = $this->mysqli->query($query);
-		$num_result=$result->num_rows;		
-		if($num_result>0){				
-			while($rows=$result->fetch_assoc()){									
-				$this->req_data=$rows;					
-			}						
-			return $this->req_data['location'];
-		}
-		else
-			echo "<span class='label label-warning'>Not found in req_hub.</span> ";	
-	}
-	public function assign_local_account_scm($id)
-	{
-		$this->date_time();
-		$id = $this->mysqli->real_escape_string($id);
-		$location = $this->getReqDestination($id); 
+						$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
+
+						echo "<span class='label label-success'>User added successfully.</span> ";	
+					}
+					public function getReqDestination($id){
+						unset($this->req_data);
+						$query="SELECT location FROM req_hub WHERE req_id = '$id'";
+						$result = $this->mysqli->query($query);
+						$num_result=$result->num_rows;		
+						if($num_result>0){				
+							while($rows=$result->fetch_assoc()){									
+								$this->req_data=$rows;					
+							}						
+							return $this->req_data['location'];
+						}
+						else
+							echo "<span class='label label-warning'>Not found in req_hub.</span> ";	
+					}
+					public function assign_local_account_scm($id)
+					{
+						$this->date_time();
+						$id = $this->mysqli->real_escape_string($id);
+						$location = $this->getReqDestination($id); 
 		//$this->mysqli->real_escape_string($location);
 		//$idL = $this->get_location_id($location);		
 		//var_dump($location);
-		$account = (int)$this->get_local_accountant($location,$id);	
+						$account = (int)$this->get_local_accountant($location,$id);	
 		//var_dump($account);
-		$scm = (int)$this->get_local_scm($location,$id);	
+						$scm = (int)$this->get_local_scm($location,$id);	
 		//var_dump($scm);
-		$activitiesAcc = 'accountant added,'.$this->date;
-		$activitiesScm = 'scm added,'.$this->date;
+						$activitiesAcc = 'accountant added,'.$this->date;
+						$activitiesScm = 'scm added,'.$this->date;
 		//echo $name,$designation,$office_code,$authority_level;		
-		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
-		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
-		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
-		
-		echo "<span class='label label-success'>User added successfully.</span> ";	
-	}
-	public function assign_central_account_scm($id)
-	{
-		$this->date_time();
-		$id = $this->mysqli->real_escape_string($id);
-		$account = $this->get_central_accountant();
-		$scm = $this->get_central_scm();
-		$activitiesAcc = 'accountant added,'.$this->date;
-		$activitiesScm = 'scm added,'.$this->date;
-		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
-		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
-		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
-		
-		echo "<span class='label label-success'>User added successfully.</span> ";	
-	}
-	public function get_central_accountant()
-	{		
-		unset($this->req_data);
-		$query="SELECT id FROM user_master WHERE authorization_level = 'Central Hub Accountant'";
-		
-		$result = $this->mysqli->query($query);
-		
+						$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
+						$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
+						$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
+						$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
+
+						echo "<span class='label label-success'>User added successfully.</span> ";	
+					}
+					public function assign_central_account_scm($id)
+					{
+						$this->date_time();
+						$id = $this->mysqli->real_escape_string($id);
+						$account = $this->get_central_accountant();
+						$scm = $this->get_central_scm();
+						$activitiesAcc = 'accountant added,'.$this->date;
+						$activitiesScm = 'scm added,'.$this->date;
+						$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
+						$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
+						$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
+						$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
+
+						echo "<span class='label label-success'>User added successfully.</span> ";	
+					}
+					public function get_central_accountant()
+					{		
+						unset($this->req_data);
+						$query="SELECT id FROM user_master WHERE authorization_level = 'Central Hub Accountant'";
+
+						$result = $this->mysqli->query($query);
+
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->req_data.=$rows['id'].',';					
 			}						
 			return $this->req_data;
@@ -2396,11 +2407,11 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->req_data.=$rows['id'].',';					
 			}						
 			return $this->req_data;
@@ -2422,9 +2433,9 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){									
 				$this->req_data[]=$rows['id'];					
 			}	
@@ -2461,9 +2472,9 @@ class User extends Database
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
 		$this->additional_data = $num_result;
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){									
 				$this->req_data[]=$rows['id'];					
 			}	
@@ -2489,10 +2500,10 @@ class User extends Database
 		if($num_result>0){				
 			while($rows=$result->fetch_assoc()){				
 				//var_dump($rows);									
-				 if($rows['user_id']==$data){
+				if($rows['user_id']==$data){
 					//var_dump($data);						
-				 	return true;			
-				 }
+					return true;			
+				}
 			}						
 		}
 		return false;	
@@ -2511,9 +2522,9 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
 				$this->req_data=$rows;					
 			}						
@@ -2531,11 +2542,11 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->req_data=$rows['id'];					
 			}						
 			return $this->req_data;
@@ -2554,7 +2565,7 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
 			while($rows=$result->fetch_assoc()){
 				$this->user_data[] = $rows;
@@ -2598,15 +2609,15 @@ class User extends Database
 		INNER JOIN requisition_user
 		ON requisition_user.user_id = user_master.id
 		WHERE requisition_user.location_id = 'central' and post = 'Boss'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;		
 			}						
 			return $this->user_data;
@@ -2619,15 +2630,15 @@ class User extends Database
 		unset($this->user_data);
 		
 		$query="SELECT * FROM admins WHERE req_id = '$req_id'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;		
 			}						
 			return $this->user_data;
@@ -2638,11 +2649,11 @@ class User extends Database
 	public function check_login_available($user_id)
 	{				
 		$query="SELECT * FROM user_login_details WHERE user_id = '$user_id'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		return $num_result;
 	}
 	public function add_department($department)
@@ -2660,15 +2671,15 @@ class User extends Database
 		FROM user_master 
 		INNER JOIN central_admins
 		ON central_admins.user_id = user_master.id";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;		
 			}						
 			return $this->user_data;
@@ -2680,19 +2691,19 @@ class User extends Database
 		unset($this->user_data);
 		
 		$query="SELECT location_id FROM highest_local_authority WHERE user_id	= '$user_id'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
 				$this->user_data[]=$rows;		
 			}	
 			$array = array(
 				"des" => "boss",
-			);
+				);
 			$this->user_data[] = $array;
 			return $this->user_data;
 		}
@@ -2704,13 +2715,13 @@ class User extends Database
 		unset($this->user_data);
 		
 		$query="SELECT location_id FROM requisition_user WHERE user_id = '$user_id'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){									
 				$this->user_data[]=$rows;		
 			}						
@@ -2724,55 +2735,55 @@ class User extends Database
 		unset($this->user_data);
 		
 		$query="SELECT location_id FROM user_by_location WHERE user_id = '$user_id'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){
-									
+
 				$this->user_data[]=$rows;		
 			}			
 			/*$array = array(
 				"des" => "staff",
 			);
-			$this->user_data[] = $array;	*/		
-			return $this->user_data;
-		}
-		else			
-			return 0;
+$this->user_data[] = $array;	*/		
+return $this->user_data;
+}
+else			
+	return 0;
 			//echo "<span class='label label-warning'>No user_from_user_by_location available.</span> ";	
-	}
-	public function getExtractedArray($arr,$key){
+}
+public function getExtractedArray($arr,$key){
 		//$this->comment_data = array();
-		if(is_array($arr)){
-			if(!array_key_exists($key, $arr)){
-				extract($arr);
-				foreach($arr as $arr1){
+	if(is_array($arr)){
+		if(!array_key_exists($key, $arr)){
+			extract($arr);
+			foreach($arr as $arr1){
 					//extract($da);
-					$this->getExtractedArray($arr1,$key);
-				}
-			}
-			else{
-				$this->user_data_temp.= $arr[$key];
-				$this->user_data_temp.= '|';
+				$this->getExtractedArray($arr1,$key);
 			}
 		}
-		return $this->user_data_temp;
+		else{
+			$this->user_data_temp.= $arr[$key];
+			$this->user_data_temp.= '|';
+		}
 	}
-	public function get_all_user_location($user_id)
-	{	
-		unset($this->comment_data);
-		unset($this->additional_data);
-		unset($this->req_data);
-		unset($this->user_data_temp1);
-		unset($this->user_data_temp);
-		$this->comment_data = array();
-		if($this->user_from_requisition_user($user_id)){
-			array_push($this->comment_data,$this->user_data);
-		}
+	return $this->user_data_temp;
+}
+public function get_all_user_location($user_id)
+{	
+	unset($this->comment_data);
+	unset($this->additional_data);
+	unset($this->req_data);
+	unset($this->user_data_temp1);
+	unset($this->user_data_temp);
+	$this->comment_data = array();
+	if($this->user_from_requisition_user($user_id)){
+		array_push($this->comment_data,$this->user_data);
+	}
 		/*if($this->user_from_user_by_location($user_id)){
 			array_push($this->comment_data,$this->user_data);
 		}*/
@@ -2781,13 +2792,13 @@ class User extends Database
 	public function getPost($user_id,$req_id){
 		unset($this->user_data_temp1);
 		$query="SELECT relation_to_req FROM admins WHERE admin_id = '$user_id' and req_id = '$req_id'";
-				
+
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-					
+
 		if($num_result>0){
-				
+
 			while($rows=$result->fetch_assoc()){									
 				$this->user_data_temp1=$rows;		
 			}						
@@ -2828,82 +2839,82 @@ class User extends Database
 		unset($this->user_data_temp1);		
 		switch($status){
 			case 'New':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>'; 
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>'; 
+			break;
 			case 'Delivered':
-				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success pDecision" type="button" id="decision" name="decision1" value="Received">Create GRN</button>';
-				break;
+			$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success pDecision" type="button" id="decision" name="decision1" value="Received">Create GRN</button>';
+			break;
 			case 'Partially Delivered':
-				$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success pDecision" type="button" id="decision" name="decision1" value="Partially Received">Create GRN</button>';
-				break;
+			$this->user_data_temp1 = $this->getGrnForm().'<button class="btn btn-small btn-success pDecision" type="button" id="decision" name="decision1" value="Partially Received">Create GRN</button>';
+			break;
 			case 'Approved':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
-					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
+			<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
+			break;
 			case 'Clear From Accounts':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Delivered</button>
-					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Delivered</button>
+			<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
+			break;
 			case 'Received':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Document Delivered">Document Deliver</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Document Delivered">Document Deliver</button>';
+			break;
 			case 'Document Delivered':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Document Received">Document Receive</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Document Received">Document Receive</button>';
+			break;
 			case 'Document Received':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Closed">Close</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Closed">Close</button>';
+			break;
 			case 'Partially Received':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
-					 <button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Delivered">Deliver</button>
+			<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Partially Delivered">Partially Deliver</button>';
+			break;
 			case 'Redirect':
-				$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>';
-				break;
+			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>';
+			break;
 			case 'Closed':
 			case 'View':
 			case 'Reject':
-				$this->user_data_temp1 = '';
-				break;
+			$this->user_data_temp1 = '';
+			break;
 		}	
 		return $this->user_data_temp1;
 	}
 	public function getGrnForm(){
 		$html="<div id='grnDiv' style='display:none;'><table class='table table-condensed table-hover' id='grnTable'>
-        <tr>
-        <th>Title</th>
-        <th><input type='text' id='grnTitle' name='grnTitle'></th>
-        </tr>
-        <tr>
-        <th>Requisition Type</th>
-        <td><input type='text' id='grnReqType' name='grnReqType'></td>
-        </tr>
-        <tr>
-        <th>Received Location</th>
-        <td><input type='text' id='grnRcvdLoc' name='grnRcvdLoc'></td>
-        </tr>
-        <tr>
-        <th>Received By</th>
-        <td><input type='text' id='grnRcvdBy' name='grnRcvdBy'></td>
-        </tr>
-        <tr>
-        <th>Received Date</th>
-        <td><input type='text' id='grnRcvdDate' name='grnRcvdDate'></td>
-        </tr>
-        <tr>
-        <th>Chalan No.</th>
-        <td><input type='text' id='grnChalanNo' name='grnChalanNo'></td>
-        </tr>
-        <tr>
-        <th>Note</th>
-        <td><textarea id='grnNote' name='grnNote'></textarea></td>
-        </tr>
-        </tr>
-        <tr id='grnLoading' style='display:hidden'>
-        <th></th>
-        <td></td>
-        </tr>
-        </table></div>";
+		<tr>
+		<th>Title</th>
+		<th><input type='text' id='grnTitle' name='grnTitle'></th>
+		</tr>
+		<tr>
+		<th>Requisition Type</th>
+		<td><input type='text' id='grnReqType' name='grnReqType'></td>
+		</tr>
+		<tr>
+		<th>Received Location</th>
+		<td><input type='text' id='grnRcvdLoc' name='grnRcvdLoc'></td>
+		</tr>
+		<tr>
+		<th>Received By</th>
+		<td><input type='text' id='grnRcvdBy' name='grnRcvdBy'></td>
+		</tr>
+		<tr>
+		<th>Received Date</th>
+		<td><input type='text' id='grnRcvdDate' name='grnRcvdDate'></td>
+		</tr>
+		<tr>
+		<th>Chalan No.</th>
+		<td><input type='text' id='grnChalanNo' name='grnChalanNo'></td>
+		</tr>
+		<tr>
+		<th>Note</th>
+		<td><textarea id='grnNote' name='grnNote'></textarea></td>
+		</tr>
+		</tr>
+		<tr id='grnLoading' style='display:hidden'>
+		<th></th>
+		<td></td>
+		</tr>
+		</table></div>";
 		return $html;
 	}
 	public function checkBoss($req_id,$user_id){		
@@ -2971,7 +2982,7 @@ class User extends Database
 		//var_dump($temp);
 		//if(count($temp)>1){
 		$query="SELECT site_factory,project,master FROM locations WHERE location_id = '$temp[0]'";			
-			$result = $this->mysqli->query($query);		
+		$result = $this->mysqli->query($query);		
 			$num_result=$result->num_rows;		// determine number of rows result set 					
 			if($num_result>0){				
 				while($rows=$result->fetch_assoc()){									
@@ -2981,10 +2992,10 @@ class User extends Database
 			else
 				echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 		//}
-				
-		if(count($temp)==2){			
-			$query="SELECT name FROM micro_site WHERE id = '$temp[1]'";			
-			$result = $this->mysqli->query($query);		
+
+			if(count($temp)==2){			
+				$query="SELECT name FROM micro_site WHERE id = '$temp[1]'";			
+				$result = $this->mysqli->query($query);		
 			$num_result=$result->num_rows;		// determine number of rows result set 					
 			if($num_result>0){				
 				while($rows=$result->fetch_assoc()){									
@@ -3047,10 +3058,10 @@ class User extends Database
 		$mDes = $this->mysqli->real_escape_string($mDes);
 		$mCPU = $this->mysqli->real_escape_string($mCPU);
 		//if($category=='Category')
-			$query="INSERT INTO material_master SET name = '$mName', category = '$Cat', subcategory = '$SubCat', measurment_unit = '$mUnit', m_description = '$mDes', cost_per_unit = '$mCPU'";
+		$query="INSERT INTO material_master SET name = '$mName', category = '$Cat', subcategory = '$SubCat', measurment_unit = '$mUnit', m_description = '$mDes', cost_per_unit = '$mCPU'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
 		echo "<span class='label label-success'>Material category added successfully.</span> ";	
-				
+
 	}
 	public function add_material_category($cName,$category,$cat){
 		$cName = $this->mysqli->real_escape_string($cName);
@@ -3062,7 +3073,7 @@ class User extends Database
 			$query="INSERT INTO material_category SET name = '$cName', type = '$category', sub_cat_of = '$cat'";			
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
 		echo "<span class='label label-success'>Material category added successfully.</span> ";	
-				
+
 	}
 	public function getMatSubCat($cat){
 		unset($this->user_data_temp);
@@ -3190,7 +3201,7 @@ class User extends Database
 		//echo '</br>';
 		//echo count($arr);
 		echo '</br>';
-	
+
 	}
 	public function input_stage($name,$instruction){	
 		$name = $this->trimming(strtolower($name));	
@@ -3211,7 +3222,7 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){			
 			while($rows=$result->fetch_assoc()){								
 				$this->user_data[]=$rows;					
@@ -3228,7 +3239,7 @@ class User extends Database
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-				
+
 		if($num_result>0){			
 			while($rows=$result->fetch_assoc()){								
 				$this->user_data[]=$rows;					
@@ -3366,7 +3377,7 @@ class User extends Database
 				return $rows['id'];					
 			}					
 		}		
-	    echo "<span class='label label-success'>No data found for single entity master.</span> ";
+		echo "<span class='label label-success'>No data found for single entity master.</span> ";
 	}
 	public function add_new_single_entity($single_entity_master,$single_entity){
 		$id = $this->getSingleEntityId($single_entity_master);
@@ -3474,19 +3485,19 @@ class User extends Database
 			case "Document Delivered":		
 			case "Document Received":		
 			case "Closed":
-				return false;
-				break;
+			return false;
+			break;
 			default:
-				return true;
-				break;			
+			return true;
+			break;			
 		}
 	}
 	public function form_unserialized($po_info){
 		//$temp = explode('|',$po_info);
 		//foreach($temp as $t){
-			$temp1 = unserialize($po_info);
-			array_splice($temp1, -1);
-			$temp2[] = $temp1;
+		$temp1 = unserialize($po_info);
+		array_splice($temp1, -1);
+		$temp2[] = $temp1;
 		//}
 		return $temp2;
 	}
@@ -3505,8 +3516,8 @@ class User extends Database
 	}
 	public function acc_scm_to_site_fact_office($user_id,$location_id){
 		$query="INSERT INTO acc_scm_to_office SET user_id = '$user_id', location_id = '$location_id'";
-			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted. error- ".__FUNCTION__);		
-			echo "<span class='label label-success'>Entity office/factory added.</span> ";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted. error- ".__FUNCTION__);		
+		echo "<span class='label label-success'>Entity office/factory added.</span> ";
 	}
 	public function user_home_page_authorization($user_id){
 		$query="SELECT post FROM requisition_user WHERE user_id = '$user_id'";		
@@ -3639,7 +3650,7 @@ class User extends Database
 					$tempUnit = explode(' ',$temp[$i+2]);
 					$html.= "<td>".$temp[$i]."</td><td>".$temp[$i+1]."</td><td><input type='text' id='mat_cart_edit_field_".$temp[$i]."' value='".$tempUnit[0]."' disabled> ".$tempUnit[1]."</td><td id='singleUnitPrice_".$temp[$i]."'>".$temp[$i+3]."</td><td id='singleItemTotal_".$temp[$i]."' class = 'singleItemTotalPrice'>".$temp[$i+4]."</td><td><input type='button'  id='matCartEdit_".$temp[$i]."' class='btn btn-mini btn-danger cartEditForBoss' value='Edit'></td>";
 				}
-			$html.= '</tr>';
+				$html.= '</tr>';
 			}
 			//$c++;
 		}
@@ -3660,7 +3671,7 @@ class User extends Database
 					$html.= "<th></th><th></th><th></th><th>".$temp[$i+3]."</th><th>".$temp[$i+4]."</th><th></th>";
 				else
 					$html.= "<td>".$temp[$i]."</td><td>".$temp[$i+1]."</td><td>".$temp[$i+2]."</td><td>".$temp[$i+3]."</td><td>".$temp[$i+4]."</td><td>".$temp[$i+5]."</td>";
-			$html.= '</tr>';
+				$html.= '</tr>';
 			}
 			//$c++;
 		}
@@ -3701,15 +3712,15 @@ class User extends Database
 	public function get_user_req_stage_urgent($post){
 		switch($post){
 			case 'Boss':
-				return "New";
+			return "New";
 			case 'SCM':
-				return "Received|Partially Received|Approved";
+			return "Received|Partially Received|Approved";
 			case 'Raiser':
-				return "Delivered|Partially Delivered|Reject|Approved";
+			return "Delivered|Partially Delivered|Reject|Approved";
 			case 'Accountant':
-				return "Document Delivered";
+			return "Document Delivered";
 			default:
-				echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 		}		
 	}
 	public function insert_grn($grn,$req_id){
@@ -3754,6 +3765,44 @@ class User extends Database
 			return false;
 			//echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 		//return $roles;
+	}
+	public function master_log($message,$keyword,$type=""){
+    	$message = $this->mysqli->real_escape_string($message);
+    	$keyword = $this->mysqli->real_escape_string($keyword);
+		$type = $this->mysqli->real_escape_string($type);
+		if($message===""){
+			echo "no message declared!!!!";
+			return;
+		}
+		switch ($type) {
+				case "":
+					$file = 'log_book/general.txt';
+					//$fp = fopen('log_book/general.txt', 'w');
+					break;
+				
+				default:
+					echo "no file available under this name!!!";
+					return;
+					break;
+			}	
+		
+		// The new person to add to the file
+		//$person = "John Smith\n";
+		// Write the contents to the file, 
+		// using the FILE_APPEND flag to append the content to the end of the file
+		// and the LOCK_EX flag to prevent anyone else writing to the file at the same time
+		$this->date_time();
+		var_dump($keyword);
+		var_dump($message);
+		$current_message = $message." - ".$this->date." | ".$keyword." \r\n";
+		$written = file_put_contents($file, $current_message, FILE_APPEND | LOCK_EX);
+		//$written = fwrite($fp, $current_message);
+		if($written)
+			echo "Log successfully updated";
+		else
+			echo "Log not updated";
+		//fclose($fp);	
+		return;
 	}
 }	
 ?>

@@ -1,40 +1,40 @@
 <?php 
-	include_once "user.php";
-	
-	session_start();
-	
-	if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
-	{ 	  
-		header("Location: signin.php?status=notloggedin");
-	}
-	if($_SESSION["designation"]!=='Hub Admin')
-	{ 	  
-		echo 'You are not authorized to use this page.';
-		echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
-		exit;
-	}
-	$user = new User();
-	
-	if(isset($_REQUEST['add_limit'])){
-		if(!in_array("", $_REQUEST)){
+include_once "user.php";
+
+session_start();
+
+if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
+{ 	  
+  header("Location: signin.php?status=notloggedin");
+}
+if($_SESSION["designation"]!=='Hub Admin')
+{ 	  
+  echo 'You are not authorized to use this page.';
+  echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
+  exit;
+}
+$user = new User();
+
+if(isset($_REQUEST['add_limit'])){
+  if(!in_array("", $_REQUEST)){
 			//var_dump($_REQUEST['boss']);
 			//var_dump($_REQUEST['money_limit']);
-			$user->add_boss_limit($_REQUEST['boss'],$_REQUEST['money_limit']);
-		}
-		else 
-			echo "<span class='label label-warning'>A field was empty.</span>";	
-	}
-	
-	if(isset($_REQUEST['add_exec'])){
-		if(!in_array("", $_REQUEST)){
-			$user->add_new_exec($_REQUEST['user1'],$_REQUEST['loc'],$_REQUEST['post']);
-		}
-		else 
-			echo "<span class='label label-warning'>A field was empty.</span>";	
-	}
-	
-	if(isset($_REQUEST['add_exec_central'])){
-		if(!in_array("", $_REQUEST)){
+   $user->add_boss_limit($_REQUEST['boss'],$_REQUEST['money_limit']);
+ }
+ else 
+   echo "<span class='label label-warning'>A field was empty.</span>";	
+}
+
+if(isset($_REQUEST['add_exec'])){
+  if(!in_array("", $_REQUEST)){
+   $user->add_new_exec($_REQUEST['user1'],$_REQUEST['loc'],$_REQUEST['post']);
+ }
+ else 
+   echo "<span class='label label-warning'>A field was empty.</span>";	
+}
+
+if(isset($_REQUEST['add_exec_central'])){
+  if(!in_array("", $_REQUEST)){
 			//echo $_REQUEST['name_c']." ".$_REQUEST['designation_c']." ".$_REQUEST['office_code_c']." ".$_REQUEST['authority_level_c'];
 			$id_r = $user->add_new_user($_REQUEST['name_c'],$_REQUEST['designation_c'],$_REQUEST['authority_level_c']); //$_REQUEST['office_code_c'],
 			$user->add_new_exec($id_r,'central',$_REQUEST['post_c']);
@@ -66,73 +66,73 @@
 			echo "<span class='label label-warning'>A field was empty.</span>";	
 	}
 	?>
-<!DOCTYPE html>
-<!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <title>Add User</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <!DOCTYPE html>
+  <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
+  <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Add User</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <!-- Le styles -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="css/datepicker.css" rel="stylesheet">
+  <!-- Le styles -->
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+  <style>
+  body {
+    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+  }
+  </style>
+  <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="css/datepicker.css" rel="stylesheet">
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+      <![endif]-->
 
-    <!-- Fav and touch icons -->
-    <link rel="shortcut icon" href="ico/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-  <style>.tooltiptrolol { position: relative; cursor: help; text-decoration: none;} .tooltiptrolol span { display: none; position: absolute; top: 15px; left: 10px; padding: 5px; z-index: 100; background: #000; color: #fff; border-radius: 5px; box-shadow: 2px 2px rgba(0, 0, 0, 0.1); text-align: center; line-width: 1000px; text-indent: 0; font: normal bold 10px/13px Tahoma,sans-serif; white-space: nowrap;} span:hover.tooltiptrolol { font-size: 99%; } .tooltiptrolol:hover span { display: block; } .md img { display:inline; } .rageface { visibility:visible; }</style>
-  
-  </head>
-  <body>
+      <!-- Fav and touch icons -->
+      <link rel="shortcut icon" href="ico/favicon.ico">
+      <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+      <style>.tooltiptrolol { position: relative; cursor: help; text-decoration: none;} .tooltiptrolol span { display: none; position: absolute; top: 15px; left: 10px; padding: 5px; z-index: 100; background: #000; color: #fff; border-radius: 5px; box-shadow: 2px 2px rgba(0, 0, 0, 0.1); text-align: center; line-width: 1000px; text-indent: 0; font: normal bold 10px/13px Tahoma,sans-serif; white-space: nowrap;} span:hover.tooltiptrolol { font-size: 99%; } .tooltiptrolol:hover span { display: block; } .md img { display:inline; } .rageface { visibility:visible; }</style>
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
-              <li class="active"><a href="add_user.php">Add User</a></li> 
-              <li><a href="add_material.php">Add Material</a></li>    
-              <li><a href="add_location.php">Add Location</a></li>    
-              <li><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
-              <li><a id="log_out" href="log_out.php">Log Out</a></li>
-            </ul>
-            <ul class="nav pull-right">
-            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
-            	<input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
-                <button id="search_btn" type="submit" class="btn">Search</button>
-            </form>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-      
-    <div class="container">
+    </head>
+    <body>
+
+      <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
+            <div class="nav-collapse collapse">
+              <ul class="nav">
+                <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
+                <li class="active"><a href="add_user.php">Add User</a></li> 
+                <li><a href="add_material.php">Add Material</a></li>    
+                <li><a href="add_location.php">Add Location</a></li>    
+                <li><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
+                <li><a id="log_out" href="log_out.php">Log Out</a></li>
+              </ul>
+              <ul class="nav pull-right">
+                <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
+                 <input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
+                 <button id="search_btn" type="submit" class="btn">Search</button>
+               </form>
+             </ul>
+           </div><!--/.nav-collapse -->
+         </div>
+       </div>
+     </div>
+
+     <div class="container">
       <!--Body content-->
       <ul class="breadcrumb">
         <li class="active">Add User</li>
@@ -141,252 +141,252 @@
         <h2>Add User</h2>
       </div>
       <div id="main">
-      
-      <table class="table table-hover">
-      <tr>
-      <td style="text-align:center"><strong>Section For Local User</strong></td>
-      </tr>
-      <tr>
-      <td><a href="#add_user" role="button" class="btn" data-toggle="modal">Add Staff</a></td>
-      <td>Add new staff</td>
-      </tr>
-      <tr>
-      <td><a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Local Raiser</a></td>
-      <td>Assign location to a user</td>
-      </tr>
-      <tr>
-      <td><a href="#add_top_local" role="button" class="btn" data-toggle="modal">Add Local Boss</a></td>
-      <td>Add new local boss</td>
-      </tr>
-      <tr>
-      <td><a href="#add_boss_limit" role="button" class="btn" data-toggle="modal">Set Boss Limit</a></td>
-      <td>Set boss money limit</td>
-      </tr>
-      <tr>
-      <tr>
-      <td style="text-align:center"><strong>Section For Central User</strong></td>
-      </tr>
-      <tr>
-      <td><a href="#add_top_central" role="button" class="btn" data-toggle="modal">Add Central Boss/Accountant/SCM</a></td>
-      <td>Add new central boss/accountant/SCM</td>
-      </tr>
-      <tr>
-      <td><a href="#assign_acc_scm_to_office_factory_site" role="button" class="btn" data-toggle="modal">Assign Accountant/SCM</a></td>
-      <td>Assign accountant/SCM to office/factory/site</td>
-      </tr>
-      </table>  
-   	  </div>
-    </div>
-	<!-- All modals -->
-   
-    
-  	<div id="add_user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add Local Staff</h3>
-      </div>
-      <br>
-    <form id="add_user_form" name="add_user_form" class="form-horizontal" action="add_user.php" method="post">
-      <div class="control-group">
-        <label class="control-label" for="inputEmail">Name</label>
-        <div class="controls">
-          <input name="name" type="text">
+
+        <table class="table table-hover">
+          <tr>
+            <td style="text-align:center"><strong>Section For Local User</strong></td>
+          </tr>
+          <tr>
+            <td><a href="#add_user" role="button" class="btn" data-toggle="modal">Add Staff</a></td>
+            <td>Add new staff</td>
+          </tr>
+          <tr>
+            <td><a href="#add_location_to_user" role="button" class="btn" data-toggle="modal">Add Local Raiser</a></td>
+            <td>Assign location to a user</td>
+          </tr>
+          <tr>
+            <td><a href="#add_top_local" role="button" class="btn" data-toggle="modal">Add Local Boss</a></td>
+            <td>Add new local boss</td>
+          </tr>
+          <tr>
+            <td><a href="#add_boss_limit" role="button" class="btn" data-toggle="modal">Set Boss Limit</a></td>
+            <td>Set boss money limit</td>
+          </tr>
+          <tr>
+            <tr>
+              <td style="text-align:center"><strong>Section For Central User</strong></td>
+            </tr>
+            <tr>
+              <td><a href="#add_top_central" role="button" class="btn" data-toggle="modal">Add Central Boss/Accountant/SCM</a></td>
+              <td>Add new central boss/accountant/SCM</td>
+            </tr>
+            <tr>
+              <td><a href="#assign_acc_scm_to_office_factory_site" role="button" class="btn" data-toggle="modal">Assign Accountant/SCM</a></td>
+              <td>Assign accountant/SCM to office/factory/site</td>
+            </tr>
+          </table>  
         </div>
       </div>
-       <div class="control-group">
-        <label class="control-label" for="inputEmail">Designation</label>
-        <div class="controls">
-          <select name="designation" id="designation"">
-             <option value="" label="Select Designation"></option>  
-             <?php
-			 	unset($user->comment_data);
-                $user->get_designation(); 
-                foreach($user->comment_data as $des)
-                {
-                    extract($des);
-            ?>	
-              <option><?php echo $name ?></option>    
-            <?php }?>  
-            </select>
+      <!-- All modals -->
+
+
+      <div id="add_user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="myModalLabel">Add Local Staff</h3>
         </div>
-      </div>
-       <!-- <div class="control-group">
-        <label class="control-label" for="inputEmail">Office Code</label>
-        <div class="controls">
-          <input name="office_code" type="text">
-        </div>
-      </div> -->
-      <div class="control-group">
-        <label class="control-label" for="inputEmail">Authority Level</label>
-        <div class="controls">
-          <select name="authority_level" id="authority_level"">
+        <br>
+        <form id="add_user_form" name="add_user_form" class="form-horizontal" action="add_user.php" method="post">
+          <div class="control-group">
+            <label class="control-label" for="inputEmail">Name</label>
+            <div class="controls">
+              <input name="name" type="text">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputEmail">Designation</label>
+            <div class="controls">
+              <select name="designation" id="designation"">
+               <option value="" label="Select Designation"></option>  
+               <?php
+               unset($user->comment_data);
+               $user->get_designation(); 
+               foreach($user->comment_data as $des)
+               {
+                extract($des);
+                ?>	
+                <option><?php echo $name ?></option>    
+                <?php }?>  
+              </select>
+            </div>
+          </div>
+          <!-- <div class="control-group">
+          <label class="control-label" for="inputEmail">Office Code</label>
+          <div class="controls">
+            <input name="office_code" type="text">
+          </div>
+        </div> -->
+        <div class="control-group">
+          <label class="control-label" for="inputEmail">Authority Level</label>
+          <div class="controls">
+            <select name="authority_level" id="authority_level"">
              <option value="" label="Select Authority Level"></option>  
              <?php
-			 	unset($user->user_data);
-                $user->get_authority_level(); 
-                foreach($user->user_data as $auth)
-                {
-                    extract($auth);
-            ?>	
+             unset($user->user_data);
+             $user->get_authority_level(); 
+             foreach($user->user_data as $auth)
+             {
+              extract($auth);
+              ?>	
               <option><?php echo $name ?></option>    
-            <?php }?>  
+              <?php }?>  
             </select>
+          </div>
         </div>
-      </div>
-      <div class="control-group">
-        <div class="controls">
-          <button type="submit" value="add_new_user" id="add_new_user" name="add_new_user" class="btn">Submit</button>
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" value="add_new_user" id="add_new_user" name="add_new_user" class="btn">Submit</button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
     </div>
-	
+
     <div id="add_location_to_user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
+      <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Add Local Raiser</h3>
       </div>
       <br>
-    <form id="add_location_to_user_form" name="add_location_to_user_form" class="form-horizontal" action="add_user.php" method="post">
-      <div class="control-group">
-        <label class="control-label" for="inputUser">User</label>
-        <div class="controls">
-        	<select id="user" name="user">
+      <form id="add_location_to_user_form" name="add_location_to_user_form" class="form-horizontal" action="add_user.php" method="post">
+        <div class="control-group">
+          <label class="control-label" for="inputUser">User</label>
+          <div class="controls">
+           <select id="user" name="user">
              <option value="" label="Select User" onChange="getMaster()"></option>  
              <?php
-			 	unset($user->login_data);
-                $user->search_user(); 
-                foreach($user->login_data as $data1)
-                {
-                    extract($data1);
-            ?>	
+             unset($user->login_data);
+             $user->search_user(); 
+             foreach($user->login_data as $data1)
+             {
+              extract($data1);
+              ?>	
               <option value="<?php echo $id ?>"><?php echo $name ?></option>    
-            <?php }?>  
+              <?php }?>  
             </select>
+          </div>
         </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputUser">Master</label>
-        <div class="controls">
-        	<select id="ms" name="ms">
+        <div class="control-group">
+          <label class="control-label" for="inputUser">Master</label>
+          <div class="controls">
+           <select id="ms" name="ms">
              <option value="" label="Select Master"></option>  
              
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
+           </select>
+         </div>
+       </div>
+       <div class="control-group">
         <label class="control-label" for="inputLocation">Project</label>
         <div class="controls">
         	<select id="pr" name="pr">
-             <option value="" label="Select Project"></option>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputLocation">Site</label>
-        <div class="controls">
-        	<select id="site" name="site">
-             <option value="" label="Select Site"></option>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputLocation">Micro Site</label>
-        <div class="controls">
-        	<select id="msite" name="msite">
-             <option value="" label="Select Micro Site"></option>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <div class="controls">
-          <button type="submit" value="add_location" id="add_location" name="add_location" class="btn">Submit</button>
-        </div>
-      </div>
-    </form>
-    </div>    
-    <div id="assign_acc_scm_to_office_factory_site" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add central boss,accountant and SCM</h3>
-      </div>
-      <br>
-    <form id="add_top_central_form_1" name="add_top_central_form_1" class="form-horizontal" action="add_user.php" method="post">
-       <div class="control-group">
-        <label class="control-label" for="inputEmail">User Name</label>
-        <div class="controls">
-          <select name="name_acc_scm" id="name_acc_scm">
-             <option value="" label="Select Central Accountant/SCM"></option>  
-             <?php
-			 	unset($user->comment_data);
-                $uid = $user->get_central_acc_scm(); 
-                foreach($uid as $ud)
-                {
-            ?>	
-              <option value="<?php echo $ud; ?>"><?php echo $user->get_user_details($ud,'name') ?></option>    
-            <?php }?>  
-            </select>
-        </div>
-      </div>
-      <div id="location_output_ext" class="control-group" style="display:none">
-        <div id="location_output" class="controls">
-          
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputEmail">Office/Factory/Site</label>
-        <div class="controls">
-          <select name="off_fac_site" id="off_fac_site">
-             <option value="" label="Select Office/Factory/Site"></option>  
-             <?php
-			 	unset($user->user_data);
-                $user->get_location_by_id('site_factory'); 
-                foreach($user->user_data as $loct)
-                {
-                    extract($loct);
-            ?>	
-              <option value="<?php echo $location_id ?>"><?php echo $site_factory ?></option>    
-            <?php }?>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <div class="controls">
-          <button type="submit" value="off_fac_site_submit" id="off_fac_site_submit" name="off_fac_site_submit" class="btn">Submit</button>
-        </div>
-      </div>
-    </form>
+           <option value="" label="Select Project"></option>  
+         </select>
+       </div>
+     </div>
+     <div class="control-group">
+      <label class="control-label" for="inputLocation">Site</label>
+      <div class="controls">
+       <select id="site" name="site">
+         <option value="" label="Select Site"></option>  
+       </select>
+     </div>
+   </div>
+   <div class="control-group">
+    <label class="control-label" for="inputLocation">Micro Site</label>
+    <div class="controls">
+     <select id="msite" name="msite">
+       <option value="" label="Select Micro Site"></option>  
+     </select>
+   </div>
+ </div>
+ <div class="control-group">
+  <div class="controls">
+    <button type="submit" value="add_location" id="add_location" name="add_location" class="btn">Submit</button>
+  </div>
+</div>
+</form>
+</div>    
+<div id="assign_acc_scm_to_office_factory_site" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Add central boss,accountant and SCM</h3>
+  </div>
+  <br>
+  <form id="add_top_central_form_1" name="add_top_central_form_1" class="form-horizontal" action="add_user.php" method="post">
+   <div class="control-group">
+    <label class="control-label" for="inputEmail">User Name</label>
+    <div class="controls">
+      <select name="name_acc_scm" id="name_acc_scm">
+       <option value="" label="Select Central Accountant/SCM"></option>  
+       <?php
+       unset($user->comment_data);
+       $uid = $user->get_central_acc_scm(); 
+       foreach($uid as $ud)
+       {
+        ?>	
+        <option value="<?php echo $ud; ?>"><?php echo $user->get_user_details($ud,'name') ?></option>    
+        <?php }?>  
+      </select>
     </div>
-    <div id="add_top_central" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add central boss,accountant and SCM</h3>
+  </div>
+  <div id="location_output_ext" class="control-group" style="display:none">
+    <div id="location_output" class="controls">
+
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputEmail">Office/Factory/Site</label>
+    <div class="controls">
+      <select name="off_fac_site" id="off_fac_site">
+       <option value="" label="Select Office/Factory/Site"></option>  
+       <?php
+       unset($user->user_data);
+       $user->get_location_by_id('site_factory'); 
+       foreach($user->user_data as $loct)
+       {
+        extract($loct);
+        ?>	
+        <option value="<?php echo $location_id ?>"><?php echo $site_factory ?></option>    
+        <?php }?>  
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" value="off_fac_site_submit" id="off_fac_site_submit" name="off_fac_site_submit" class="btn">Submit</button>
+    </div>
+  </div>
+</form>
+</div>
+<div id="add_top_central" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Add central boss,accountant and SCM</h3>
+  </div>
+  <br>
+  <form id="add_top_central_form" name="add_top_central_form" class="form-horizontal" action="add_user.php" method="post">
+    <div class="control-group">
+      <label class="control-label" for="inputEmail">User Name</label>
+      <div class="controls">
+        <input name="name_c" type="text">
       </div>
-      <br>
-    <form id="add_top_central_form" name="add_top_central_form" class="form-horizontal" action="add_user.php" method="post">
-      <div class="control-group">
-        <label class="control-label" for="inputEmail">User Name</label>
-        <div class="controls">
-          <input name="name_c" type="text">
-        </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="inputEmail">Designation</label>
+      <div class="controls">
+        <select name="designation_c" id="designation_c">
+         <option value="" label="Select Designation"></option>  
+         <?php
+         unset($user->comment_data);
+         $user->get_designation(); 
+         foreach($user->comment_data as $des)
+         {
+          extract($des);
+          ?>	
+          <option><?php echo $name ?></option>    
+          <?php }?>  
+        </select>
       </div>
-       <div class="control-group">
-        <label class="control-label" for="inputEmail">Designation</label>
-        <div class="controls">
-          <select name="designation_c" id="designation_c">
-             <option value="" label="Select Designation"></option>  
-             <?php
-			 	unset($user->comment_data);
-                $user->get_designation(); 
-                foreach($user->comment_data as $des)
-                {
-                    extract($des);
-            ?>	
-              <option><?php echo $name ?></option>    
-            <?php }?>  
-            </select>
-        </div>
-      </div>
+    </div>
        <!--<div class="control-group">
         <label class="control-label" for="inputEmail">Office Code</label>
         <div class="controls">
@@ -397,128 +397,128 @@
         <label class="control-label" for="inputEmail">Authority Level</label>
         <div class="controls">
           <select name="authority_level_c" id="authority_level_c">
-             <option value="" label="Select Authority Level"></option>  
-             <?php
-			 	unset($user->user_data);
-                $user->get_authority_level(); 
-                foreach($user->user_data as $auth)
-                {
-                    extract($auth);
+           <option value="" label="Select Authority Level"></option>  
+           <?php
+           unset($user->user_data);
+           $user->get_authority_level(); 
+           foreach($user->user_data as $auth)
+           {
+            extract($auth);
             ?>	
-              <option><?php echo $name ?></option>    
+            <option><?php echo $name ?></option>    
             <?php }?>  
-            </select>
+          </select>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="inputLocation">Post</label>
         <div class="controls">
         	<select id="post_c" name="post_c">
-             <option value="" label="Select Post"></option>  
-             <option>Boss</option>  
-             <option>Accountant</option>  
-             <option>SCM</option>  
-             <option>Hub Admin</option>  
-            </select>
-        </div>
+           <option value="" label="Select Post"></option>  
+           <option>Boss</option>  
+           <option>Accountant</option>  
+           <option>SCM</option>  
+           <option>Hub Admin</option>  
+         </select>
+       </div>
+     </div>
+     <div class="control-group">
+      <div class="controls">
+        <button type="submit" value="add_exec_central" id="add_exec_central" name="add_exec_central" class="btn">Submit</button>
       </div>
-      <div class="control-group">
-        <div class="controls">
-          <button type="submit" value="add_exec_central" id="add_exec_central" name="add_exec_central" class="btn">Submit</button>
-        </div>
-      </div>
-    </form>
     </div>
-    <div id="add_top_local" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add local boss,accountant and SCM</h3>
+  </form>
+</div>
+<div id="add_top_local" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Add local boss,accountant and SCM</h3>
+  </div>
+  <br>
+  <form id="add_top_local_form" name="add_top_local_form" class="form-horizontal" action="add_user.php" method="post">
+    <div class="control-group">
+      <label class="control-label" for="inputUser">User</label>
+      <div class="controls">
+       <select id="user1" name="user1" onChange="getLocations()">
+         <option value="" label="Select User"></option>  
+         <?php
+         $user->search_user(); 
+         foreach($user->login_data as $data1)
+         {
+          extract($data1);
+          ?>	
+          <option value="<?php echo $id ?>"><?php echo $name ?></option>    
+          <?php }?>  
+        </select>
       </div>
-      <br>
-    <form id="add_top_local_form" name="add_top_local_form" class="form-horizontal" action="add_user.php" method="post">
-      <div class="control-group">
-        <label class="control-label" for="inputUser">User</label>
-        <div class="controls">
-        	<select id="user1" name="user1" onChange="getLocations()">
-             <option value="" label="Select User"></option>  
-             <?php
-                $user->search_user(); 
-                foreach($user->login_data as $data1)
-                {
-                    extract($data1);
-            ?>	
-              <option value="<?php echo $id ?>"><?php echo $name ?></option>    
-            <?php }?>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputUser">Location</label>
-        <div class="controls">
-        	<select id="loc" name="loc">
-             <option value="" label="Select Location"></option>  
-             
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputLocation">Post</label>
-        <div class="controls">
-        	<select id="post" name="post">
-             <option value="" label="Select Post"></option>  
-             <option>Boss</option>  
-             <option>Accountant</option>  
-             <option>SCM</option>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <div class="controls">
-          <button type="submit" value="add_exec" id="add_exec" name="add_exec" class="btn">Submit</button>
-        </div>
-      </div>
-    </form>
     </div>
-    
-	<div id="add_boss_limit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Add Boss Money Limit</h3>
-      </div>
-      <br>
-    <form id="limit_money" name="limit_money" class="form-horizontal" action="add_user.php" method="post">
-      <div class="control-group">
-        <label class="control-label" for="inputUser">User</label>
-        <div class="controls">
-        	<select id="boss" name="boss" onChange="getLocations()">
-             <option value="" label="Select Boss"></option>  
-             <?php
-			 	unset($user->user_data_temp);
-                $user->search_boss(); 
-                foreach($user->user_data_temp as $bossLimit)
-				{
-					extract($bossLimit);
-					$user->get_boss_by_id($user_id);					
-            ?>	
-              <option value="<?php echo $user_id ?>"><?php echo $user->user_data_temp1; ?></option>    
-            <?php }?>  
-            </select>
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label" for="inputUser">Money Limit</label>
-        <div class="controls">
-        	<input id="money_limit" name="money_limit" type="text">
-        </div>
-      </div>
-      <div class="control-group">
-        <div class="controls">
-          <button type="submit" value="add_limit" id="add_limit" name="add_limit" class="btn">Submit</button>
-        </div>
-      </div>
-    </form>
+    <div class="control-group">
+      <label class="control-label" for="inputUser">Location</label>
+      <div class="controls">
+       <select id="loc" name="loc">
+         <option value="" label="Select Location"></option>  
+
+       </select>
+     </div>
+   </div>
+   <div class="control-group">
+    <label class="control-label" for="inputLocation">Post</label>
+    <div class="controls">
+     <select id="post" name="post">
+       <option value="" label="Select Post"></option>  
+       <option>Boss</option>  
+       <option>Accountant</option>  
+       <option>SCM</option>  
+     </select>
+   </div>
+ </div>
+ <div class="control-group">
+  <div class="controls">
+    <button type="submit" value="add_exec" id="add_exec" name="add_exec" class="btn">Submit</button>
+  </div>
+</div>
+</form>
+</div>
+
+<div id="add_boss_limit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Add Boss Money Limit</h3>
+  </div>
+  <br>
+  <form id="limit_money" name="limit_money" class="form-horizontal" action="add_user.php" method="post">
+    <div class="control-group">
+      <label class="control-label" for="inputUser">User</label>
+      <div class="controls">
+       <select id="boss" name="boss" onChange="getLocations()">
+         <option value="" label="Select Boss"></option>  
+         <?php
+         unset($user->user_data_temp);
+         $user->search_boss(); 
+         foreach($user->user_data_temp as $bossLimit)
+         {
+           extract($bossLimit);
+           $user->get_boss_by_id($user_id);					
+           ?>	
+           <option value="<?php echo $user_id ?>"><?php echo $user->user_data_temp1; ?></option>    
+           <?php }?>  
+         </select>
+       </div>
+     </div>
+     <div class="control-group">
+      <label class="control-label" for="inputUser">Money Limit</label>
+      <div class="controls">
+       <input id="money_limit" name="money_limit" type="text">
+     </div>
+   </div>
+   <div class="control-group">
+    <div class="controls">
+      <button type="submit" value="add_limit" id="add_limit" name="add_limit" class="btn">Submit</button>
     </div>
-	
+  </div>
+</form>
+</div>
+
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -553,104 +553,106 @@
 	  });
 	  $("#main").text(str);
 	})	*/
-	
-	function getLocations(){
-		singleVal = $("#user1").val();		
-		$('#loc option').text('Loading...')
-		posting = $.post("get_locations.php",{val:singleVal});	
-		posting.done(function(output){
-			  $('#loc').html(output).show();
-			})  
-	}
-	function getMaster(){
-		$('#ms option').text('Loading...')
-		posting = $.post("get_master.php");	  
-		posting.done(function(output){
-			  $('#ms').html(output).show();
-			})
-	}
-	function getProject(){
-		singleVal = $("#ms").val();
-		$('#pr option').text('Loading...')
-		posting = $.post("get_master.php",{val:singleVal,from:'ms'});	 
-		posting.done(function(output){
-			  $('#pr').html(output).show();
-			}) 
-	}
-	function getSite(){
-		singleVal = $("#pr").val();
-		$('#site option').text('Loading...')
-		posting = $.post("get_master.php",{val:singleVal,from:'pr'});
-		posting.done(function(output){
-			  $('#site').html(output).show();
-			})	  
-	}
-	function getMicroSite(){
-		singleVal = $("#site").val();
-		$('#msite option').text('Loading...')
-		posting = $.post("get_master.php",{val:singleVal,from:'site'});	
-		posting.done(function(output){
-			  $('#msite').html(output).show();
-			})  
-	}
-	function displayVals() {
-      var singleValues = $("#single").val();
-      var multipleValues = $("#multiple").val() || [];
-      $("p").html("<b>Single:</b> " +
-                  singleValues +
-                  " <b>Multiple:</b> " +
-                  multipleValues.join(", "));
-    }
- 
-    $("#user").change(getMaster);
-    $("#ms").change(getProject);
-    $("#pr").change(getSite);
-    $("#site").change(getMicroSite);
-    //getMaster();
-      function get_projects()
-      {
-		  //masterOne = document.getElementById("master")
-          $.post('get_projects.php', {master: add_user_form.master.value},
-              function(output){
-                  $('#project').html(output).show();
-              });
-      }
-	  
-	  function get_site_factory()
-      {
-          $.post('get_site_factory.php', {project: add_user_form.project.value, master: add_user_form.master.value },
-              function(output){
-                  $('#site_factory').html(output).show();
-              });
-      }
-	  
-	  function get_site_factory1()
-      {
-          $.post('get_site_factory.php', {project: location.project.value, master: location.master.value },
-              function(output){
-                  $('#site_factory').html(output).show();
-              });
-      }
-	  $("form").submit(function(e){
-		if (!confirm("Do you confirm submit?"))
-		{
-			e.preventDefault();
-			return;
-		} 
-	}); 
-	$('#name_acc_scm').change(get_users_assigned_location)
-	function get_users_assigned_location(e){
-		if(this.value!=''){			
-			$('#location_output').text('Loading...')
-			posting = $.post('get_users_assigned_location.php', {id: this.value},
-			  function(o){
-				  $('#location_output_ext').show('slow')
-				  $('#location_output').html(o).show('slow');
-			  })
-		}
-	}
-	</script>
-		
-	  
 
-</body></html>
+function getLocations(){
+  singleVal = $("#user1").val();		
+  $('#loc option').text('Loading...')
+  posting = $.post("get_locations.php",{val:singleVal});	
+  posting.done(function(output){
+   $('#loc').html(output).show();
+ })  
+}
+function getMaster(){
+  $('#ms option').text('Loading...')
+  posting = $.post("get_master.php");	  
+  posting.done(function(output){
+   $('#ms').html(output).show();
+ })
+}
+function getProject(){
+  singleVal = $("#ms").val();
+  $('#pr option').text('Loading...')
+  posting = $.post("get_master.php",{val:singleVal,from:'ms'});	 
+  posting.done(function(output){
+   $('#pr').html(output).show();
+ }) 
+}
+function getSite(){
+  singleVal = $("#pr").val();
+  $('#site option').text('Loading...')
+  posting = $.post("get_master.php",{val:singleVal,from:'pr'});
+  posting.done(function(output){
+   $('#site').html(output).show();
+ })	  
+}
+function getMicroSite(){
+  singleVal = $("#site").val();
+  $('#msite option').text('Loading...')
+  posting = $.post("get_master.php",{val:singleVal,from:'site'});	
+  posting.done(function(output){
+   $('#msite').html(output).show();
+ })  
+}
+function displayVals() {
+  var singleValues = $("#single").val();
+  var multipleValues = $("#multiple").val() || [];
+  $("p").html("<b>Single:</b> " +
+    singleValues +
+    " <b>Multiple:</b> " +
+    multipleValues.join(", "));
+}
+
+$("#user").change(getMaster);
+$("#ms").change(getProject);
+$("#pr").change(getSite);
+$("#site").change(getMicroSite);
+    //getMaster();
+    function get_projects()
+    {
+		  //masterOne = document.getElementById("master")
+      $('#project option').text('Loading...')
+      posting = $.post('get_projects.php', {master: add_user_form.master.value})
+
+      posting.done(function(output){
+          $('#project').html(output).show();
+        });
+    }
+
+    function get_site_factory()
+    {
+      $.post('get_site_factory.php', {project: add_user_form.project.value, master: add_user_form.master.value },
+        function(output){
+          $('#site_factory').html(output).show();
+        });
+    }
+
+    function get_site_factory1()
+    {
+      $.post('get_site_factory.php', {project: location.project.value, master: location.master.value },
+        function(output){
+          $('#site_factory').html(output).show();
+        });
+    }
+    $("form").submit(function(e){
+      if (!confirm("Do you confirm submit?"))
+      {
+       e.preventDefault();
+       return;
+     } 
+   }); 
+    $('#name_acc_scm').change(get_users_assigned_location)
+    function get_users_assigned_location(e){
+      if(this.value!=''){			
+       $('#location_output').text('Loading...')
+       posting = $.post('get_users_assigned_location.php', {id: this.value},
+         function(o){
+          $('#location_output_ext').show('slow')
+          $('#location_output').html(o).show('slow');
+        })
+     }
+   }
+   </script>
+
+
+
+ </body></html>
