@@ -1647,9 +1647,16 @@ class User extends Database
 			//echo "<span class='label label-warning'>User type not found. So navbar can not be available</span> ";		
 			//header("Location: signin.php?status=notauthorized"); 
 	}
-	public function recent_added_user($limit)
-	{		
-		$query="SELECT id,name FROM user_master order by user_since desc limit $limit";
+	public function recent_added_local_raisers($limit,$start=0)
+	{
+		$query="SELECT user_master.id,user_master.name,user_master.user_since,requisition_user.location_id	
+		FROM user_master 
+		INNER JOIN requisition_user
+		ON requisition_user.user_id = user_master.id		
+		WHERE requisition_user.post = 'Raiser' and requisition_user.location_id <> 'Central'
+		order by id desc limit $start,$limit";
+		
+		//$query="SELECT id,name,user_since FROM user_master order by id desc limit $start,$limit";
 		
 		$result = $this->mysqli->query($query);
 		
@@ -1661,14 +1668,49 @@ class User extends Database
 			
 			while($rows=$result->fetch_assoc()){
 
-				$this->req_data[]=$rows;					
+				$local_raiser_list[]=$rows;					
+			}
+			var_dump($local_raiser_list);
+			return $local_raiser_list;
+		}		
+		return NULL;
+	}	
+	public function recent_added_user($limit,$start=0)
+	{
+		$query="SELECT id,name,user_since FROM user_master order by id desc limit $start,$limit";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+
+		$this->good_to_go_flag = $num_result;
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+
+				$recent_added_user_list[]=$rows;					
 			}	
 			//echo $_SESSION["designation"];					
-			return $this->req_data;
-		}	
-		/*else
-		echo "<span class='label label-warning'>No requisition is found under this type.</span> ";*/
+			return $recent_added_user_list;
+		}		
+		return NULL;
 	}	
+	public function delete_recent_added_user($id){
+		if(!$this->check_login_available($id)){
+			$query="DELETE FROM user_master WHERE id='$id'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+			return 1;
+		}
+		else
+			echo "<span class='label label-warning'>This user is registered so cant be deleted.</span> ";
+		return NULL;	
+	}
+	public function delete_local_raiser($id,$location){
+		$query="DELETE FROM requisition_user WHERE user_id ='$id' and location_id = '$location'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		return 1;
+	}
 	public function check_new_req()
 	{		
 		$query="SELECT * FROM requisition where status = 'New'";
@@ -3250,7 +3292,6 @@ public function get_all_user_location($user_id)
 			echo "<span class='label label-warning'>No stage found.</span> ";				
 	}
 	public function delete_stage($delete){
-		//echo $delete;				
 		$query="DELETE FROM stages_of_requisition WHERE id='$delete'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");	
 		echo "<span class='label label-warning'>Deleted.</span> ";

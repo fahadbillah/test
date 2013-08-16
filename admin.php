@@ -112,9 +112,9 @@
              <?php 
 			 	unset($admin->req_data);
 			 	unset($admin->good_to_go_flag);
-				$admin->recent_added_user(50);
+				$recent_user = $admin->recent_added_user(50);
 				  if($admin->good_to_go_flag>0){
-					 foreach($admin->req_data as $list)
+					 foreach($recent_user as $list)
 					 {
 						extract($list);
 			  ?>           

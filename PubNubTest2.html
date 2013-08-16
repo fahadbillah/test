@@ -1,26 +1,86 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>My Chat</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PubNub Tic Tac Toe</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.no-icons.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.0/cyborg/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+    .box{
+        height: 100px;
+        width: 100px;
+    }
+    .cross{
+        background-image: url('x.png');
+        background-size: 99px 99px;
+    }
+    .zero{
+        background-image: url('o.png');
+        background-size: 99px 99px;
+    }
+    </style>
 </head>
 
 <body>
-<div id='read'></div>
-<div id='write'>
-<form id="chatBox" >
-<input type="text" id="name" />
-<input type="button" id="set" value="Set Name" />
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="navbar-header">
+             <h4>PubNub Tic Tac Toe</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+<div class="container" style="margin-top: 100px">
+    <div id='read'></div>
+    <div id='write'>
+        <form id="chatBox" class="form inline-form" >
+            <input type="text" id="name" />
+            <input type="button" id="set" value="Set Name" />
 
-<input type="text" id="chat" style="display:none" />
-<input type="button" id="send" value="Send" style="display:none" />
-</form>
+            <input type="text" id="chat" style="display:none" />
+            <input type="button" id="send" value="Send" style="display:none" />
+        </form>
+    </div>
+    <div id="play">        
+        <table id="ticTacToe">
+            <tr>
+                <td><div id="box0" class="box"></div></td>
+                <td><div id="box1" class="box"></div></td>
+                <td><div id="box2" class="box"></div></td>
+            </tr>
+            <tr>
+                <td><div id="box3" class="box"></div></td>
+                <td><div id="box4" class="box"></div></td>
+                <td><div id="box5" class="box"></div></td>
+            </tr>
+            <tr>
+                <td><div id="box6" class="box"></div></td>
+                <td><div id="box7" class="box"></div></td>
+                <td><div id="box8" class="box"></div></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="footer" class="footer">
+  <div class="container">
+    <p>Powerd By PubNub</p>
+  </div>
 </div>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="http://cdn.pubnub.com/pubnub-3.5.3.min.js"></script>
 <script>
 (function(){
-	var userName
+ var userName = ""
+ var sign = ""
+ var iAm = 0
+ var allMoves = new Array()
+ var notInIt = true
+ var myMove = true
+ //var wcm = 0
     // Init
     var pubnub = PUBNUB.init({
         publish_key   : 'pub-c-418d01d0-a5b3-4730-98b5-f3d7531d7bc3',
@@ -30,7 +90,18 @@
     // LISTEN
     pubnub.subscribe({
         channel : "hello_world",
-        message : function(m){ console.log(m) },
+        message : function(m){ 
+            console.log(m) 
+            allMoves.push(m)
+            //var wcm = whoCanMove(allMoves)
+            var data = m.split("|")
+            var temp = ""
+            if(data[0]!==userName && notInIt){     //&& data[1]==="init"
+                iAm = 2
+                notInIt = false
+            }            
+            makeAMove(data[0],data[2]) 
+        },
         connect : publish
     })
 
@@ -41,17 +112,43 @@
             message : mes
         })
     }
-	$('#send').on("click", function(event){
-		temp = userName+' -> '+$('#chat').val()
-		publish(temp)
-	})
-	$('#set').on("click", function(event){
-		userName = $('#name').val()
-		$('#name').attr('disabled','')
-		$(this).hide('slow')
-		$('#send').show('slow')
-		$('#chat').show('slow')
-	})
+
+    function whoCanMove(all){
+        //(all.length%2==1)? return 2 : return 1
+    }
+
+    function makeAMove(player,data){    
+        (player==="player1")? sign = "cross" : sign = "zero";
+        console.log(player,sign,data)
+        $("#"+data).addClass(sign)    
+    }
+    $('#send').on("click", function(event){
+      temp = userName+'|'+$('#chat').val()
+      publish(temp)
+  })
+    $('#set').on("click", function(event){
+      userName = $('#name').val()
+      $('#name').attr('disabled','')
+      $(this).hide('slow')
+      console.log(userName)
+  })
+    $(".box").click(function(e){
+        var temp = userName
+        if(userName==="")
+            return
+        if(notInIt){
+            notInIt = false
+            iAm = 1
+            //temp += '|init|'
+        }
+        var id = this.id    //
+        if($("#"+id).html()===""){
+            temp += '|'+iAm+'|'+id      //iAm+'|'+id
+            publish(temp)
+        }
+        else
+            console.log("bad")            
+    })
 
 })();
 

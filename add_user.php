@@ -147,7 +147,7 @@ if(isset($_REQUEST['add_exec_central'])){
             <td style="text-align:center"><strong>Section For Local User</strong></td>
           </tr>
           <tr>
-            <td><a href="#add_user" role="button" class="btn" data-toggle="modal">Add Staff</a></td>
+            <td><a href="#add_user" role="button" class="btn" data-toggle="modal">Add Local Staff</a></td>
             <td>Add new staff</td>
           </tr>
           <tr>
@@ -188,15 +188,15 @@ if(isset($_REQUEST['add_exec_central'])){
         <br>
         <form id="add_user_form" name="add_user_form" class="form-horizontal" action="add_user.php" method="post">
           <div class="control-group">
-            <label class="control-label" for="inputEmail">Name</label>
+            <label class="control-label" for="inputName">Name</label>
             <div class="controls">
               <input name="name" type="text">
             </div>
           </div>
           <div class="control-group">
-            <label class="control-label" for="inputEmail">Designation</label>
+            <label class="control-label" for="inputDesignation">Designation</label>
             <div class="controls">
-              <select name="designation" id="designation"">
+              <select name="designation" id="designation">
                <option value="" label="Select Designation"></option>  
                <?php
                unset($user->comment_data);
@@ -210,16 +210,10 @@ if(isset($_REQUEST['add_exec_central'])){
               </select>
             </div>
           </div>
-          <!-- <div class="control-group">
-          <label class="control-label" for="inputEmail">Office Code</label>
-          <div class="controls">
-            <input name="office_code" type="text">
-          </div>
-        </div> -->
         <div class="control-group">
           <label class="control-label" for="inputEmail">Authority Level</label>
           <div class="controls">
-            <select name="authority_level" id="authority_level"">
+            <select name="authority_level" id="authority_level">
              <option value="" label="Select Authority Level"></option>  
              <?php
              unset($user->user_data);
@@ -239,6 +233,19 @@ if(isset($_REQUEST['add_exec_central'])){
           </div>
         </div>
       </form>
+      <div class="notice container-fluid"></div>
+      <div class="container-fluid pre-scrollable">
+        <table id="local_staff_list" class="table table-condensed table-striped table-hover">
+          <tr>
+            <th>Name</th>
+            <th>Date Added</th>
+            <th>Delete</th>
+          </tr>
+        </table>
+        <div class=""><button id="see_more_local_staff_list" class="btn btn-large btn-block" type="button">See More</button>
+</div>
+        <div class="modal-footer"></div>
+      </div>
     </div>
 
     <div id="add_location_to_user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -304,6 +311,20 @@ if(isset($_REQUEST['add_exec_central'])){
   </div>
 </div>
 </form>
+<div class="notice container-fluid"></div>
+<div class="container-fluid pre-scrollable">
+  <table id="local_raiser_list" class="table table-condensed table-striped table-hover">
+    <tr>
+      <th>Name</th>
+      <th>Date Added</th>
+      <th>Delete</th>
+    </tr>
+  </table>
+  <div class=""><button id="see_more_local_raiser_list" class="btn btn-large btn-block" type="button">See More</button>
+</div>
+  <div class="modal-footer"></div>
+  <div class="modal-footer"></div>
+</div>
 </div>    
 <div id="assign_acc_scm_to_office_factory_site" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
@@ -518,7 +539,6 @@ if(isset($_REQUEST['add_exec_central'])){
   </div>
 </form>
 </div>
-
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -546,18 +566,84 @@ if(isset($_REQUEST['add_exec_central'])){
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
     <script>
-	/*$("#master").change(function () {
-	  var str = "";
-	  $("select option:selected").each(function () {
-				str += $(this).text() + " ";
-	  });
-	  $("#main").text(str);
-	})	*/
+var local_staff_limit_start = 0
+var local_raiser_limit_start = 0
+$(document).ready(function() {
+  get_local_staff_list()
+  get_local_raiser_list()
+  /*get_local_staff_list()
+  get_local_staff_list()  */
+});
+function get_local_raiser_list(){
+  var singleVal = 10
+  buttonLoading("see_more_local_raiser_list","Loading..")
+  var posting = $.post("form_handler.php",{get_local_raiser_list: singleVal, raise_start: local_raiser_limit_start})
+  local_raiser_limit_start += 10
+  posting.done(function(output){
+    $("#local_raiser_list").append(output)
+    buttonLoadingOff("see_more_local_raiser_list","See More")
+  })    
+}
+$('#see_more_local_raiser_list').click(get_local_raiser_list)
+function get_local_staff_list(){
+  var singleVal = 10
+  buttonLoading("see_more_local_staff_list","Loading..")
+  var posting = $.post("form_handler.php",{get_local_staff_list: singleVal, start: local_staff_limit_start})
+  local_staff_limit_start += 10
+  posting.done(function(output){
+    $("#local_staff_list").append(output)
+    buttonLoadingOff("see_more_local_staff_list","See More")
+  })    
+}
+$('#see_more_local_staff_list').click(get_local_staff_list)
 
+function delete_current_user(id){
+  //alert(id)
+  buttonLoading("delete_current_user"+id,"Deleting..")
+  var posting = $.post("form_handler.php",{delete_current_user: id})
+  posting.done(function(output){
+    $("#add_user .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+    if(!output.match("cannot be deleted"))
+      temp = $("#delete_current_user"+id).parent().parent().hide("slow")
+    else
+      buttonLoadingOff("delete_current_user"+id,"Delete")
+  })
+}
+function delete_local_raiser(c,id,location){
+  //alert(id+" "+location)
+  buttonLoading("delete_local_raiser"+c,"Deleting..")
+  var posting = $.post("form_handler.php",{delete_local_raiser: id,loc: location})
+  posting.done(function(output){
+    console.log(output)
+    $("#add_location_to_user .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+    if(!output.match("delete failed"))
+      temp = $("#delete_local_raiser"+c).parent().parent().hide("slow")
+    else
+      buttonLoadingOff("delete_local_raiser"+c,"Delete")
+  })
+}
+/*$("#local_staff_list button").click(function(e){
+  var singleVal = this.val
+  buttonLoading("delete_current_user")
+  var posting = $.post("form_handler.php",{delete_current_user: singleVal})
+  posting.done(function(output){
+    $(".notice").html(output)
+    buttonLoadingOff("delete_current_user","Delete")
+  }) 
+})*/
+function buttonLoading(id,message){
+  loading = '<i class="icon-spinner icon-spin icon-large"></i> '+message
+  $('#'+id).html(loading)
+  return
+}
+function buttonLoadingOff(id,message){
+  $('#'+id).html(message)
+  return
+}
 function getLocations(){
-  singleVal = $("#user1").val();		
+  singleVal = $("#user1").val()
   $('#loc option').text('Loading...')
-  posting = $.post("get_locations.php",{val:singleVal});	
+  posting = $.post("get_locations.php",{val:singleVal})
   posting.done(function(output){
    $('#loc').html(output).show();
  })  
@@ -614,8 +700,8 @@ $("#site").change(getMicroSite);
       posting = $.post('get_projects.php', {master: add_user_form.master.value})
 
       posting.done(function(output){
-          $('#project').html(output).show();
-        });
+        $('#project').html(output).show();
+      });
     }
 
     function get_site_factory()
