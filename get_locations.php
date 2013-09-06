@@ -4,7 +4,7 @@
 	$getLocations = new User();
 	unset($getLocations->user_data_temp1);
 	
-	if(isset($_POST["val"])){
+	if(in_array("val", $_POST) && isset($_POST["val"])){
 		$value = (int)$_POST["val"];
 		$getLocations->get_location_by_id($value);
 		echo "<option>Select Location</option>";  
@@ -14,6 +14,9 @@
 				extract($d);
 				echo "<option value='$location_id'>$site_factory</option>";  
 			}
+	}
+	elseif (in_array("delete_master_location", $_POST)) {
+		echo $_POST["delete_master_location"];
 	}
 	
 	/*if(isset($_POST["val"]) && isset($_POST["from"])){

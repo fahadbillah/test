@@ -323,6 +323,7 @@
 			</table>
         </form>
       </div>
+      <div class="notice container-fluid"></div>
       <div class="container-fluid pre-scrollable" id="site_list">
         <table class="table table-condensed table-hover" id="site_list_table">
         <tr>
@@ -376,6 +377,7 @@
         </div>
       </div>
     </form>
+    <div class="notice container-fluid"></div>
     <div class="container-fluid pre-scrollable" id="master_list">
     <table class="table table-condensed table-hover" id="master_list_table">
     <tr>
@@ -392,7 +394,7 @@
     <tr>
     <td><?php echo $name;?></td>
     <td><?php echo $id;?></td>
-    <td><input type="button" class="btn btn-mini btn-danger masterButton" id="<?php echo 'master_'.$id;?>" value="Remove"></td>
+    <td><button  type="button" class="btn btn-mini btn-danger masterButton" id="<?php echo 'master_'.$id;?>" onclick = "delete_master_location(<?php echo $id ?>)">Remove</button></td>
     </tr>
     <?php }?>
     </table>
@@ -424,6 +426,7 @@
         </div>
       </div>
     </form>
+    <div class="notice container-fluid"></div>
     <div class="container-fluid pre-scrollable" id="master_list">
     <table class="table table-condensed table-hover" id="se_list_table">
     <tr>
@@ -482,6 +485,7 @@
         </div>
       </div>
     </form>
+    <div class="notice container-fluid"></div>
     <div class="container-fluid pre-scrollable" id="master_list">
     <table class="table table-condensed table-hover" id="project_list_table">
     <tr>
@@ -572,20 +576,34 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
     <script>
-	/*$("#master").change(function () {
-	  var str = "";
-	  $("select option:selected").each(function () {
-				str += $(this).text() + " ";
-	  });
-	  $("#main").text(str);
-	})	*/
+      function delete_master_location(id){
+        buttonLoadingOn("master_"+id,"Loading...")
+        var posting = $.post("get_locations.php",{delete_master_location: id})
+        posting.done(function(output){
+          $("#add_top_local .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+          if(!output.match("delete failed"))
+            temp = $("#delete_local_boss"+c).parent().parent().hide("slow")
+          else
+            buttonLoadingOff("delete_local_boss"+c,"Delete")
+        })   
+      } 
+
+      function buttonLoadingOn(id,message){
+        alert(id+" "+message)
+        loading = '<i class="icon-spinner icon-spin icon-large"></i> '+message
+        $('#'+id).html(loading)
+        return
+      }
+      function buttonLoadingOff(id,message){
+        $('#'+id).html(message)
+        return
+      }   
       function get_projects()
       {
-		  //masterOne = document.getElementById("master")
-          $.post('get_projects.php', {master: add_user_form.master.value},
-              function(output){
-                  $('#project').html(output).show();
-              });
+        $.post('get_projects.php', {master: add_user_form.master.value},
+            function(output){
+                $('#project').html(output).show();
+            });
       }
 	  
 	  function get_projects1()

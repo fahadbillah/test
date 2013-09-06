@@ -1647,6 +1647,96 @@ class User extends Database
 			//echo "<span class='label label-warning'>User type not found. So navbar can not be available</span> ";		
 			//header("Location: signin.php?status=notauthorized"); 
 	}
+	public function get_assigned_location_scm_acc($limit,$start=0)	
+	{
+		$query="SELECT acc_scm_to_office.id,user_master.name,acc_scm_to_office.date_added,acc_scm_to_office.location_id
+		FROM user_master 		
+		INNER JOIN acc_scm_to_office
+		ON acc_scm_to_office.user_id = user_master.id	
+		ORDER by acc_scm_to_office.id desc limit $start,$limit";
+
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;
+		
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$scm_acc_assigned_location[]=$rows;					
+			}
+			return $scm_acc_assigned_location;
+		}		
+		return NULL;
+	}
+	public function get_top_central_list($limit,$start=0)	
+	{
+		$query="SELECT user_master.id,user_master.name,user_master.user_since,requisition_user.post
+		FROM user_master 
+		INNER JOIN requisition_user
+		ON requisition_user.user_id = user_master.id
+		WHERE requisition_user.location_id = 'central'		
+		ORDER by user_master.id desc limit $start,$limit";
+
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;
+		
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$top_central_list[]=$rows;					
+			}
+			return $top_central_list;
+		}		
+		return NULL;
+	}
+	public function local_boss_money_limit($limit,$start=0)	
+	{
+		$query="SELECT user_master.id uid,user_master.name,money_limit.id mid,money_limit.bosslimit,money_limit.date_modified
+		FROM user_master 
+		INNER JOIN money_limit
+		ON money_limit.user_id = user_master.id		
+		order by user_master.id desc limit $start,$limit";
+
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+
+				$local_boss_money_limit[]=$rows;					
+			}
+			//var_dump($local_boss_list);
+			return $local_boss_money_limit;
+		}		
+		return NULL;
+	}	
+	public function recent_added_local_bosses($limit,$start=0)
+	{
+		$query="SELECT user_master.id,user_master.name,user_master.user_since,requisition_user.location_id	
+		FROM user_master 
+		INNER JOIN requisition_user
+		ON requisition_user.user_id = user_master.id		
+		WHERE requisition_user.post in ('Boss','Accountant','SCM') and requisition_user.location_id <> 'Central'
+		order by user_master.id desc limit $start,$limit";
+		
+		//$query="SELECT id,name,user_since FROM user_master order by id desc limit $start,$limit";
+		
+		$result = $this->mysqli->query($query);
+		
+		$num_result=$result->num_rows;		// determine number of rows result set 
+		
+		if($num_result>0){
+			
+			while($rows=$result->fetch_assoc()){
+
+				$local_boss_list[]=$rows;					
+			}
+			//var_dump($local_boss_list);
+			return $local_boss_list;
+		}		
+		return NULL;
+	}	
 	public function recent_added_local_raisers($limit,$start=0)
 	{
 		$query="SELECT user_master.id,user_master.name,user_master.user_since,requisition_user.location_id	
@@ -1654,15 +1744,13 @@ class User extends Database
 		INNER JOIN requisition_user
 		ON requisition_user.user_id = user_master.id		
 		WHERE requisition_user.post = 'Raiser' and requisition_user.location_id <> 'Central'
-		order by id desc limit $start,$limit";
+		order by user_master.id desc limit $start,$limit";
 		
 		//$query="SELECT id,name,user_since FROM user_master order by id desc limit $start,$limit";
 		
 		$result = $this->mysqli->query($query);
 		
 		$num_result=$result->num_rows;		// determine number of rows result set 
-
-		$this->good_to_go_flag = $num_result;
 		
 		if($num_result>0){
 			
@@ -1670,7 +1758,6 @@ class User extends Database
 
 				$local_raiser_list[]=$rows;					
 			}
-			var_dump($local_raiser_list);
 			return $local_raiser_list;
 		}		
 		return NULL;
@@ -1681,9 +1768,7 @@ class User extends Database
 		
 		$result = $this->mysqli->query($query);
 		
-		$num_result=$result->num_rows;		// determine number of rows result set 
-
-		$this->good_to_go_flag = $num_result;
+		$this->good_to_go_flag = $num_result=$result->num_rows;		// determine number of rows result set 
 		
 		if($num_result>0){
 			
@@ -1707,7 +1792,45 @@ class User extends Database
 		return NULL;	
 	}
 	public function delete_local_raiser($id,$location){
+		$query="DELETE FROM requisition_user WHERE user_id ='$id' and location_id = '$location' and post = 'Raiser'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		return 1;
+	}
+	public function delete_local_boss($id,$location){
 		$query="DELETE FROM requisition_user WHERE user_id ='$id' and location_id = '$location'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		return 1;
+	}
+	public function delete_local_boss_money_limit($id){
+		$query="DELETE FROM money_limit WHERE id ='$id'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
+		return 1;
+	}
+	public function delete_central_boss($id,$post){
+		if($post=="Boss"){
+			return NULL;
+		}
+		elseif ($post=="SCM"||"Accountant"||"Hub Admin") {
+			$pre_query="SELECT id FROM acc_scm_to_office WHERE user_id = '$id'";
+		
+			$pre_result = $this->mysqli->query($pre_query);
+			if($pre_result->num_rows){
+				$query="DELETE FROM acc_scm_to_office WHERE user_id ='$id'";
+				$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+				echo "<span class='label label-success'>Central ".$post." from acc_scm_to_office deleted.</span> ";
+
+			}
+			$query="DELETE FROM requisition_user WHERE user_id ='$id'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+			
+			$query="DELETE FROM user_master WHERE id ='$id'";
+			$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
+			echo "<span class='label label-success'>Central ".$post." from requisition_user & user_master deleted.</span> ";
+		}
+		return 1;
+	}
+	public function delete_acc_scm_location($id){
+		$query="DELETE FROM acc_scm_to_office WHERE id ='$id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");
 		return 1;
 	}
@@ -3543,7 +3666,11 @@ public function get_all_user_location($user_id)
 		return $temp2;
 	}
 	public function get_central_acc_scm(){		
-		$query="SELECT user_id FROM requisition_user WHERE location_id = 'central' and post BETWEEN 'Accountant' AND 'SCM'";		
+		$query="SELECT requisition_user.user_id 
+				FROM requisition_user
+				INNER JOIN user_master
+				ON requisition_user.user_id = user_master.id
+				WHERE location_id = 'central' and post BETWEEN 'Accountant' AND 'SCM'";		
 		$result = $this->mysqli->query($query);		
 		$num_result=$result->num_rows;		// determine number of rows result set 				
 		if($num_result>0){			
@@ -3844,6 +3971,30 @@ public function get_all_user_location($user_id)
 			echo "Log not updated";
 		//fclose($fp);	
 		return;
+	}
+	public function message_scope($type,$id=""){
+		if ($type==="admin") {
+			$query="SELECT id FROM user_master";		
+			$result = $this->mysqli->query($query);		
+			$num_result=$result->num_rows;
+			if($num_result>0){			
+				while($rows=$result->fetch_assoc()){
+					$allUserList[] = $rows;				//var_dump($temp);				
+				}
+				return $allUserList;
+			}
+		}
+		elseif ($type==="requisition") {
+			$query="SELECT admin_id FROM admins WHERE req_id='$id'";		
+			$result = $this->mysqli->query($query);		
+			$num_result=$result->num_rows;
+			if($num_result>0){			
+				while($rows=$result->fetch_assoc()){
+					$allUserList[] = $rows;				//var_dump($temp);				
+				}
+				return $allUserList;
+			}
+		}
 	}
 }	
 ?>

@@ -316,6 +316,7 @@ if(isset($_REQUEST['add_exec_central'])){
   <table id="local_raiser_list" class="table table-condensed table-striped table-hover">
     <tr>
       <th>Name</th>
+      <th>Location</th>
       <th>Date Added</th>
       <th>Delete</th>
     </tr>
@@ -341,6 +342,7 @@ if(isset($_REQUEST['add_exec_central'])){
        <?php
        unset($user->comment_data);
        $uid = $user->get_central_acc_scm(); 
+       var_dump($uid);
        foreach($uid as $ud)
        {
         ?>	
@@ -377,6 +379,21 @@ if(isset($_REQUEST['add_exec_central'])){
     </div>
   </div>
 </form>
+<div class="notice container-fluid"></div>
+<div class="container-fluid pre-scrollable">
+  <table id="acc_scm_location_list" class="table table-condensed table-striped table-hover">
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Date Added</th>
+      <th>Delete</th>
+    </tr>
+  </table>
+  <div class=""><button id="see_more_acc_scm_location_list" class="btn btn-large btn-block" type="button">See More</button>
+</div>
+  <div class="modal-footer"></div>
+  <div class="modal-footer"></div>
+</div>
 </div>
 <div id="add_top_central" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
@@ -448,7 +465,22 @@ if(isset($_REQUEST['add_exec_central'])){
         <button type="submit" value="add_exec_central" id="add_exec_central" name="add_exec_central" class="btn">Submit</button>
       </div>
     </div>
-  </form>
+  </form>  
+  <div class="notice container-fluid"></div>
+  <div class="container-fluid pre-scrollable">
+    <table id="add_top_central_list" class="table table-condensed table-striped table-hover">
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Date Added</th>
+        <th>Delete</th>
+      </tr>
+    </table>
+    <div class=""><button id="see_more_add_top_central_list" class="btn btn-large btn-block" type="button">See More</button>
+  </div>
+    <div class="modal-footer"></div>
+    <div class="modal-footer"></div>
+  </div>
 </div>
 <div id="add_top_local" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
@@ -499,6 +531,21 @@ if(isset($_REQUEST['add_exec_central'])){
   </div>
 </div>
 </form>
+<div class="notice container-fluid"></div>
+<div class="container-fluid pre-scrollable">
+  <table id="local_boss_list" class="table table-condensed table-striped table-hover">
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Date Added</th>
+      <th>Delete</th>
+    </tr>
+  </table>
+  <div class=""><button id="see_more_local_boss_list" class="btn btn-large btn-block" type="button">See More</button>
+</div>
+  <div class="modal-footer"></div>
+  <div class="modal-footer"></div>
+</div>
 </div>
 
 <div id="add_boss_limit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -538,6 +585,21 @@ if(isset($_REQUEST['add_exec_central'])){
     </div>
   </div>
 </form>
+<div class="notice container-fluid"></div>
+<div class="container-fluid pre-scrollable">
+  <table id="local_boss_money_limit" class="table table-condensed table-striped table-hover">
+    <tr>
+      <th>Name</th>
+      <th>Money Limit</th>
+      <th>Date Added</th>
+      <th>Delete</th>
+    </tr>
+  </table>
+  <div class=""><button id="see_more_local_boss_money_limit" class="btn btn-large btn-block" type="button">See More</button>
+</div>
+  <div class="modal-footer"></div>
+  <div class="modal-footer"></div>
+</div>
 </div>
     <!-- Le javascript
     ================================================== -->
@@ -568,12 +630,67 @@ if(isset($_REQUEST['add_exec_central'])){
     <script>
 var local_staff_limit_start = 0
 var local_raiser_limit_start = 0
+var local_boss_limit_start = 0
+var local_boss_money_limit_start = 0
+var top_central_limit_start = 0
+var scm_acc_assigned_location_start = 0
 $(document).ready(function() {
   get_local_staff_list()
   get_local_raiser_list()
-  /*get_local_staff_list()
-  get_local_staff_list()  */
+  get_local_boss_list()
+  get_local_boss_money_limit()
+  get_top_central_list()  
+  get_scm_acc_assigned_location()  
 });
+function get_scm_acc_assigned_location(){
+  var singleVal = 10
+  buttonLoading("see_more_acc_scm_location_list","Loading..")
+  var posting = $.post("form_handler.php",{get_assigned_location: singleVal, limit: scm_acc_assigned_location_start})
+  scm_acc_assigned_location_start += 10
+  posting.done(function(output){
+    //console.log(output)
+    //alert(output)
+    $("#acc_scm_location_list").append(output)
+    buttonLoadingOff("see_more_acc_scm_location_list","See More")
+  }) 
+}
+$('#see_more_acc_scm_location_list').click(get_scm_acc_assigned_location)
+function get_top_central_list(){
+  var singleVal = 10
+  buttonLoading("see_more_add_top_central_list","Loading..")
+  var posting = $.post("form_handler.php",{get_top_central_list: singleVal, limit: top_central_limit_start})
+  top_central_limit_start += 10
+  posting.done(function(output){
+    //console.log(output)
+    //alert(output)
+    $("#add_top_central_list").append(output)
+    buttonLoadingOff("see_more_add_top_central_list","See More")
+  })    
+}
+function get_local_boss_money_limit(){
+  var singleVal = 10
+  buttonLoading("see_more_local_boss_money_limit","Loading..")
+  var posting = $.post("form_handler.php",{get_local_boss_money_limit: singleVal, local_money_limit: local_boss_money_limit_start})
+  local_boss_money_limit_start += 10
+  posting.done(function(output){
+    ///console.log(output)
+    $("#local_boss_money_limit").append(output)
+    buttonLoadingOff("see_more_local_boss_money_limit","See More")
+  })    
+}
+$('#see_more_local_boss_money_limit').click(get_local_boss_money_limit)
+function get_local_boss_list(){
+  //alert('hi')
+  var singleVal = 10
+  buttonLoading("see_more_local_boss_list","Loading..")
+  var posting = $.post("form_handler.php",{get_local_boss_list: singleVal, local_boss_start: local_boss_limit_start})
+  local_boss_limit_start += 10
+  posting.done(function(output){
+    $("#local_boss_list").append(output)
+    buttonLoadingOff("see_more_local_boss_list","See More")
+  })    
+}
+$('#see_more_local_boss_list').click(get_local_boss_list)
 function get_local_raiser_list(){
   var singleVal = 10
   buttonLoading("see_more_local_raiser_list","Loading..")
@@ -597,13 +714,50 @@ function get_local_staff_list(){
 }
 $('#see_more_local_staff_list').click(get_local_staff_list)
 
+function delete_acc_scm_assigned_location(c,id){
+  buttonLoading("delete_acc_scm_assigned_location"+c,"Deleting..")
+  var posting = $.post("form_handler.php",{delete_acc_scm_location: id})
+  posting.done(function(output){
+    //alert(output)
+    $("#assign_acc_scm_to_office_factory_site .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+    if(!output.match("not"))
+      temp = $("#delete_acc_scm_assigned_location"+c).parent().parent().hide("slow")
+    else
+      buttonLoadingOff("delete_acc_scm_assigned_location"+c,"Delete")
+  })
+}
+function delete_central_boss_func(c,id,pst){
+  //alert(c+' '+id+' '+pst)
+  buttonLoading("delete_central_boss"+c,"Deleting..")
+  var posting = $.post("form_handler.php",{delete_central_boss: id,boss_post: pst})
+  posting.done(function(output){
+    //alert(output)
+    $("#add_top_central .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+    if(!output.match("not"))
+      temp = $("#delete_central_boss"+c).parent().parent().hide("slow")
+    else
+      buttonLoadingOff("delete_central_boss"+c,"Delete")
+  })
+}
+function delete_local_boss_money_limit(c,id){
+  //alert(id+" "+c)
+  buttonLoading("delete_local_boss_money_limit"+c,"Deleting..")
+  var posting = $.post("form_handler.php",{money_limit: id})
+  posting.done(function(output){
+    $("#add_boss_limit .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+    if(!output.match("not"))
+      temp = $("#delete_local_boss_money_limit"+c).parent().parent().hide("slow")
+    else
+      buttonLoadingOff("delete_local_boss_money_limit"+c,"Delete")
+  })
+}
 function delete_current_user(id){
   //alert(id)
   buttonLoading("delete_current_user"+id,"Deleting..")
   var posting = $.post("form_handler.php",{delete_current_user: id})
   posting.done(function(output){
     $("#add_user .notice").hide().html(output).show("slow").delay(2000).hide("slow")
-    if(!output.match("cannot be deleted"))
+    if(!output.match("not"))
       temp = $("#delete_current_user"+id).parent().parent().hide("slow")
     else
       buttonLoadingOff("delete_current_user"+id,"Delete")
@@ -622,15 +776,19 @@ function delete_local_raiser(c,id,location){
       buttonLoadingOff("delete_local_raiser"+c,"Delete")
   })
 }
-/*$("#local_staff_list button").click(function(e){
-  var singleVal = this.val
-  buttonLoading("delete_current_user")
-  var posting = $.post("form_handler.php",{delete_current_user: singleVal})
+function delete_local_boss(c,id,location){
+  //alert(id+" "+location)
+  buttonLoading("delete_local_boss"+c,"Deleting..")
+  var posting = $.post("form_handler.php",{delete_local_boss: id,boss_loc: location})
   posting.done(function(output){
-    $(".notice").html(output)
-    buttonLoadingOff("delete_current_user","Delete")
-  }) 
-})*/
+    console.log(output)
+    $("#add_top_local .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+    if(!output.match("delete failed"))
+      temp = $("#delete_local_boss"+c).parent().parent().hide("slow")
+    else
+      buttonLoadingOff("delete_local_boss"+c,"Delete")
+  })
+}
 function buttonLoading(id,message){
   loading = '<i class="icon-spinner icon-spin icon-large"></i> '+message
   $('#'+id).html(loading)
