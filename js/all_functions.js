@@ -30,11 +30,60 @@ function searchSuggestionEnd(){
 }
 
 $("#toggle_messenger").click(function(e){
-	if($(this).text()=="Expand Messenger")
-		$(this).text("Hide Messenger")
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
 	else
-		$(this).text("Expand Messenger")
+		$(this).text("Expand")
 	$("#messenger_form_box").slideToggle("slow")
+})
+$("#toggle_form_add_loc_user").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
+})
+$("#toggle_form_add_exec_loc").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
+})
+$("#toggle_form_limit").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
+})
+$("#toggle_form_new_user").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
+})
+$("#toggle_form_fac_site").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
+})
+$("#toggle_form_add_exec_cent").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
+})
+$("#toggle_form").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$(this).parent().siblings("form").slideToggle("slow")
 })
 
 $("#search_box").focusin(searchSuggestionStart)

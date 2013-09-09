@@ -245,6 +245,9 @@ if(isset($_REQUEST['add_exec_central'])){
           </div>
         </div>
       </form>
+<div class="container-fluid"><button id="toggle_form_new_user" class="btn btn-large btn-block" type="button">Hide</button>
+</div>
+</br>
       <div class="notice container-fluid"></div>
       <div class="container-fluid pre-scrollable">
         <table id="local_staff_list" class="table table-condensed table-striped table-hover">
@@ -323,6 +326,9 @@ if(isset($_REQUEST['add_exec_central'])){
   </div>
 </div>
 </form>
+<div class="container-fluid"><button id="toggle_form_add_loc_user" class="btn btn-large btn-block" type="button">Hide</button>
+</div>
+</br>
 <div class="notice container-fluid"></div>
 <div class="container-fluid pre-scrollable">
   <table id="local_raiser_list" class="table table-condensed table-striped table-hover">
@@ -391,6 +397,9 @@ if(isset($_REQUEST['add_exec_central'])){
     </div>
   </div>
 </form>
+<div class="container-fluid"><button id="toggle_form_fac_site" class="btn btn-large btn-block" type="button">Hide</button>
+</div>
+</br>
 <div class="notice container-fluid"></div>
 <div class="container-fluid pre-scrollable">
   <table id="acc_scm_location_list" class="table table-condensed table-striped table-hover">
@@ -478,6 +487,9 @@ if(isset($_REQUEST['add_exec_central'])){
       </div>
     </div>
   </form>  
+<div class="container-fluid"><button id="toggle_form_add_exec_cent" class="btn btn-large btn-block" type="button">Hide</button>
+</div>
+</br>
   <div class="notice container-fluid"></div>
   <div class="container-fluid pre-scrollable">
     <table id="add_top_central_list" class="table table-condensed table-striped table-hover">
@@ -543,6 +555,9 @@ if(isset($_REQUEST['add_exec_central'])){
   </div>
 </div>
 </form>
+<div class="container-fluid"><button id="toggle_form_add_exec_loc" class="btn btn-large btn-block" type="button">Hide</button>
+</div>
+</br>
 <div class="notice container-fluid"></div>
 <div class="container-fluid pre-scrollable">
   <table id="local_boss_list" class="table table-condensed table-striped table-hover">
@@ -597,6 +612,9 @@ if(isset($_REQUEST['add_exec_central'])){
     </div>
   </div>
 </form>
+<div class="container-fluid"><button id="toggle_form_limit" class="btn btn-large btn-block" type="button">Hide</button>
+</div>
+</br>
 <div class="notice container-fluid"></div>
 <div class="container-fluid pre-scrollable">
   <table id="local_boss_money_limit" class="table table-condensed table-striped table-hover">
@@ -613,6 +631,7 @@ if(isset($_REQUEST['add_exec_central'])){
   <div class="modal-footer"></div>
 </div>
 </div>
+    <?php include_once "messenger.php" ?> 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

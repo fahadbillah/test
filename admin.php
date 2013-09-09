@@ -163,6 +163,7 @@
                    
         </div>
       </div>
+    <?php include_once "messenger.php" ?> 
 
 
     <!-- Le javascript

@@ -3974,7 +3974,11 @@ public function get_all_user_location($user_id)
 	}
 	public function message_scope($type,$id=""){
 		if ($type==="admin") {
-			$query="SELECT id FROM user_master";		
+			$query="SELECT user_master.id,user_master.name,requisition_user.location_id,requisition_user.post
+			FROM user_master
+			INNER JOIN requisition_user
+			ON user_master.id = requisition_user.user_id
+			ORDER BY requisition_user.location_id DESC";		
 			$result = $this->mysqli->query($query);		
 			$num_result=$result->num_rows;
 			if($num_result>0){			
@@ -3985,7 +3989,12 @@ public function get_all_user_location($user_id)
 			}
 		}
 		elseif ($type==="requisition") {
-			$query="SELECT admin_id FROM admins WHERE req_id='$id'";		
+			$query="SELECT user_master.id,user_master.name,admins.relation_to_req
+			FROM user_master
+			INNER JOIN admins
+			ON user_master.id = admins.admin_id
+			WHERE admins.req_id = '$id'
+			ORDER BY admins.relation_to_req DESC";		
 			$result = $this->mysqli->query($query);		
 			$num_result=$result->num_rows;
 			if($num_result>0){			
