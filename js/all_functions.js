@@ -29,6 +29,14 @@ function searchSuggestionEnd(){
 	console.log(time)
 }
 
+$("#toggle_messenger").click(function(e){
+	if($(this).text()=="Expand Messenger")
+		$(this).text("Hide Messenger")
+	else
+		$(this).text("Expand Messenger")
+	$("#messenger_form_box").slideToggle("slow")
+})
+
 $("#search_box").focusin(searchSuggestionStart)
 
 $("#search_box").focusout(searchSuggestionEnd)

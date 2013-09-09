@@ -135,9 +135,21 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
-              <li><a href="add_user.php">Add User</a></li> 
-              <li><a href="add_material.php">Add Material</a></li>    
-              <li class="active"><a href="add_location.php">Add Location</a></li>       
+              <li class="dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#">
+                    ADD
+                    <b class="caret"></b>
+                  </a>
+                <ul class="dropdown-menu">
+                  <!-- links -->
+                  <li><a href="add_user.php">Add User</a></li> 
+                  <li><a href="add_material.php">Add Material</a></li> 
+                  <li class="active"><a href="add_location.php">Add Location</a></li> 
+                </ul>
+              </li>   
+              <li><a href="#message" data-toggle="modal">Message</a></li>          
               <li><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
@@ -547,6 +559,42 @@
       </div>
     </form>
       
+    </div> 
+    <div id="message" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Messenger</h3>
+      </div>
+      <br>
+    <div id="messenger_form_box">
+    <form id="messenger_form" name="messenger_form" class="form-horizontal" action="messenger.php" method="post"><div class="control-group">
+        <label class="control-label" for="inputEmail">Select Staff</label>
+        <div class="controls">
+          <select name="single_staff_message" id="single_staff_message">
+            <option value="" label="Select Staff"></option>                 
+            <option value="">1</option>               
+            <option value="">2</option>               
+            <option value="">3</option>               
+            <option value="">4</option>  
+          </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="inputEmail">Message</label>
+        <div class="controls">
+          <textarea id="sms" name="sms"></textarea>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" id="send_pm" name="send_pm" class="btn">Submit</button>
+        </div>
+      </div>
+    </form>
+    </div>
+    <div class="container-fluid"><button id="toggle_messenger" class="btn btn-large btn-block" type="button" data-toggle-text="Collapse Messenger">Hide Messenger</button>
+</div>
+  <div class="modal-footer"></div>
     </div>    
     <!-- Le javascript
     ================================================== -->
