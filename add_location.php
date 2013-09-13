@@ -261,7 +261,7 @@
 			</table>
         </form>
       </div>
-       <div class="container-fluid pre-scrollable" id="micro_site_list">
+       <div class="container-fluid pre-scrollable nano" id="micro_site_list">
         <table class="table table-condensed table-hover" id="micro_site_list_table">
         <tr>
         <th>Micro Site</th>
@@ -273,7 +273,7 @@
         $location->get_micro_site('');
        	//var_dump($location->user_data_temp1);
         foreach($location->user_data_temp1 as $mic){
-            extract($mic)
+            extract($mic);
         ?>
         <tr>
         <td><?php echo $name;?></td>
@@ -336,7 +336,7 @@
         </form>
       </div>
       <div class="notice container-fluid"></div>
-      <div class="container-fluid pre-scrollable" id="site_list">
+      <div class="container-fluid pre-scrollable nano" id="site_list">
         <table class="table table-condensed table-hover" id="site_list_table">
         <tr>
         <th>Site</th>
@@ -390,7 +390,7 @@
       </div>
     </form>
     <div class="notice container-fluid"></div>
-    <div class="container-fluid pre-scrollable" id="master_list">
+    <div class="container-fluid pre-scrollable nano" id="master_list">
     <table class="table table-condensed table-hover" id="master_list_table">
     <tr>
     <th>Master Business</th>
@@ -401,7 +401,7 @@
 	$location->get_all_masters();
 	//var_dump($location->user_data_temp);
 	foreach($location->user_data_temp as $mas){
-		extract($mas)
+		extract($mas);
 	?>
     <tr>
     <td><?php echo $name;?></td>
@@ -439,7 +439,7 @@
       </div>
     </form>
     <div class="notice container-fluid"></div>
-    <div class="container-fluid pre-scrollable" id="master_list">
+    <div class="container-fluid pre-scrollable nano" id="master_list">
     <table class="table table-condensed table-hover" id="se_list_table">
     <tr>
     <th>Single Entity Business</th>
@@ -450,7 +450,7 @@
 	$seTemp = $location->get_all_single_entity();
 	//var_dump($location->user_data_temp);
 	foreach($seTemp as $set){
-		extract($set)
+		extract($set);
 	?>
     <tr>
     <td><?php echo $name;?></td>
@@ -498,7 +498,7 @@
       </div>
     </form>
     <div class="notice container-fluid"></div>
-    <div class="container-fluid pre-scrollable" id="master_list">
+    <div class="container-fluid pre-scrollable nano" id="master_list">
     <table class="table table-condensed table-hover" id="project_list_table">
     <tr>
     <th>Project</th>
@@ -510,7 +510,7 @@
 	$pTemp = $location->get_all_projects('','all');
 	//var_dump($location->user_data_temp);
 	foreach($pTemp as $pt){
-		extract($pt)
+		extract($pt);
 	?>
     <tr>
     <td><?php echo $name;?></td>
@@ -578,6 +578,7 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
+    <script src="js/jquery.nanoscroller.min.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
@@ -600,17 +601,7 @@
             buttonLoadingOff("delete_local_boss"+c,"Delete")
         })   
       } 
-
-      function buttonLoadingOn(id,message){
-        alert(id+" "+message)
-        loading = '<i class="icon-spinner icon-spin icon-large"></i> '+message
-        $('#'+id).html(loading)
-        return
-      }
-      function buttonLoadingOff(id,message){
-        $('#'+id).html(message)
-        return
-      }   
+ 
       function get_projects()
       {
         $.post('get_projects.php', {master: add_user_form.master.value},

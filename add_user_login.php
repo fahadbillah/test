@@ -55,11 +55,23 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
-              <li><a href="add_material.php">Add Material</a></li>
-              <li><a href="add_user.php">Add User</a></li>  
-              <li><a href="add_location.php">Add Location</a></li>    
-              <li><a href="super_admin_central_hub.php">Requisition Hub</a></li>                 
+              <li class="active"><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
+              <li class="dropdown">
+                  <a class="dropdown-toggle"
+                     data-toggle="dropdown"
+                     href="#">
+                      ADD
+                      <b class="caret"></b>
+                    </a>
+                  <ul class="dropdown-menu">
+                    <!-- links -->
+                    <li><a href="add_user.php">Add User</a></li> 
+                    <li><a href="add_material.php">Add Material</a></li> 
+                    <li><a href="add_location.php">Add Location</a></li> 
+                  </ul>
+                </li>
+                <li><a href="#message" data-toggle="modal">Message</a></li> 
+              <li><a href="super_admin_central_hub.php">Requisition Hub</a></li>                
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
             <ul class="nav pull-right">
@@ -167,6 +179,7 @@
 			?>
         </div>
       </div>
+       <?php include_once "messenger.php" ?> 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -185,6 +198,7 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
+    <script src="js/jquery.nanoscroller.min.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
@@ -195,9 +209,9 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
 	<script>
-	  $(document).ready(function(){
+/*	  $(document).ready(function(){
 		$("#add_user_form").validate();
-	  });
+	  });*/
 	
       function get_projects()
       {

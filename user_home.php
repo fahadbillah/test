@@ -72,8 +72,9 @@
           <a class="brand" href=""><img src="logo.png" height="47" width="167"></a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li> <a class="active" href="user_home.php">Home</a> </li>
+              <li class="active"> <a href="user_home.php">Home</a> </li>
               <li> <a href="add_new_req.php">Requisition</a> </li>
+              <li> <a href="messenger_for_staff.php">Message</a> </li>
               <li> <a id="log_out" href="log_out.php">Log Out</a>  </li>
             </ul>
             <ul class="nav pull-right">
@@ -274,6 +275,7 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
+    <script src="js/jquery.nanoscroller.min.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 100%; }

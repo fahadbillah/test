@@ -266,6 +266,7 @@ body {
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
+    <script src="js/jquery.nanoscroller.min.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 100%; }

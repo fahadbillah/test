@@ -1,0 +1,8 @@
+ Shared Plan:        Business
+    Your Control Panel: https://gator325.hostgator.com:2083
+    Username:           zulkerv8
+    Domain:             maxrailwaytrack.com
+    Password:           eaz2|Xr4Arcb
+    1st Nameserver:     ns649.hostgator.com
+    2nd Nameserver:     ns650.hostgator.com
+    Server IP:          184.172.187.226

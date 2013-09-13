@@ -53,6 +53,7 @@
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/datepicker.css" rel="stylesheet">
+    <link href="css/nanoscroller.css" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -183,6 +184,8 @@
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
+    <script src="js/jquery.nanoscroller.min.js"></script>
+    <script src="js/jquery.nanoscroller.min.js.map"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
@@ -192,4 +195,7 @@
     .submit { margin-left: 12em; }
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
+    <script>
+      $(".nano").nanoScroller();
+    </script>
 </body></html>

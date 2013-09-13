@@ -203,6 +203,31 @@
 		else
 			echo "<span class='label label-success'>Acc/SCM location deleted.</span> ";
 	}
+	elseif (array_key_exists('message_scope', $args)) {
+		$result = $form->message_scope($args['message_scope']);
+		if($result==NULL){
+			echo "<span class='label label-warning'>No more assigned location found.</span> ";
+		}
+		else{
+			$opt = '';
+			echo "<select id='select_receiver'>";
+            		echo "<option value=''>Select Receiver</option>";
+			foreach ($result as $m) {
+				extract($m);
+            		if ($opt!==$location_id) {
+            			if ($location_id!=="central") {
+            		 		$loc = $form->convert_id_location($location_id);
+            			}
+            			else
+            				$loc = "Central";
+					  echo "<optgroup label='$loc'>";
+            		}
+            		echo "<option value='$id'>".$name.' - '.$post."</option>";
+            		$opt = $location_id;
+			}
+			echo "</select>";
+		}
+	}
 	else
 		echo 'key not exists';
 	//call_user_func('barber', "mushroom");	

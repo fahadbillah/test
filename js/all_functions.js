@@ -10,6 +10,8 @@ $("#log_out").click(function(e){
 	} 		
 })
 
+
+
 function searchSuggestionStart(){
 	try {
 		clearInterval(time)//stopTimer()	
@@ -85,6 +87,76 @@ $("#toggle_form").click(function(e){
 		$(this).text("Expand")
 	$(this).parent().siblings("form").slideToggle("slow")
 })
+
+$(".tab_close").click(function(e){
+	$(this).parent().remove()
+})
+
+$("#send_pm").click(function(e){
+	var rcv = $("#receiver").val();
+	var ss = $("#sms").val();
+	var sdr = $("#sender").val();
+	if(rcv=="" || ss=="" || sdr==""){
+		$("#message_notice").hide().html("Blanc field! Please fill properly.").show("slow").delay(3000).hide("slow")
+		return
+	}
+	if (!confirm("Do you confirm sending this message?"))
+	{
+		e.preventDefault();
+		return;
+	}
+	//alert(id+" "+location)
+	buttonLoadingOn("send_pm","Sending Pm...")
+	var posting = $.post("pm_process.php",{sender:sdr, receiver:rcv, sms:ss})
+	posting.done(function(output){
+		//console.log(output)
+		$("#message_notice").hide().html(output).show("slow").delay(5000).hide("slow")
+		buttonLoadingOff("send_pm","Submit")
+		$("#sms").val('')
+	})
+
+})
+
+function submit_message(id){
+	var rcv = $("#select_receiver").val();
+	var ss = $("#tab_textarea_"+id).val();
+	var sdr = $("#sender_"+id).val();
+	if(rcv=="" || ss=="" || sdr==""){
+		$(".mail_notice").hide().html("Blanc field! Please fill properly.").show("slow").delay(3000).hide("slow")
+		return
+	}
+	if (!confirm("Do you confirm sending this message?"))
+	{
+		return;
+	}
+	//alert(rcv+" "+ss+" "+sdr+" "+id)
+	buttonLoadingOn("tab_submit_"+id,"Sending Pm...")
+	var posting = $.post("pm_process.php",{sender:sdr, receiver:rcv, sms:ss})
+	posting.done(function(output){
+		//console.log(output)
+		$(".mail_notice").hide().html(output).show("slow").delay(5000).hide("slow")
+		buttonLoadingOff("tab_submit_"+id,"Submit")
+		$("#tab_textarea_"+id).val('')
+	})
+
+}
+
+function auto_load_messages(){
+
+}
+
+auto_load_messages()
+
+function buttonLoadingOn(id,message){
+	loading = '<i class="icon-spinner icon-spin icon-large"></i> '+message
+	$('#'+id).html(loading)
+	return
+}
+function buttonLoadingOff(id,message){
+	$('#'+id).html(message)
+	return
+}  
+
 
 $("#search_box").focusin(searchSuggestionStart)
 

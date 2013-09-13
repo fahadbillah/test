@@ -249,7 +249,7 @@ if(isset($_REQUEST['add_exec_central'])){
 </div>
 </br>
       <div class="notice container-fluid"></div>
-      <div class="container-fluid pre-scrollable">
+      <div class="container-fluid pre-scrollable nano">
         <table id="local_staff_list" class="table table-condensed table-striped table-hover">
           <tr>
             <th>Name</th>
@@ -401,7 +401,7 @@ if(isset($_REQUEST['add_exec_central'])){
 </div>
 </br>
 <div class="notice container-fluid"></div>
-<div class="container-fluid pre-scrollable">
+<div class="container-fluid pre-scrollable nano">
   <table id="acc_scm_location_list" class="table table-condensed table-striped table-hover">
     <tr>
       <th>Name</th>
@@ -559,7 +559,7 @@ if(isset($_REQUEST['add_exec_central'])){
 </div>
 </br>
 <div class="notice container-fluid"></div>
-<div class="container-fluid pre-scrollable">
+<div class="container-fluid pre-scrollable nano">
   <table id="local_boss_list" class="table table-condensed table-striped table-hover">
     <tr>
       <th>Name</th>
@@ -649,6 +649,7 @@ if(isset($_REQUEST['add_exec_central'])){
     <script src="./starter_files/bootstrap-collapse.js"></script>
     <script src="./starter_files/bootstrap-carousel.js"></script>
     <script src="./starter_files/bootstrap-typeahead.js"></script>
+    <script src="js/jquery.nanoscroller.min.js"></script>
     <script src="js/all_functions.js"></script>
     <style type="text/css">
     * { font-family: Verdana; font-size: 98%; }
@@ -675,7 +676,7 @@ $(document).ready(function() {
 });
 function get_scm_acc_assigned_location(){
   var singleVal = 10
-  buttonLoading("see_more_acc_scm_location_list","Loading..")
+  buttonLoadingOn("see_more_acc_scm_location_list","Loading..")
   var posting = $.post("form_handler.php",{get_assigned_location: singleVal, limit: scm_acc_assigned_location_start})
   scm_acc_assigned_location_start += 10
   posting.done(function(output){
@@ -688,7 +689,7 @@ function get_scm_acc_assigned_location(){
 $('#see_more_acc_scm_location_list').click(get_scm_acc_assigned_location)
 function get_top_central_list(){
   var singleVal = 10
-  buttonLoading("see_more_add_top_central_list","Loading..")
+  buttonLoadingOn("see_more_add_top_central_list","Loading..")
   var posting = $.post("form_handler.php",{get_top_central_list: singleVal, limit: top_central_limit_start})
   top_central_limit_start += 10
   posting.done(function(output){
@@ -698,9 +699,10 @@ function get_top_central_list(){
     buttonLoadingOff("see_more_add_top_central_list","See More")
   })    
 }
+$('#see_more_add_top_central_list').click(get_top_central_list)
 function get_local_boss_money_limit(){
   var singleVal = 10
-  buttonLoading("see_more_local_boss_money_limit","Loading..")
+  buttonLoadingOn("see_more_local_boss_money_limit","Loading..")
   var posting = $.post("form_handler.php",{get_local_boss_money_limit: singleVal, local_money_limit: local_boss_money_limit_start})
   local_boss_money_limit_start += 10
   posting.done(function(output){
@@ -713,7 +715,7 @@ $('#see_more_local_boss_money_limit').click(get_local_boss_money_limit)
 function get_local_boss_list(){
   //alert('hi')
   var singleVal = 10
-  buttonLoading("see_more_local_boss_list","Loading..")
+  buttonLoadingOn("see_more_local_boss_list","Loading..")
   var posting = $.post("form_handler.php",{get_local_boss_list: singleVal, local_boss_start: local_boss_limit_start})
   local_boss_limit_start += 10
   posting.done(function(output){
@@ -724,7 +726,7 @@ function get_local_boss_list(){
 $('#see_more_local_boss_list').click(get_local_boss_list)
 function get_local_raiser_list(){
   var singleVal = 10
-  buttonLoading("see_more_local_raiser_list","Loading..")
+  buttonLoadingOn("see_more_local_raiser_list","Loading..")
   var posting = $.post("form_handler.php",{get_local_raiser_list: singleVal, raise_start: local_raiser_limit_start})
   local_raiser_limit_start += 10
   posting.done(function(output){
@@ -735,7 +737,7 @@ function get_local_raiser_list(){
 $('#see_more_local_raiser_list').click(get_local_raiser_list)
 function get_local_staff_list(){
   var singleVal = 10
-  buttonLoading("see_more_local_staff_list","Loading..")
+  buttonLoadingOn("see_more_local_staff_list","Loading..")
   var posting = $.post("form_handler.php",{get_local_staff_list: singleVal, start: local_staff_limit_start})
   local_staff_limit_start += 10
   posting.done(function(output){
@@ -746,7 +748,7 @@ function get_local_staff_list(){
 $('#see_more_local_staff_list').click(get_local_staff_list)
 
 function delete_acc_scm_assigned_location(c,id){
-  buttonLoading("delete_acc_scm_assigned_location"+c,"Deleting..")
+  buttonLoadingOn("delete_acc_scm_assigned_location"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_acc_scm_location: id})
   posting.done(function(output){
     //alert(output)
@@ -759,7 +761,7 @@ function delete_acc_scm_assigned_location(c,id){
 }
 function delete_central_boss_func(c,id,pst){
   //alert(c+' '+id+' '+pst)
-  buttonLoading("delete_central_boss"+c,"Deleting..")
+  buttonLoadingOn("delete_central_boss"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_central_boss: id,boss_post: pst})
   posting.done(function(output){
     //alert(output)
@@ -772,7 +774,7 @@ function delete_central_boss_func(c,id,pst){
 }
 function delete_local_boss_money_limit(c,id){
   //alert(id+" "+c)
-  buttonLoading("delete_local_boss_money_limit"+c,"Deleting..")
+  buttonLoadingOn("delete_local_boss_money_limit"+c,"Deleting..")
   var posting = $.post("form_handler.php",{money_limit: id})
   posting.done(function(output){
     $("#add_boss_limit .notice").hide().html(output).show("slow").delay(2000).hide("slow")
@@ -784,7 +786,7 @@ function delete_local_boss_money_limit(c,id){
 }
 function delete_current_user(id){
   //alert(id)
-  buttonLoading("delete_current_user"+id,"Deleting..")
+  buttonLoadingOn("delete_current_user"+id,"Deleting..")
   var posting = $.post("form_handler.php",{delete_current_user: id})
   posting.done(function(output){
     $("#add_user .notice").hide().html(output).show("slow").delay(2000).hide("slow")
@@ -796,7 +798,7 @@ function delete_current_user(id){
 }
 function delete_local_raiser(c,id,location){
   //alert(id+" "+location)
-  buttonLoading("delete_local_raiser"+c,"Deleting..")
+  buttonLoadingOn("delete_local_raiser"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_local_raiser: id,loc: location})
   posting.done(function(output){
     console.log(output)
@@ -809,7 +811,7 @@ function delete_local_raiser(c,id,location){
 }
 function delete_local_boss(c,id,location){
   //alert(id+" "+location)
-  buttonLoading("delete_local_boss"+c,"Deleting..")
+  buttonLoadingOn("delete_local_boss"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_local_boss: id,boss_loc: location})
   posting.done(function(output){
     console.log(output)
@@ -820,7 +822,7 @@ function delete_local_boss(c,id,location){
       buttonLoadingOff("delete_local_boss"+c,"Delete")
   })
 }
-function buttonLoading(id,message){
+function buttonLoadingOn(id,message){
   loading = '<i class="icon-spinner icon-spin icon-large"></i> '+message
   $('#'+id).html(loading)
   return
