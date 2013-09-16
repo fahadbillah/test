@@ -56,8 +56,9 @@
               <li><a href="">Contact</a></li>
             </ul>
             <ul class="nav pull-right">
-            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
-            	<input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
+            <form id="search_req" name="search_req" method="get" action="all_requisitions.php" class="navbar-form pull-right">
+            	<input id="search_box" name="query" type="text" class="span2 search-query" placeholder="Search Requisition">
+                 <input id="type" name="type" type="text" value="search" style="display: none;">
                 <button id="search_btn" type="submit" class="btn">Search</button>
             </form>
             </ul>

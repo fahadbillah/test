@@ -113,8 +113,9 @@
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
             <ul class="nav pull-right">
-            <form id="search_req" name="search_req" method="post" class="navbar-form pull-right">
-            	<input id="search_box" type="text" class="span2 search-query" placeholder="Search Requisition">
+            <form id="search_req" name="search_req" method="get" action="all_requisitions.php" class="navbar-form pull-right">
+            	<input id="search_box" name="query" type="text" class="span2 search-query" placeholder="Search Requisition">
+                 <input id="type" name="type" type="text" value="search" style="display: none;">
                 <button id="search_btn" type="submit" class="btn">Search</button>
             </form>
             </ul>
@@ -140,7 +141,7 @@
 	<!-- All modals -->
    
     
-  	<div id="add_material" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  	<div id="add_material" class="modal hide fade container-fluid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">Add Material</h3>
@@ -211,7 +212,29 @@
           <button type="submit" value="add_new_material" id="add_new_material" name="add_new_material" class="btn">Submit</button>
         </div>
       </div>
-    </form>    
+    </form>         
+    <div class="container-fluid"><button id="toggle_add_material_list" class="btn btn-large btn-block" type="button">Hide</button>
+    </div>
+    </br>
+    <div class="notice container-fluid"></div>
+    <div class="container-fluid pre-scrollable nano">
+      <table id="add_material_list" class="table table-condensed table-striped table-hover">
+        <tr>
+          <th>Name</th>
+          <th>Catagory</th>
+          <th>Sub-Catagory</th>
+          <th>Unit</th>
+          <th>Detail</th>
+          <th>CPU</th>
+          <th>Date Added</th>
+          <th>Delete</th>
+        </tr>
+      </table>
+      <div class=""><button id="see_more_add_material_list" class="btn btn-large btn-block" type="button">See More</button>
+    </div>
+      <div class="modal-footer"></div>
+      <div class="modal-footer"></div>
+    </div>   
     </div>
     
 	<div id="add_material_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -267,7 +290,7 @@
     <th>Name</th>
     <th>Catagory/Subcatagory</th>
     <th>Subcatagory of</th>
-    <th>Remove</th>
+    <th>Delete</th>
     </tr>
     <?php 
 		$allCat = $material->get_all_material_cat();
@@ -361,8 +384,43 @@
     em { font-weight: bold; padding-right: 1em; vertical-align: top; }
     </style>
     <script> 	
+
+    $(document).ready(function(){
+      get_add_material_list()
+    })
+    var material_list_start = 0
+
     $("#category").change(showCat);
     $("#mCat").change(getSub);
+
+
+    function get_add_material_list(){
+      var singleVal = 10
+      buttonLoadingOn("see_more_add_material_list","Loading..")
+      var posting = $.post("form_handler.php",{get_material_list: singleVal, limit: material_list_start})
+      material_list_start += 10
+      posting.done(function(output){
+        $("#add_material_list").append(output)
+        buttonLoadingOff("see_more_add_material_list","See More")
+      })    
+    }
+    $('#see_more_add_material_list').click(get_add_material_list)
+
+
+    function delete_material_list(c,id){          
+      buttonLoadingOn("delete_material_list"+c,"Deleting..")
+      var posting = $.post("form_handler.php",{delete_material: id})
+      posting.done(function(output){
+        console.log(output)
+        $("#add_material .notice").hide().html(output).show("slow").delay(2000).hide("slow")
+        if(!output.match("not"))
+          temp = $("#delete_material_list"+c).parent().parent().hide("slow")
+        else
+          buttonLoadingOff("delete_material_list"+c,"Delete")
+      })
+    }
+
+
 	function showCat(){
 	    var catVal = $("#category").val();
 		if(catVal == 'Subcategory')

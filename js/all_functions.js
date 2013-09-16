@@ -31,6 +31,13 @@ function searchSuggestionEnd(){
 	console.log(time)
 }
 
+$("#toggle_add_material_list").click(function(e){
+	if($(this).text()=="Expand")
+		$(this).text("Hide")
+	else
+		$(this).text("Expand")
+	$("#add_material_form").slideToggle("slow")
+})
 $("#toggle_messenger").click(function(e){
 	if($(this).text()=="Expand")
 		$(this).text("Hide")
@@ -142,7 +149,7 @@ function submit_message(id){
 }
 
 function auto_load_messages(){
-
+	
 }
 
 auto_load_messages()

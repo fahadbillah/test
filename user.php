@@ -3230,7 +3230,7 @@ public function get_all_user_location($user_id)
 			return $this->user_data_temp1;
 		}
 	}
-	function insert_actual_cost($actual_cost,$req_id){
+	public function insert_actual_cost($actual_cost,$req_id){
 		/*echo $actual_cost.' '.$req_id;
 		$actual_cost = (int)$actual_cost;
 		$req_id = (int)$req_id;
@@ -3847,6 +3847,28 @@ public function get_all_user_location($user_id)
 		else			
 			echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
 	}
+	public function get_all_material_list($limit,$start){		
+		$query="SELECT * FROM material_master order by id desc limit $start,$limit";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;		// determine number of rows result set 				
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$all_mat[] = $rows;				//var_dump($temp);				
+			}
+			return $all_mat;
+		}
+		return NULL;
+		//else			
+		//	echo "<span class='label label-warning'>".__FUNCTION__." error</span> ";
+	}
+	public function delete_material($id){
+		$query="DELETE FROM material_master WHERE id='$id'";
+		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be deleted");
+		return 1;
+		echo "<span class='label label-warning'>This material cant be deleted.</span> ";
+		return NULL;
+	}
+
 	public function get_all_material_cat(){
 		$query="SELECT * FROM material_category";		
 		$result = $this->mysqli->query($query);		

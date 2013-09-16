@@ -75,26 +75,29 @@
         <div class="tab-pane active" id="inbox">
           <?php
             echo '<div class="accordion" id="accordioninbox">';
-            foreach ($all_inbox_messages as $inbox) {
-              extract($inbox);
-              $datetime = strtotime($date);
-              $mysqldate = date("m/d/y g:i A", $datetime);
-              echo '<div class="accordion-group"><div class="accordion-heading">';
-              echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordioninbox" href="#collapse_inbox_'.$id.'">';
-              echo $messenger->get_user_details($sender,'name');  
-              echo '<span class="pull-right">'.$mysqldate.'</span>';
-              echo '</a>';
-              echo '</div><div id="collapse_inbox_'.$id.'" class="accordion-body collapse"><div class="accordion-inner">';
-              echo $message;
-              echo '</div></div></div>';
+            if($all_inbox_messages){
+              foreach ($all_inbox_messages as $inbox) {
+                extract($inbox);
+                $datetime = strtotime($date);
+                $mysqldate = date("m/d/y g:i A", $datetime);
+                echo '<div class="accordion-group"><div class="accordion-heading">';
+                echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordioninbox" href="#collapse_inbox_'.$id.'">';
+                echo $messenger->get_user_details($sender,'name');  
+                echo '<span class="pull-right">'.$mysqldate.'</span>';
+                echo '</a>';
+                echo '</div><div id="collapse_inbox_'.$id.'" class="accordion-body collapse"><div class="accordion-inner">';
+                echo $message;
+                echo '</div></div></div>';
+              }
+              echo "</div>";
             }
-            echo "</div>";
           ?>
           <!-- <div class="pane" style="display: block;"><div class="slider" style="height: 37px; top: 71.74416243654822px;"></div></div>
          --></div>
         <div class="tab-pane" id="sent">
           <?php
             echo '<div class="accordion" id="accordionsent">';
+            if($all_sent_messages){
             foreach ($all_sent_messages as $sent) {
               extract($sent);
               //var_dump($date);
@@ -110,6 +113,7 @@
               echo '</div></div></div>';
             }
             echo "</div>";
+            }
           ?>
         </div>
         <!-- <div class="tab-pane" id="tab2">

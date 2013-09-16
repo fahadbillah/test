@@ -203,6 +203,45 @@
 		else
 			echo "<span class='label label-success'>Acc/SCM location deleted.</span> ";
 	}
+	else if(array_key_exists('get_material_list', $args)){
+		//echo $args['get_top_central_list']." ".$args['limit'];
+		$result = $form->get_all_material_list($args['get_material_list'],$args['limit']);
+		if($result=== NULL)
+			echo "<span class='label label-warning'>No more material found.</span> ";
+		else{
+			/*echo count($result);
+			print_r($result);*/
+			$c = 0+$args['limit'];
+			foreach ($result as $list) { 					
+							extract($list);
+							echo "<tr><td>";
+							echo $name;
+							echo "</td><td>";
+							echo $category;
+							echo "</td><td>";
+							echo $subcategory;
+							echo "</td><td>";
+							echo $measurment_unit;
+							echo "</td><td>";
+							echo $m_description;
+							echo "</td><td>";
+							echo $cost_per_unit;
+							echo "</td><td>";
+							echo $date_added;
+							echo "</td><td>";
+							echo '<button id="delete_material_list'.$c.'" type="button" class="btn btn-danger btn-mini dcu" value="'.$id.'" onclick="delete_material_list('.$c.','.$id.')">Delete</button>';
+							echo "</td></tr>";
+							$c++;
+						}
+		}
+	}
+	else if(array_key_exists('delete_material', $args)){
+		$result = $form->delete_material($args['delete_material']);
+		if($result=== NULL)
+			echo "<span class='label label-warning'>Material cannot be deleted.</span> ";
+		else
+			echo "<span class='label label-success'>Material deleted.</span> ";
+	}
 	elseif (array_key_exists('message_scope', $args)) {
 		$result = $form->message_scope($args['message_scope']);
 		if($result==NULL){
