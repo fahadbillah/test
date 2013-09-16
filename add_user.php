@@ -749,6 +749,8 @@ function get_local_staff_list(){
 $('#see_more_local_staff_list').click(get_local_staff_list)
 
 function delete_acc_scm_assigned_location(c,id){
+  if(!confirm("Do you want to delete this?"))
+    return
   buttonLoadingOn("delete_acc_scm_assigned_location"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_acc_scm_location: id})
   posting.done(function(output){
@@ -761,6 +763,8 @@ function delete_acc_scm_assigned_location(c,id){
   })
 }
 function delete_central_boss_func(c,id,pst){
+  if(!confirm("Do you want to delete this?"))
+    return
   //alert(c+' '+id+' '+pst)
   buttonLoadingOn("delete_central_boss"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_central_boss: id,boss_post: pst})
@@ -774,6 +778,8 @@ function delete_central_boss_func(c,id,pst){
   })
 }
 function delete_local_boss_money_limit(c,id){
+  if(!confirm("Do you want to delete this?"))
+    return
   //alert(id+" "+c)
   buttonLoadingOn("delete_local_boss_money_limit"+c,"Deleting..")
   var posting = $.post("form_handler.php",{money_limit: id})
@@ -786,6 +792,8 @@ function delete_local_boss_money_limit(c,id){
   })
 }
 function delete_current_user(id){
+  if(!confirm("Do you want to delete this?"))
+    return
   //alert(id)
   buttonLoadingOn("delete_current_user"+id,"Deleting..")
   var posting = $.post("form_handler.php",{delete_current_user: id})
@@ -798,6 +806,8 @@ function delete_current_user(id){
   })
 }
 function delete_local_raiser(c,id,location){
+  if(!confirm("Do you want to delete this?"))
+    return
   //alert(id+" "+location)
   buttonLoadingOn("delete_local_raiser"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_local_raiser: id,loc: location})
@@ -811,6 +821,8 @@ function delete_local_raiser(c,id,location){
   })
 }
 function delete_local_boss(c,id,location){
+  if(!confirm("Do you want to delete this?"))
+    return
   //alert(id+" "+location)
   buttonLoadingOn("delete_local_boss"+c,"Deleting..")
   var posting = $.post("form_handler.php",{delete_local_boss: id,boss_loc: location})
@@ -833,12 +845,14 @@ function buttonLoadingOff(id,message){
   return
 }
 function getLocations(){
-  singleVal = $("#user1").val()
+  var singleVal = $("#user1").val()
+  //alert(singleVal)
   $('#loc option').text('Loading...')
-  posting = $.post("get_locations.php",{val:singleVal})
+  var posting = $.post("get_locations.php",{locval: singleVal})
   posting.done(function(output){
-   $('#loc').html(output).show();
- })  
+    //alert(output)
+    $('#loc').html(output).show();
+  })
 }
 function getMaster(){
   $('#ms option').text('Loading...')

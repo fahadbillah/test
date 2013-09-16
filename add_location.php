@@ -392,25 +392,25 @@
     </form>
     <div class="notice container-fluid"></div>
     <div class="container-fluid pre-scrollable nano" id="master_list">
-    <table class="table table-condensed table-hover" id="master_list_table">
-    <tr>
-    <th>Master Business</th>
-    <th>ID</th>
-    <th>Remove/Edit</th>
-    </tr>
-    <?php 
-	$location->get_all_masters();
-	//var_dump($location->user_data_temp);
-	foreach($location->user_data_temp as $mas){
-		extract($mas);
-	?>
-    <tr>
-    <td><?php echo $name;?></td>
-    <td><?php echo $id;?></td>
-    <td><button  type="button" class="btn btn-mini btn-danger masterButton" id="<?php echo 'master_'.$id;?>" onclick = "delete_master_location(<?php echo $id ?>)">Remove</button></td>
-    </tr>
-    <?php }?>
-    </table>
+      <table class="table table-condensed table-hover" id="master_list_table">
+      <tr>
+      <th>Master Business</th>
+      <th>ID</th>
+      <th>Remove/Edit</th>
+      </tr>
+      <?php 
+  	$location->get_all_masters();
+  	//var_dump($location->user_data_temp);
+  	foreach($location->user_data_temp as $mas){
+  		extract($mas);
+  	?>
+      <tr>
+      <td><?php echo $name;?></td>
+      <td><?php echo $id;?></td>
+      <td><button  type="button" class="btn btn-mini btn-danger masterButton" id="<?php echo 'master_'.$id;?>" onclick = "delete_master_location(<?php echo $id ?>)">Remove</button></td>
+      </tr>
+      <?php }?>
+      </table>
     </div>
     </div>
 
@@ -559,7 +559,29 @@
         </div>
       </div>
     </form>
-      
+    
+    <div class="notice container-fluid"></div>
+    <div class="container-fluid pre-scrollable nano" id="master_list">
+      <table class="table table-condensed table-hover" id="master_list_table">
+      <tr>
+      <th>Master Business</th>
+      <th>ID</th>
+      <th>Remove/Edit</th>
+      </tr>
+      <?php 
+    $location->get_all_masters();
+    //var_dump($location->user_data_temp);
+    foreach($location->user_data_temp as $mas){
+      extract($mas);
+    ?>
+      <tr>
+      <td><?php echo $name;?></td>
+      <td><?php echo $id;?></td>
+      <td><button  type="button" class="btn btn-mini btn-danger masterButton" id="<?php echo 'master_'.$id;?>" onclick = "delete_master_location(<?php echo $id ?>)">Remove</button></td>
+      </tr>
+      <?php }?>
+      </table>
+    </div>
     </div> 
     <?php include_once "messenger.php" ?> 
     <!-- Le javascript
@@ -592,7 +614,9 @@
     </style>
     <script>
       function delete_master_location(id){
-        buttonLoadingOn("master_"+id,"Loading...")
+        if(!confirm("Do you want to delete this?"))
+          return
+        /*buttonLoadingOn("master_"+id,"Loading...")
         var posting = $.post("get_locations.php",{delete_master_location: id})
         posting.done(function(output){
           $("#add_top_local .notice").hide().html(output).show("slow").delay(2000).hide("slow")
@@ -600,7 +624,7 @@
             temp = $("#delete_local_boss"+c).parent().parent().hide("slow")
           else
             buttonLoadingOff("delete_local_boss"+c,"Delete")
-        })   
+        }) */  
       } 
  
       function get_projects()

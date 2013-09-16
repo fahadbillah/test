@@ -93,9 +93,21 @@
           <div class="nav-collapse collapse">
              <ul class="nav">
               <li><a href="admin.php"><i class="icon-home icon-white"></i> Home</a></li>
-              <li><a href="add_user.php">Add User</a></li> 
-              <li><a href="add_material.php">Add Material</a></li>    
-              <li><a href="add_location.php">Add Location</a></li>    
+              <li class="dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#">
+                    ADD
+                    <b class="caret"></b>
+                  </a>
+                <ul class="dropdown-menu">
+                  <!-- links -->
+                  <li><a href="add_user.php">Add User</a></li> 
+                  <li><a href="add_material.php">Add Material</a></li> 
+                  <li class="active"><a href="add_location.php">Add Location</a></li> 
+                </ul>
+              </li>   
+              <li><a href="#message" data-toggle="modal">Message</a></li>   
               <li class="active"><a href="super_admin_central_hub.php">Requisition Hub</a></li>               
               <li><a id="log_out" href="log_out.php">Log Out</a></li>
             </ul>
@@ -404,6 +416,8 @@
              
         </div> 
         <!-- Modal -->
+
+        <?php include_once "messenger.php" ?> 
         <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <br>
         <br>

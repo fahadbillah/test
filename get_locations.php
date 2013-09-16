@@ -1,18 +1,20 @@
 <?php 
 	include_once "user.php";
 	
+	$args = $_POST;
 	$getLocations = new User();
 	unset($getLocations->user_data_temp1);
-	
-	if(in_array("val", $_POST) && isset($_POST["val"])){
-		$value = (int)$_POST["val"];
+	//echo 'wokssssssssssssss';
+	if(isset($args["locval"])){
+		var_dump($args);
+		$value = (int)$_POST["locval"];
 		$getLocations->get_location_by_id($value);
 		echo "<option>Select Location</option>";  
 		
-		$getLocations->get_location_by_id($value);
+		//$getLocations->get_location_by_id($value);
 		foreach($getLocations->user_data as $d){
 				extract($d);
-				echo "<option value='$location_id'>$site_factory</option>";  
+				echo "<option value='$location_id'>".$site_factory."</option>";  
 			}
 	}
 	elseif (in_array("delete_master_location", $_POST)) {

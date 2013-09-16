@@ -91,6 +91,8 @@
               }
               echo "</div>";
             }
+            else
+              echo "<span class='label label-warning'>No received message available.</span>"; 
           ?>
           <!-- <div class="pane" style="display: block;"><div class="slider" style="height: 37px; top: 71.74416243654822px;"></div></div>
          --></div>
@@ -114,6 +116,8 @@
             }
             echo "</div>";
             }
+            else
+              echo "<span class='label label-warning'>No sent message available.</span>";                
           ?>
         </div>
         <!-- <div class="tab-pane" id="tab2">

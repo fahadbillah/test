@@ -2144,8 +2144,8 @@ class User extends Database
 			}						
 			return $all_messages;
 		}
-		else
-			echo "<span class='label label-warning'>No message available.</span> ";	
+		/*else
+			echo "<span class='label label-warning'>No message available.</span> ";	*/
 		return 0;
 	}
 	public function get_sent_pm($user_id,$limit,$start)
@@ -2170,8 +2170,8 @@ class User extends Database
 			}						
 			return $all_messages;
 		}
-		else
-			echo "<span class='label label-warning'>No message available.</span> ";	
+		/*else
+			echo "<span class='label label-warning'>No message available.</span> ";	*/
 		return 0;
 	}
 	public function add_admin($select_admin,$req_id)

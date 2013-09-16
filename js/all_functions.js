@@ -164,6 +164,7 @@ function buttonLoadingOff(id,message){
 	return
 }  
 
+$(".dcu")
 
 $("#search_box").focusin(searchSuggestionStart)
 
