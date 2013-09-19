@@ -68,7 +68,7 @@ body {
             <ul class="nav pull-right">
               <form id="search_req" name="search_req" method="get" action="all_requisitions.php" class="navbar-form pull-right">
                <input id="search_box" name="query" type="text" class="span2 search-query" placeholder="Search Requisition">
-                 <input id="type" name="type" type="text" value="search" style="display: none;">
+               <input id="type" name="type" type="text" value="search" style="display: none;">
                <button id="search_btn" type="submit" class="btn">Search</button>
              </form>
            </ul>
@@ -93,13 +93,13 @@ body {
       <?php 
 		  	//print_r($_SESSION);
       if(isset($_REQUEST["pm_submit"]))
-        $req_list->add_pm($_REQUEST["subject"],$_REQUEST["message"],$_REQUEST["sender"],$_REQUEST["receiver"]);
+        $req_list->add_pm($_REQUEST["message"],$_REQUEST["sender"],$_REQUEST["receiver"],'',$_REQUEST["sms_req_id"]);
       if(isset($_REQUEST["stat_cng"]))
 				$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
       ?>
     </div>          
     <div id="notice1">
-      
+
     </div>
     <div id="yooo">
      <?php 
@@ -210,7 +210,7 @@ $_SESSION['rand'] = rand(1, 10000000);
      </tr>   
      <tr>
        <th>Created by</th>
-       <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> <!--<a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>-->
+       <td><i class="icon-user icon-white"></i> <?php echo "<a href='user_details.php?id=$user_id'>".$req_list->idusers_to_id($user_id)."</a>" ?> 
        </td>
      </tr>
      <?php //if($user_requested_by_info!=''){?>  
@@ -506,128 +506,90 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                      <input type="submit" class="btn btn-large" value="Print This Requisition">
                    </form>
                  </td> 
-               </tr>          
-             </table>
-             <?php 
-           }	
-           unset($req_list->req_data); 		
-           ?>                 
-         </div>
-         <div>
+               </tr>     
+               <tr>
+                <th>Send Messages</th>
+                <td>
+                  <a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>
+                </td>
+              </tr>    
+              <tr>
+                <th>All Messages</th>
+                <td>
+                  <?php 
+                    //var_dump(count($req_list->get_pm_req($user_id,100,0,$_REQUEST['id'])));
+                    $allMessage = $req_list->get_pm_req($user_id,100,0,$_REQUEST['id']);
+                    echo '<div class="accordion" id="accordioninbox">';
+                    if($allMessage){
+                      foreach ($allMessage as $am) {
+                        extract($am);
+                        $datetime = strtotime($date);
+                        $mysqldate = date("m/d/y g:i A", $datetime);
+                        echo '<div class="accordion-group"><div class="accordion-heading">';
+                        echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordioninbox" href="#collapse_inbox_'.$id.'">';
+                        if($sender==$user_id)
+                          echo "Me";
+                        else
+                          echo $req_list->get_user_details($sender,'name');  
+                        echo '<span class="pull-right">'.$mysqldate.'</span>';
+                        echo '</a>';
+                        echo '</div><div id="collapse_inbox_'.$id.'" class="accordion-body collapse"><div class="accordion-inner">';
+                        echo $message;
+                        echo '</div></div></div>';
+                      }
+                    }
+                    else
+                      echo "<span class='label label-warning'>No message available.</span>"; 
+                    echo "</div>";
+                    /*foreach ($allMessage as $am) {
+                      extract($am);
+
+                    }*/
+                  ?>   
+                </td>
+              </tr>     
+            </table>
+            <?php 
+          }	
+          unset($req_list->req_data); 		
+          ?>                 
+        </div>
+        <div>
           <!--<legend>Comments</legend>-->
           <table>
-            
           </table>
-        </div>             
+        </div>          
         <div class="accordion" id="accordion2">
-             <!--<a href="#gnr" role="button" class="btn" data-toggle="modal">GNR Form</a>
- 
-            
-            <div id="gnr" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">GNR Form</h3>
-              </div>
-              <div class="modal-body">
-                <p>GNR Body</p>
-              </div>
-              <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <button class="btn btn-primary">Submit</button>
-              </div>
-            </div>-->
-            <?php 
-			   /*unset($req_list->user_data);
-			   $req_list->get_comments($_REQUEST["id"]);
-			   
-			   $sn = 1;	
-			   		   
-			   foreach($req_list->comment_data as $cmnt)
-				{
-					extract($cmnt);	
-					$req_list->get_user_details($comment_by,"name");	
-					if($sn == $req_list->additional_data){
-			 ?>
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a id="comment_heading" class="accordion-toggle" onClick="<?php if($_SESSION["idusers"] != $comment_by){?>make_read(<?php echo $id ?>)<?php }?>" data-toggle="collapse" data-parent="#accordion2" href="#<?php echo "collapse".$sn ?>">
-                    <?php 
-						echo substr($comment,0,50).".... Comment # ".$sn." by ".$req_list->user_data[0]["name"]." time ".$date; 
-						if($comment_by!= $_SESSION["idusers"])
-						{
-							if($flag=="unread")
-								echo "<strong> New*</strong>";
-							else
-								echo " Old";
-						}
-					?>
-					<i class="icon-comment"></i>
-                  </a>
-                </div>
-                <div id="<?php echo "collapse".$sn ?>" class="accordion-body collapse in">
-                  <div id="comment" class="accordion-inner">
-                    <?php echo $comment ?>
-                  </div>
-                </div>
-              </div> 
-              <?php
-				}
-				else{
-			  ?>
-              <div class="accordion-group">
-                <div class="accordion-heading">
-                  <a id="comment_heading" class="accordion-toggle" onClick="<?php if($_SESSION["idusers"] != $comment_by){?>make_read(<?php echo $id ?>)<?php }?>" data-toggle="collapse" data-parent="#accordion2" href="#<?php echo "collapse".$sn ?>">
-                    <?php 
-						echo substr($comment,0,50).".... Comment # ".$sn." by ".$req_list->user_data[0]["name"]." time ".$date; 
-						if($comment_by!= $_SESSION["idusers"])
-						{
-							if($flag=="unread")
-								echo "<strong> New*</strong>";
-							else
-								echo " Old";
-						}
-					?>
-					<i class="icon-comment"> </i>
-                  </a>
-                </div>
-                <div id="<?php echo "collapse".$sn ?>" class="accordion-body collapse">
-                  <div id="comment" class="accordion-inner">
-                    <?php echo $comment ?>
-                  </div>
-                </div>
-              </div> 
-              <?php
-					}
-					$sn++;}
-				unset($req_list->user_data); 
-				unset($req_list->comment_data);*/							  
-       ?>             
-     </div>
-             <!--<div>
-                 <form name="comments" action="req_validation_local.php?id=<?php //echo $_REQUEST["id"]?>" method="post">
-                  <fieldset>
-                    <textarea name="comment" rows="3"></textarea>
-                    <span class="help-block">Write your comment here.</span>
-                    <label>
-                      <button type="submit" name="submit" class="btn">Submit</button>
-                    </label>
-                  </fieldset>
-                </form>
-              </div>-->
-              
-            </div> 
-            <!-- Modal -->
-            <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <br>
-              <br>
-              <form id="pm" name="pm" class="form-horizontal" action="req_validation.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
-                <div class="control-group">
-                  <label class="control-label" for="subject">Subject</label>
-                  <div class="controls">
-                    <input type="text" name="subject" id="subject" placeholder="Write subject">
-                  </div>
-                </div>
+        </div>
+      </div> 
+      <!-- Modal -->
+      <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <br>
+        <br>
+        <form id="pm" name="pm" class="form-horizontal" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
+          <div class="control-group">
+            <label class="control-label" for="subject">Send To</label>
+            <div class="controls">
+              <select id="receiver" name="receiver">
+                <option>Select Receiver</option>
+                <?php 
+                $optgrp = '';
+                $contacts = $req_list->message_scope("requisition",$_REQUEST['id']);
+                if($contacts){
+                  foreach ($contacts as $cont) {
+                    extract($cont);
+                    if ($optgrp!==$relation_to_req) {
+                      echo "<optgroup label='$relation_to_req'>";
+                    }
+                    echo "<option value='".$id."'>$name</option>";
+                  }
+                }
+                else
+                  echo "<option><span class='label label-warning'>Form resubmission prevented.</span></option>"
+                ?>
+              </select>
+            </div>
+          </div>
                 <div class="control-group">
                   <label class="control-label" for="message">Message</label>
                   <div class="controls">
@@ -637,7 +599,7 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                 <div class="control-group">
                   <div class="controls">
                     <input type="hidden" id="sender" name="sender" value="<?php echo $user_id ?>">
-                    <input type="hidden" id="receiver" name="receiver" value="<?php echo $_SESSION["idusers"] ?>">
+                    <input type="hidden" id="sms_req_id" name="sms_req_id" value="<?php echo $_REQUEST["id"] ?>">
                     <button type="submit" id="pm_submit" name="pm_submit" class="btn">Send Message</button>
                   </div>
                 </div>
@@ -870,6 +832,13 @@ $('.cartEditForBoss').click(function(){
 jQuery(function($){
   $("#grnRcvdDate").datepicker({ dateFormat: "dd-mm-yy" });
 });
+$("#pm").submit(function(e){
+  if($("#message").val()===""||$("#receiver").val()===""||$("#sms_req_id").val()===""){
+    alert('Empty field! Please fill up properly.')
+    e.preventDefault()
+    return
+  }
+})
 </script>
 
 

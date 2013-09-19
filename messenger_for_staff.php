@@ -114,6 +114,7 @@
         <div class="tab-pane active" id="inbox">
           <?php
             echo '<div class="accordion" id="accordioninbox">';
+            if ($all_inbox_messages) {
             foreach ($all_inbox_messages as $inbox) {
               extract($inbox);
               $datetime = strtotime($date);
@@ -127,6 +128,9 @@
               echo $message;
               echo '</div></div></div>';
             }
+            }
+            else
+              echo "<span class='label label-warning'>No message in inbox!</span> "; 
             echo "</div>";
           ?>
           <!-- <div class="pane" style="display: block;"><div class="slider" style="height: 37px; top: 71.74416243654822px;"></div></div>
@@ -134,6 +138,7 @@
         <div class="tab-pane" id="sent">
           <?php
             echo '<div class="accordion" id="accordionsent">';
+            if ($all_sent_messages) {
             foreach ($all_sent_messages as $sent) {
               extract($sent);
               //var_dump($date);
@@ -148,6 +153,9 @@
               echo $message;
               echo '</div></div></div>';
             }
+            }
+            else
+              echo "<span class='label label-warning'>No message sent!</span> ";  
             echo "</div>";
           ?>
         </div>

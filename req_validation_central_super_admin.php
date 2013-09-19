@@ -394,7 +394,7 @@
         <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <br>
         <br>
-        <form id="pm" name="pm" class="form-horizontal" action="req_validation.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
+        <form id="pm" name="pm" class="form-horizontal" action="req_validation_central_super_admin.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
           <div class="control-group">
             <label class="control-label" for="subject">Subject</label>
             <div class="controls">

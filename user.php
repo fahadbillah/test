@@ -2109,27 +2109,66 @@ class User extends Database
 			echo "<span class='label label-warning'>No designation available.</span> ";	
 		return $this->additional_data;
 	}
-	public function add_pm($message,$sender,$receiver,$subject="")
+	public function add_pm($message,$sender,$receiver,$subject="",$req_id="")
 	{		
-		$query1="INSERT INTO pm SET message='$message', sender='$sender'";
+		$message = $this->mysqli->real_escape_string($message);
+		$sender = $this->mysqli->real_escape_string($sender);
+		$receiver = $this->mysqli->real_escape_string($receiver);
+		$subject = $this->mysqli->real_escape_string($subject);
+		$req_id = $this->mysqli->real_escape_string($req_id);
+		if ($req_id!=="") 
+			$query1="INSERT INTO pm SET message='$message', sender='$sender', req_id='$req_id'";
+		else
+			$query1="INSERT INTO pm SET message='$message', sender='$sender'";
 		$result1 = $this->mysqli->query($query1) or die(mysqli_connect_errno()."Data cannot be inserted");	
 		
 		$last_pm_id = $this->mysqli->insert_id;
-		//var_dump($last_pm_id);
+		//var_dump($receiver);
 		
 		$query2="INSERT INTO pm_destination SET pm_id='$last_pm_id', receiver='$receiver', read_unread=0";
 		$result2 = $this->mysqli->query($query2) or die(mysqli_connect_errno()."Data cannot be inserted");	
 		
 		print("<span class='label label-success'>Pm send successfully.</span>");
 	}
-	public function get_inbox_pm($user_id,$limit,$start)
+	public function get_pm_req($user_id,$limit,$start,$req_id)
 	{
-		$query="SELECT pm.message,pm.sender,pm.date,pm_destination.id,pm_destination.read_unread
+		$query="SELECT pm.message,pm.sender,pm.date,pm_destination.id,pm_destination.receiver,pm_destination.read_unread
 		FROM pm 		
 		INNER JOIN pm_destination
 		ON pm.id = pm_destination.pm_id	
-		WHERE pm_destination.receiver = '$user_id'	
-		ORDER BY pm_destination.id DESC Limit $start,$limit";
+		WHERE pm.req_id = '$req_id'	and (pm_destination.receiver='$user_id' or pm.sender='$user_id')
+		ORDER BY pm.id DESC Limit $start,$limit";
+
+		$result = $this->mysqli->query($query);
+		$num_result=$result->num_rows;		
+		if($num_result>0){
+			while($rows=$result->fetch_assoc()){
+				$all_messages[]=$rows;					
+			}						
+			return $all_messages;
+		}
+		/*else
+			echo "<span class='label label-warning'>No message available.</span> ";	*/
+		return 0;
+	}
+	public function get_inbox_pm($user_id,$limit,$start,$req_id="")
+	{
+		if($req_id!==""){
+			$query="SELECT pm.message,pm.sender,pm.date,pm_destination.id,pm_destination.read_unread
+			FROM pm 		
+			INNER JOIN pm_destination
+			ON pm.id = pm_destination.pm_id	
+			WHERE pm_destination.receiver = '$user_id' and pm.req_id = '$req_id'	
+			ORDER BY pm_destination.id DESC Limit $start,$limit";
+		}
+		else{
+			$query="SELECT pm.message,pm.sender,pm.date,pm_destination.id,pm_destination.read_unread
+			FROM pm 		
+			INNER JOIN pm_destination
+			ON pm.id = pm_destination.pm_id	
+			WHERE pm_destination.receiver = '$user_id'
+			ORDER BY pm_destination.id DESC Limit $start,$limit";			
+		}
 		//$query="SELECT * FROM pm";
 		
 		$result = $this->mysqli->query($query);
@@ -2148,14 +2187,24 @@ class User extends Database
 			echo "<span class='label label-warning'>No message available.</span> ";	*/
 		return 0;
 	}
-	public function get_sent_pm($user_id,$limit,$start)
+	public function get_sent_pm($user_id,$limit,$start,$req_id="")
 	{
-		$query="SELECT pm.message,pm.date,pm_destination.id,pm_destination.receiver,pm_destination.read_unread
-		FROM pm 		
-		INNER JOIN pm_destination
-		ON pm.id = pm_destination.pm_id	
-		WHERE pm.sender = '$user_id'	
-		ORDER BY pm_destination.id DESC Limit $start,$limit";
+		if($req_id!==""){
+			$query="SELECT pm.message,pm.date,pm_destination.id,pm_destination.receiver,pm_destination.read_unread
+			FROM pm 		
+			INNER JOIN pm_destination
+			ON pm.id = pm_destination.pm_id	
+			WHERE pm.sender = '$user_id' and pm.req_id = '$req_id'	
+			ORDER BY pm_destination.id DESC Limit $start,$limit";
+		}
+		else{
+			$query="SELECT pm.message,pm.date,pm_destination.id,pm_destination.receiver,pm_destination.read_unread
+			FROM pm 		
+			INNER JOIN pm_destination
+			ON pm.id = pm_destination.pm_id	
+			WHERE pm.sender = '$user_id'
+			ORDER BY pm_destination.id DESC Limit $start,$limit";			
+		}
 		//$query="SELECT * FROM pm";
 		
 		$result = $this->mysqli->query($query);
@@ -2170,8 +2219,7 @@ class User extends Database
 			}						
 			return $all_messages;
 		}
-		/*else
-			echo "<span class='label label-warning'>No message available.</span> ";	*/
+		/*get_all_single_entity*/
 		return 0;
 	}
 	public function add_admin($select_admin,$req_id)
@@ -4069,6 +4117,8 @@ public function get_all_user_location($user_id)
 			}
 		}
 		elseif ($type==="requisition") {
+			/*var_dump($type);
+			var_dump($id);*/
 			$query="SELECT user_master.id,user_master.name,admins.relation_to_req
 			FROM user_master
 			INNER JOIN admins
