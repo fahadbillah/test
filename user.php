@@ -2136,7 +2136,7 @@ class User extends Database
 		FROM pm 		
 		INNER JOIN pm_destination
 		ON pm.id = pm_destination.pm_id	
-		WHERE pm.req_id = '$req_id'	and (pm_destination.receiver='$user_id' or pm.sender='$user_id')
+		WHERE pm.req_id = '$req_id'
 		ORDER BY pm.id DESC Limit $start,$limit";
 
 		$result = $this->mysqli->query($query);
@@ -2542,7 +2542,7 @@ class User extends Database
 	}
 	public function change_req_status_main($req_id,$status)
 	{		
-		//echo $req_id." ".$status;
+		//echo "main changed";
 		$query="update requisition SET status = '$status' where id = '$req_id'";
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
@@ -3107,7 +3107,8 @@ public function get_all_user_location($user_id)
 	}
 				//'<button class="btn btn-small btn-warning" type="submit" id="decision" name="decision2" value="Review">Review</button><button class="btn btn-small btn-danger" type="submit" id="decision" name="decision3" value="Dismiss">Dismiss</button>'
 	public function getButton($status){
-		unset($this->user_data_temp1);		
+		unset($this->user_data_temp1);	
+			//var_dump($status);	
 		switch($status){
 			case 'New':
 			$this->user_data_temp1 = '<button class="btn btn-small btn-success" type="submit" id="decision" name="decision1" value="Approved">Approve</button> <button class="btn btn-small btn-danger" type="submit" id="decision" name="decision1" value="Reject">Reject</button>'; 
@@ -3157,7 +3158,7 @@ public function get_all_user_location($user_id)
 		<th><input type='text' id='grnTitle' name='grnTitle'></th>
 		</tr>
 		<tr>
-		<th>Requisition Type</th>
+		<th>Type of Requisition</th>
 		<td><input type='text' id='grnReqType' name='grnReqType'></td>
 		</tr>
 		<tr>
@@ -3257,7 +3258,7 @@ public function get_all_user_location($user_id)
 			$num_result=$result->num_rows;		// determine number of rows result set 					
 			if($num_result>0){				
 				while($rows=$result->fetch_assoc()){									
-					return $this->user_data_temp1=$rows['master']."->".$rows['project']."->".$rows['site_factory'];		
+					$this->user_data_temp1=$rows['master']."-".$rows['project']."-".$rows['site_factory'];		
 				}						
 			}
 			else
@@ -3270,7 +3271,7 @@ public function get_all_user_location($user_id)
 			$num_result=$result->num_rows;		// determine number of rows result set 					
 			if($num_result>0){				
 				while($rows=$result->fetch_assoc()){									
-					$this->user_data_temp1.="->".$rows['name'];		
+					$this->user_data_temp1.="-".$rows['name'];		
 				}
 			}
 			else
@@ -3583,9 +3584,12 @@ public function get_all_user_location($user_id)
 	}
 	public function status_comparison($user,$main,$pst){
 		//echo $pst;
+		var_dump($user);
+		var_dump($main);
+		var_dump($pst);
 		if($user=='Partially Delivered' && $main=='Partially Received')
 			return true;
-		if($user=='Delivered' && $main=='Received')
+		else if($user=='Delivered' && $main=='Received')
 			return true;
 		else if($user=='Partially Received' && $main=='Partially Delivered')
 			return true;

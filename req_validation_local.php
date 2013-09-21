@@ -10,7 +10,10 @@ if(!$req_list->user_home_page_authorization($_SESSION["user_id"])){
   echo 'You are not authorized to use this page.';
   echo "<INPUT class='btn' TYPE='button' VALUE='Back to previous page' onClick='history.go(-1);return true;'>";
   exit;
-}
+}  
+
+   $req_data_temp = $req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
+   //var_dump($req_data_temp[0]["location_id"]);
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -87,13 +90,13 @@ body {
     
     <div class="page-header">
       <div id="req_id" style="visibility:hidden"><?php echo $_REQUEST["id"] ?></div>
-      <h2>Requisition <?php echo $req_list->id_to_req_id($_REQUEST["id"]) ?></h2>
+      <h2>Requisition Raised From <?php echo $req_list->location_id_to_name($req_data_temp[0]["location_id"]) ?></h2>
     </div>
     <div id="notice">
       <?php 
 		  	//print_r($_SESSION);
       if(isset($_REQUEST["pm_submit"]))
-        $req_list->add_pm($_REQUEST["message"],$_REQUEST["sender"],$_REQUEST["receiver"],'',$_REQUEST["sms_req_id"]);
+        $req_list->add_pm($_REQUEST["message"],$_REQUEST["sender"],'','',$_REQUEST["sms_req_id"]);
       if(isset($_REQUEST["stat_cng"]))
 				$req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"]);	//echo $_REQUEST["select_admin"];
       ?>
@@ -129,11 +132,11 @@ body {
          $isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
          $isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
          if($isBoss){
-          var_dump('isBoss true');
+          //var_dump('isBoss true');
           if($isLocal){
-           var_dump('isLocal true');
+           //var_dump('isLocal true');
            $destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
-           var_dump($destination);
+           //var_dump($destination);
            if($destination == 'local'){
             $req_list->assign_local_account_scm($_REQUEST["id"]);			
           }
@@ -177,9 +180,9 @@ $_SESSION['rand'] = rand(1, 10000000);
 				//unset($req_list->req_data); 
    $only_view = $req_list->getRelation($_SESSION["user_id"],$_REQUEST["id"]);
    $pst = $req_list->getPost($_SESSION["user_id"],$_REQUEST["id"]);
-   $req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
+//   $req_data_temp = $req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
 				//var_dump($req_list->req_data);
-   foreach($req_list->req_data as $list)
+   foreach($req_data_temp as $list)
    {
      extract($list);			   
      ?>
@@ -508,13 +511,13 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                  </td> 
                </tr>     
                <tr>
-                <th>Send Messages</th>
+                <th>Comment</th>
                 <td>
-                  <a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Send PM <i class="icon-envelope icon-white"></i></a>
+                  <a href="#myModal" role="button" class="btn btn-small" data-toggle="modal">Comment <i class="icon-comment icon-white"></i></a>
                 </td>
               </tr>    
               <tr>
-                <th>All Messages</th>
+                <th>All Comments</th>
                 <td>
                   <?php 
                     //var_dump(count($req_list->get_pm_req($user_id,100,0,$_REQUEST['id'])));
@@ -523,14 +526,16 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                     if($allMessage){
                       foreach ($allMessage as $am) {
                         extract($am);
+                        /*var_dump($sender);
+                        var_dump($_SESSION["user_id"]);*/
                         $datetime = strtotime($date);
                         $mysqldate = date("m/d/y g:i A", $datetime);
                         echo '<div class="accordion-group"><div class="accordion-heading">';
                         echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordioninbox" href="#collapse_inbox_'.$id.'">';
-                        if($sender==$user_id)
-                          echo "Me";
+                        if($sender===$_SESSION["user_id"])
+                          echo "<strong>Me</strong>";
                         else
-                          echo $req_list->get_user_details($sender,'name');  
+                          echo "<strong>".$req_list->get_user_details($sender,'name')."</strong>";  
                         echo '<span class="pull-right">'.$mysqldate.'</span>';
                         echo '</a>';
                         echo '</div><div id="collapse_inbox_'.$id.'" class="accordion-body collapse"><div class="accordion-inner">';
@@ -567,13 +572,13 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
         <br>
         <br>
         <form id="pm" name="pm" class="form-horizontal" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
-          <div class="control-group">
+          <!-- <div class="control-group">
             <label class="control-label" for="subject">Send To</label>
             <div class="controls">
               <select id="receiver" name="receiver">
                 <option>Select Receiver</option>
                 <?php 
-                $optgrp = '';
+                /*$optgrp = '';
                 $contacts = $req_list->message_scope("requisition",$_REQUEST['id']);
                 if($contacts){
                   foreach ($contacts as $cont) {
@@ -586,12 +591,12 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                 }
                 else
                   echo "<option><span class='label label-warning'>Form resubmission prevented.</span></option>"
-                ?>
+               */ ?>
               </select>
             </div>
-          </div>
+          </div> -->
                 <div class="control-group">
-                  <label class="control-label" for="message">Message</label>
+                  <label class="control-label" for="message">Comment</label>
                   <div class="controls">
                     <textarea name="message" id="message" rows="3"></textarea>
                   </div>
@@ -833,7 +838,7 @@ jQuery(function($){
   $("#grnRcvdDate").datepicker({ dateFormat: "dd-mm-yy" });
 });
 $("#pm").submit(function(e){
-  if($("#message").val()===""||$("#receiver").val()===""||$("#sms_req_id").val()===""){
+  if($("#message").val()===""||$("#sms_req_id").val()===""){
     alert('Empty field! Please fill up properly.')
     e.preventDefault()
     return

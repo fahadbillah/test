@@ -120,7 +120,7 @@
              </div>             
 			  <form id="new_req_form" name="new_req_form" class="form-horizontal" action="add_new_req.php" method="post">             
               <div class="control-group">
-                <label class="control-label" for="location">Location</label>
+                <label class="control-label" for="location">Location *</label>
                 <div class="controls">
                   <select id="location" name="location">
                     <option value="">Select Location</option>
@@ -139,7 +139,7 @@
                 </div>
               </div> 
               <div class="control-group">
-                <label class="control-label" for="type_of_req">Type of Requisition</label>
+                <label class="control-label" for="type_of_req">Type of Requisition *</label>
                 <div class="controls">
                   <select id="type_of_req" name="type_of_req"> <!-- onChange="get_other_field()"-->
                     <option value="">Select Requisition Type</option>
@@ -157,14 +157,14 @@
               <div id="field_for_other">   
               </div>
               <div class="control-group">
-                <label class="control-label" for="title">Title</label>
+                <label class="control-label" for="title">Title *</label>
                 <div class="controls">
                   <input name="title" id="title" type="text" placeholder="Text input">
                   <span class="help-inline">Subject of Requisition</span>
                 </div>
               </div> 
               <div id="material" class="control-group" style="display:none">
-                <label class="control-label" for="title">Material Input</label>
+                <label class="control-label" for="title">Material Input *</label>
                 <div class="controls">
                  <!-- <form id="mat_form" name="mat_form" class="form-actions">-->
                     <table id="mat_shopping_cart" class="table table-condensed table-hover">
@@ -252,25 +252,25 @@
                 </div> 
               </div> 
               <div class="control-group">
-                <label class="control-label" for="description">Originally Requested By</label>
+                <label class="control-label" for="description">Originally Requested By *</label>
                 <div class="controls">
                  <div class="input-prepend"> <span class="add-on">Name</span><input name="requested_by" id="requested_by" type="text"></div>
                  <div class="input-prepend"> <span class="add-on">Contact</span><input name="requested_by_contact" id="requested_by_contact" type="text"></div>
                 </div>
               </div> <div class="control-group">
-                <label class="control-label" for="description">Description</label>
+                <label class="control-label" for="description">Description *</label>
                 <div class="controls">
                   <textarea name="description" id="description" rows="3"></textarea>
                 </div>
               </div>    
               <div id="costing_block" class="control-group">
-                <label class="control-label" for="costing">Costing</label>      
-                <div class="controls">          
+                <label class="control-label" for="costing">Estimated Costing *</label>      
+                <div class="controls">
                   <div class="input-append">
                     <input name="costingform" id="costingform" type="text" placeholder="Number input">
                     <span class="add-on">Taka</span>                   
                   </div>
-                    <span class="help-inline">More than 5 lakh require site superviser's varification</span> 
+                    <!-- <span class="help-inline">More than 5 lakh require site superviser's varification</span>  -->
                 </div>
               </div>           
               <!--<div class="control-group">
@@ -279,7 +279,7 @@
                 </div>
               </div>-->
               <div class="control-group">
-                <label class="control-label" for="datepicker">Deadline</label>
+                <label class="control-label" for="datepicker">Deadline *</label>
                 <div class="controls">
                   <input id="datepicker" name="datepicker" type="text" placeholder="Date input">
                   <!--<div class="input-append date" id="datepicker" data-date="12-02-2012" data-date-format="dd-mm-yyyy">

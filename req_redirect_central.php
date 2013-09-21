@@ -328,13 +328,13 @@
 				unset($req_list->req_data); 		
 			   ?>                 
              </div>
-             <div>
+             <!-- <div>
                 <legend>Comments</legend>
              	<table>
                 
                 </table>
              </div>             
-             <div class="accordion" id="accordion2">
+             <div class="accordion" id="accordion2"> -->
              <?php 
 			   /*unset($req_list->user_data);
 			   $req_list->get_comments($_REQUEST["id"]);
@@ -401,7 +401,7 @@
 				unset($req_list->user_data); 
 				unset($req_list->comment_data);*/							  
 			  ?>             
-            </div>
+            <!-- </div>
              <div>
                  <form name="comments" action="req_validation_local.php?id=<?php echo $_REQUEST["id"]?>" method="post">
                   <fieldset>
@@ -412,7 +412,7 @@
                     </label>
                   </fieldset>
                 </form>
-            </div>
+            </div> -->
              
         </div> 
         <!-- Modal -->
