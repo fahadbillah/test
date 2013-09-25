@@ -1,5 +1,6 @@
 <?php 
 include_once "user.php";
+require_once "swiftmailer/mail_handler.php";
 session_start();	
 if(!isset($_SESSION["loggedin"])||!isset($_SESSION["user_id"]))
 { 	  
@@ -108,6 +109,7 @@ body {
      <?php 
 			//echo $_SESSION['location'];
      unset($req_list->user_data);
+     $mailTemp = false;
      $req_list->date_time();
      $date_time = $req_list->date;
      if(isset($_REQUEST['poSubmit']) && $_REQUEST['poCost']!=''){
@@ -125,7 +127,12 @@ body {
         if($_REQUEST['decision1']=='Reject'){
          $req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
          $req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
-         $req_list->change_req_status_main($_REQUEST["id"],$decision);
+         $mailTemp = $req_list->change_req_status_main($_REQUEST["id"],$decision);
+         if($mailTemp){
+           $mailReceiver = $req_list->responsible_stuff($decision,$_REQUEST["id"]);
+           $receiverMail = $req_list->get_email($mailReceiver);
+           maxMailNotification('Check requisition *URGENT*','Please check requisition.',$receiverMail);
+         }
        }
        else{
          $destination = NULL;
@@ -158,7 +165,15 @@ body {
     }
     $req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
     $req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
-    $req_list->change_req_status_main($_REQUEST["id"],$decision);
+    $mailTemp = $req_list->change_req_status_main($_REQUEST["id"],$decision);
+    if($mailTemp){
+      $mailReceiver = $req_list->responsible_stuff($decision,$_REQUEST["id"]);
+      $receiverMail = $req_list->get_email($mailReceiver);
+      if($receiverMail)
+        maxMailNotification('Check requisition.',$decision.' Please check requisition. - '.$receiverMail,'billah22@gmail.com');
+      else
+         echo "<span class='label label-warning'>No mail notification send.</span> ";   
+    }
     if($decision=='Delivered'||$decision=='Partially Delivered')
       $req_list->update_delivery_date($_REQUEST["id"]);
   }
@@ -521,7 +536,7 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                 <td>
                   <?php 
                     //var_dump(count($req_list->get_pm_req($user_id,100,0,$_REQUEST['id'])));
-                    $allMessage = $req_list->get_pm_req($user_id,100,0,$_REQUEST['id']);
+                    $allMessage = $req_list->get_pm_req($_SESSION['user_id'],100,0,$_REQUEST['id']);
                     echo '<div class="accordion" id="accordioninbox">';
                     if($allMessage){
                       foreach ($allMessage as $am) {
@@ -603,7 +618,7 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
                 </div>
                 <div class="control-group">
                   <div class="controls">
-                    <input type="hidden" id="sender" name="sender" value="<?php echo $user_id ?>">
+                    <input type="hidden" id="sender" name="sender" value="<?php echo $_SESSION['user_id'] ?>">
                     <input type="hidden" id="sms_req_id" name="sms_req_id" value="<?php echo $_REQUEST["id"] ?>">
                     <button type="submit" id="pm_submit" name="pm_submit" class="btn">Send Message</button>
                   </div>

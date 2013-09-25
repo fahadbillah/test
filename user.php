@@ -2530,7 +2530,6 @@ class User extends Database
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>Admin activity updated.</span> ";
-		
 	}
 	public function change_req_status($admin,$req_id,$status)
 	{		
@@ -2547,7 +2546,7 @@ class User extends Database
 		$result = $this->mysqli->query($query) or die(mysqli_connect_errno()."Data cannot be inserted");		
 		
 		echo "<span class='label label-success'>Main requisition status updated.</span> ";
-		
+		return true;
 	}
 	public function get_approved_requisition_list($start,$limit,$location)
 	{		
@@ -2589,69 +2588,69 @@ class User extends Database
 		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
 		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
 		/*$query="INSERT INTO admins (admin_id, req_id, activities, status)
-						VALUES ('$account', '$id', '$activitiesAcc','New')
-						VALUES ('$scm', '$id', '$activitiesScm','New')";*/
-						$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
+		VALUES ('$account', '$id', '$activitiesAcc','New')
+		VALUES ('$scm', '$id', '$activitiesScm','New')";*/
+		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 
-						echo "<span class='label label-success'>User added successfully.</span> ";	
-					}
-					public function getReqDestination($id){
-						unset($this->req_data);
-						$query="SELECT location FROM req_hub WHERE req_id = '$id'";
-						$result = $this->mysqli->query($query);
-						$num_result=$result->num_rows;		
-						if($num_result>0){				
-							while($rows=$result->fetch_assoc()){									
-								$this->req_data=$rows;					
-							}						
-							return $this->req_data['location'];
-						}
-						else
-							echo "<span class='label label-warning'>Not found in req_hub.</span> ";	
-					}
-					public function assign_local_account_scm($id)
-					{
-						$this->date_time();
-						$id = $this->mysqli->real_escape_string($id);
-						$location = $this->getReqDestination($id); 
-		//$this->mysqli->real_escape_string($location);
-		//$idL = $this->get_location_id($location);		
-		//var_dump($location);
-						$account = (int)$this->get_local_accountant($location,$id);	
-		//var_dump($account);
-						$scm = (int)$this->get_local_scm($location,$id);	
-		//var_dump($scm);
-						$activitiesAcc = 'accountant added,'.$this->date;
-						$activitiesScm = 'scm added,'.$this->date;
-		//echo $name,$designation,$office_code,$authority_level;		
-						$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
-						$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-						$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
-						$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
+		echo "<span class='label label-success'>User added successfully.</span> ";	
+	}
+	public function getReqDestination($id){
+		unset($this->req_data);
+		$query="SELECT location FROM req_hub WHERE req_id = '$id'";
+		$result = $this->mysqli->query($query);
+		$num_result=$result->num_rows;		
+		if($num_result>0){				
+			while($rows=$result->fetch_assoc()){									
+				$this->req_data=$rows;					
+			}						
+			return $this->req_data['location'];
+		}
+		else
+			echo "<span class='label label-warning'>Not found in req_hub.</span> ";	
+	}
+	public function assign_local_account_scm($id)
+	{
+		$this->date_time();
+		$id = $this->mysqli->real_escape_string($id);
+		$location = $this->getReqDestination($id); 
+//$this->mysqli->real_escape_string($location);
+//$idL = $this->get_location_id($location);		
+//var_dump($location);
+		$account = (int)$this->get_local_accountant($location,$id);	
+//var_dump($account);
+		$scm = (int)$this->get_local_scm($location,$id);	
+//var_dump($scm);
+		$activitiesAcc = 'accountant added,'.$this->date;
+		$activitiesScm = 'scm added,'.$this->date;
+//echo $name,$designation,$office_code,$authority_level;		
+		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
+		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
+		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
+		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 
-						echo "<span class='label label-success'>User added successfully.</span> ";	
-					}
-					public function assign_central_account_scm($id)
-					{
-						$this->date_time();
-						$id = $this->mysqli->real_escape_string($id);
-						$account = $this->get_central_accountant();
-						$scm = $this->get_central_scm();
-						$activitiesAcc = 'accountant added,'.$this->date;
-						$activitiesScm = 'scm added,'.$this->date;
-						$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
-						$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
-						$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_req='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
-						$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
+		echo "<span class='label label-success'>User added successfully.</span> ";	
+	}
+	public function assign_central_account_scm($id)
+	{
+		$this->date_time();
+		$id = $this->mysqli->real_escape_string($id);
+		$account = $this->get_central_accountant();
+		$scm = $this->get_central_scm();
+		$activitiesAcc = 'accountant added,'.$this->date;
+		$activitiesScm = 'scm added,'.$this->date;
+		$query_account="INSERT INTO admins SET admin_id='$account', relation_to_req='Accountant', req_id='$id', activities = '$activitiesAcc', status='Approved'";
+		$result = $this->mysqli->query($query_account) or die(mysqli_connect_errno()."Data cannot be inserted");							
+		$query_scm="INSERT INTO admins SET admin_id='$scm', relation_to_erq='SCM', req_id='$id', activities = '$activitiesScm', status='Approved'";
+		$result = $this->mysqli->query($query_scm) or die(mysqli_connect_errno()."Data cannot be inserted");		
 
-						echo "<span class='label label-success'>User added successfully.</span> ";	
-					}
-					public function get_central_accountant()
-					{		
-						unset($this->req_data);
-						$query="SELECT id FROM user_master WHERE authorization_level = 'Central Hub Accountant'";
+		echo "<span class='label label-success'>User added successfully.</span> ";	
+	}
+	public function get_central_accountant()
+	{		
+		unset($this->req_data);
+		$query="SELECT id FROM user_master WHERE authorization_level = 'Central Hub Accountant'";
 
-						$result = $this->mysqli->query($query);
+		$result = $this->mysqli->query($query);
 
 		$num_result=$result->num_rows;		// determine number of rows result set 
 		
@@ -4138,6 +4137,63 @@ public function get_all_user_location($user_id)
 				return $allUserList;
 			}
 		}
+	}
+	public function responsible_stuff($status,$req_id){
+		switch ($status) {
+			case 'New':
+			case 'Redirect':
+				return $this->get_individual_req_staff($req_id,'Boss');
+				break;
+			case 'Partially Received':
+			case 'Received':
+			case 'Approved':
+				return $this->get_individual_req_staff($req_id,'SCM');
+				break;
+			case 'Partially Delivered':
+			case 'Delivered':
+			case 'Solved':
+				return $this->get_individual_req_staff($req_id,'Raiser');
+				break;
+			case 'Document Delivered':
+				return $this->get_individual_req_staff($req_id,'Accountant');
+				break;
+			/*case 'Closed':
+				return $this->get_individual_req_staff($req_id,'Boss');
+				break;
+			case 'Redirect':
+				return $this->get_individual_req_staff($req_id,'Boss');
+				break;*/
+			
+			default:
+				return false;
+				break;
+		}
+	}
+	public function get_individual_req_staff($req_id,$staff_type){
+		$query="SELECT admin_id FROM admins where req_id='$req_id' and relation_to_req = '$staff_type' and status<>'View'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$mailTo = $rows["admin_id"];				//var_dump($temp);				
+			}
+			return $mailTo;
+		}
+		else			
+			return false;
+	}
+	public function get_email($user_id){
+		$query="SELECT email FROM user_login_details where user_id='$user_id'";		
+		$result = $this->mysqli->query($query);		
+		$num_result=$result->num_rows;
+		if($num_result>0){			
+			while($rows=$result->fetch_assoc()){
+				$mailTo = $rows["email"];				//var_dump($temp);				
+			}
+			return $mailTo;
+		}
+		else			
+			return false;
 	}
 }	
 ?>
