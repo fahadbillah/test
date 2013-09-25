@@ -3583,9 +3583,6 @@ public function get_all_user_location($user_id)
 	}
 	public function status_comparison($user,$main,$pst){
 		//echo $pst;
-		var_dump($user);
-		var_dump($main);
-		var_dump($pst);
 		if($user=='Partially Delivered' && $main=='Partially Received')
 			return true;
 		else if($user=='Delivered' && $main=='Received')

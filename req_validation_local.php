@@ -13,8 +13,77 @@ if(!$req_list->user_home_page_authorization($_SESSION["user_id"])){
   exit;
 }  
 
-   $req_data_temp = $req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
-   //var_dump($req_data_temp[0]["location_id"]);
+unset($req_list->user_data);
+$mailTemp = false;
+$req_list->date_time();
+$date_time = $req_list->date;
+if(isset($_REQUEST['poSubmit']) && $_REQUEST['poCost']!=''){
+//$req_list->insert_actual_cost($_REQUEST["poCost"],$_REQUEST["id"]); 
+  $req_list->insert_po($_REQUEST,$_REQUEST["id"]); 
+}
+if(isset($_REQUEST['decision1'])){
+  $decision = $_REQUEST['decision1'];
+  if($_SESSION['rand'] == $_REQUEST["prevent"]){
+    if($_REQUEST['decision1']=='Reject'){
+      $req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
+      $req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
+      $mailTemp = $req_list->change_req_status_main($_REQUEST["id"],$decision);
+      if($mailTemp){
+        $mailReceiver = $req_list->responsible_stuff($decision,$_REQUEST["id"]);
+        $receiverMail = $req_list->get_email($mailReceiver);
+        maxMailNotification('Check requisition *URGENT*','Please check requisition.',$receiverMail);
+      }
+    }
+    else{
+      $destination = NULL;
+      $isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
+      $isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
+      if($isBoss){
+        if($isLocal){
+          $destination = $req_list->check_req_final_destination($_REQUEST["id"]);    
+          if($destination == 'local'){
+            $req_list->assign_local_account_scm($_REQUEST["id"]);     
+          }
+          else if($destination == 'central'){ 
+            $req_list->send_to_hub_update($_REQUEST["id"],'central');
+            $decision = 'View'; 
+          }
+        }
+        else{
+          $req_list->assign_local_account_scm($_REQUEST["id"]);
+          var_dump('isLocal false central acc/scm assigned');  
+        }
+        if($_REQUEST["mat_cart_list"]!='' && $_REQUEST["total_costing"]!=''){                  
+          var_dump('material cart working');
+          $req_list->update_material_list($_REQUEST["mat_cart_list"],$_REQUEST["total_costing"],$_REQUEST["id"]);
+        }
+      }
+      $req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
+      $req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
+      $mailTemp = $req_list->change_req_status_main($_REQUEST["id"],$decision);
+      if($mailTemp){
+        $mailReceiver = $req_list->responsible_stuff($decision,$_REQUEST["id"]);
+        $receiverMail = $req_list->get_email($mailReceiver);
+        if($receiverMail)
+          maxMailNotification('Check requisition.',$decision.' Please check requisition.',$receiverMail);
+        else
+          echo "<span class='label label-warning'>No mail notification send.</span> ";   
+      }
+      if($decision=='Delivered'||$decision=='Partially Delivered')
+        $req_list->update_delivery_date($_REQUEST["id"]);
+    }
+  }
+  else 
+    echo "<span class='label label-warning'>Form resubmission prevented.</span> ";        
+}
+if(isset($_REQUEST['decision2']))
+  echo $_REQUEST['decision2'];
+if(isset($_REQUEST['decision3']))
+  echo $_REQUEST['decision3'];    
+
+$req_data_temp = $req_list->user_req_single($_SESSION["user_id"],$_REQUEST["id"]);
+//var_dump($req_data_temp[0]["location_id"]);
+$currentStatus = '';
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0066)http://twitter.github.com/bootstrap/examples/starter-template.html -->
@@ -108,83 +177,7 @@ body {
     <div id="yooo">
      <?php 
 			//echo $_SESSION['location'];
-     unset($req_list->user_data);
-     $mailTemp = false;
-     $req_list->date_time();
-     $date_time = $req_list->date;
-     if(isset($_REQUEST['poSubmit']) && $_REQUEST['poCost']!=''){
-			   		//$req_list->insert_actual_cost($_REQUEST["poCost"],$_REQUEST["id"]);	
-       $req_list->insert_po($_REQUEST,$_REQUEST["id"]);	
-     }
-     if(isset($_REQUEST['decision1'])){
-       $decision = $_REQUEST['decision1'];
-       if($_SESSION['rand'] == $_REQUEST["prevent"]){
-						//var_dump($_REQUEST["mat_cart_list"]);
-						//var_dump($_REQUEST["total_costing"]);
-						//var_dump(isset($_REQUEST["mat_cart_list"]));
-						//return;
-						//echo $_REQUEST['decision1'];
-        if($_REQUEST['decision1']=='Reject'){
-         $req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
-         $req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
-         $mailTemp = $req_list->change_req_status_main($_REQUEST["id"],$decision);
-         if($mailTemp){
-           $mailReceiver = $req_list->responsible_stuff($decision,$_REQUEST["id"]);
-           $receiverMail = $req_list->get_email($mailReceiver);
-           maxMailNotification('Check requisition *URGENT*','Please check requisition.',$receiverMail);
-         }
-       }
-       else{
-         $destination = NULL;
-         $isBoss = $req_list->checkBoss($_REQUEST["id"],$_SESSION["user_id"]);
-         $isLocal = $req_list->checkLocal($_SESSION['location'],$_REQUEST["id"]);
-         if($isBoss){
-          //var_dump('isBoss true');
-          if($isLocal){
-           //var_dump('isLocal true');
-           $destination = $req_list->check_req_final_destination($_REQUEST["id"]);		
-           //var_dump($destination);
-           if($destination == 'local'){
-            $req_list->assign_local_account_scm($_REQUEST["id"]);			
-          }
-          else if($destination == 'central'){	
-            $req_list->send_to_hub_update($_REQUEST["id"],'central');
-            $decision = 'View';	
-          }
-        }
-        else{
-         $req_list->assign_local_account_scm($_REQUEST["id"]);
-         var_dump('isLocal false central acc/scm assigned');	
-       }
-								//"mat_cart_list"]);
-						//var_dump($_REQUEST["total_costing"]);
-       if($_REQUEST["mat_cart_list"]!='' && $_REQUEST["total_costing"]!=''){									
-        var_dump('material cart working');
-        $req_list->update_material_list($_REQUEST["mat_cart_list"],$_REQUEST["total_costing"],$_REQUEST["id"]);
-      }
-    }
-    $req_list->change_req_activities($_SESSION["user_id"],$_REQUEST["id"],$decision);
-    $req_list->change_req_status($_SESSION["user_id"],$_REQUEST["id"],$decision);
-    $mailTemp = $req_list->change_req_status_main($_REQUEST["id"],$decision);
-    if($mailTemp){
-      $mailReceiver = $req_list->responsible_stuff($decision,$_REQUEST["id"]);
-      $receiverMail = $req_list->get_email($mailReceiver);
-      if($receiverMail)
-        maxMailNotification('Check requisition.',$decision.' Please check requisition. - '.$receiverMail,'billah22@gmail.com');
-      else
-         echo "<span class='label label-warning'>No mail notification send.</span> ";   
-    }
-    if($decision=='Delivered'||$decision=='Partially Delivered')
-      $req_list->update_delivery_date($_REQUEST["id"]);
-  }
-}
-else 
-  echo "<span class='label label-warning'>Form resubmission prevented.</span> ";				
-}
-if(isset($_REQUEST['decision2']))
-  echo $_REQUEST['decision2'];
-if(isset($_REQUEST['decision3']))
-  echo $_REQUEST['decision3'];					
+     			
 
 $_SESSION['rand'] = rand(1, 10000000);
 ?>
@@ -199,7 +192,8 @@ $_SESSION['rand'] = rand(1, 10000000);
 				//var_dump($req_list->req_data);
    foreach($req_data_temp as $list)
    {
-     extract($list);			   
+     extract($list);	
+     $currentStatus = $status;	
      ?>
      <tr>
        <th>Requisition ID</th>
@@ -485,19 +479,17 @@ if($GRN = $req_list->getGRNList($_REQUEST["id"])){
    <form id="des" name="des" action="req_validation_local.php?id=<?php echo $_REQUEST["id"] ?>" method="post">
      <?php 	
      $this_user_status = $req_list->getReqStatus($_REQUEST["id"],$_SESSION["user_id"]);					
-     $button = $req_list->getButton($status);
-					//echo $button;
+     $button = $req_list->getButton($currentStatus);
      if($pst){
-       /*if(($status==='Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='Accountant')||($status==='Clear From Accounts' && $pst==='SCM')||($status==='Solved' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss' && $only_view != 'View'))*/
-       /*if(($status==='Delivered' && $pst==='Raiser')||($status==='Partially Delivered' && $pst==='Raiser')||($status==='Approved' && $pst==='SCM')||($status==='Partially Received' && $pst==='SCM')||($status==='Received' && $pst==='Accountant')||(($status==='New'||$status==='Redirect') && $pst==='Boss' && $only_view != 'View'))*/
-       if($req_list->status_comparison($this_user_status,$status,$pst))
+      if($req_list->status_comparison($this_user_status,$currentStatus,$pst)){
         echo $button;						 
+      }
       else{
         if($only_view)
          echo "<button class='btn btn-small btn-success disabled' type='button'>Only View</button>";
        else
          echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
-     }
+      }
    }
    else
     echo "<button class='btn btn-small btn-success disabled' type='button'>$status</button>";
