@@ -2,8 +2,17 @@
 	include_once "user.php";
 	require_once "swiftmailer/mail_handler.php";
 	//maxMailNotification('mail notification','test message from test',"billah22@gmail.com");
-	$test = new User();
-	var_dump($test->get_email(47));
+	//$test = new User();
+	/*$temp = true;
+	if (!$temp) {
+		echo "shit worksssss";
+	}*/
+	//var_dump($temp);
+	echo substr("L10011.5U27R40", 1,stripos("L10011.5U27R40", "u")-1);
+	echo "</br>";
+	echo stripos("L10011.5U27R40", "u");
+	//echo "shit not worksss";
+	//var_dump($test->get_email(47));
 	//echo count($test->message_scope("requisition",109));
 	//if($temp)
 	//$temp = "মাত্র এক বছরের মধ্যেই বিশ্বের সবচেয়ে উঁচু ভবনের দিক থেকে দ্বিতীয় অবস্থানে চলে যাচ্ছে দুবাইয়ের বুর্জ খলিফা। ইতোমধ্যে চীনে সবচেয়ে উঁচু ভবন স্কাই সিটি নির্মাণ কাজ শুরু হয়েছে। আর মাত্র দশ মাসেই এই ভবনের নির্মাণ কাজ শেষ করার পরিকল্পনা গ্রহণ করা হয়েছে। খবর সিএনএন'র।";
@@ -26,14 +35,14 @@
 		extract($subcat);
 		echo "<option value=".$id.">".$name."</option>"; 	
 	}*/
-	exit;
+/*	exit;
 	return ;
 	$temp = $test->id_to_catagory($item_id);
 	foreach($temp as $d){
 			extract($d);
 			echo $id.' '.$name.' '.$type.' '.$sub_cat_of.' '.$date_added; 
 			echo '</br>';
-		}
+		}*/
 	//var_dump($test->get_local_accountant('central',91));
 	
 ?>

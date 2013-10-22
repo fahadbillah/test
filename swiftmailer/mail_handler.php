@@ -2,7 +2,10 @@
 	require_once 'swiftmailer/lib/swift_required.php';
 
 	// Create the Transport
-	function maxMailNotification($subject,$sms,$receiver){		
+	function maxMailNotification($subject,$sms,$receiver){	
+		if (!isset($receiver)) {
+				# code...
+			}	
 		$transport = Swift_SmtpTransport::newInstance('mail.maxrailwaytrack.com', 25)
 		  ->setUsername('zulkerv8')
 		  ->setPassword('eaz2|Xr4Arcb')
